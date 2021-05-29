@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="false">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/pin_background_color"/>
+            <corners android:radius="@dimen/five"/>
+        </shape>
+    </item>
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/pin_background_color"/>
+            <corners android:radius="@dimen/five"/>
+            <stroke android:width="@dimen/one" android:color="@color/pin_line_color"/>
+        </shape>
+    </item>
+</selector>

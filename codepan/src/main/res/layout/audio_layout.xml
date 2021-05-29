@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:codePan="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/player_bg_rect_secondary_rad_three"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:layout_width="@dimen/thirty"
+        android:layout_height="@dimen/thirty"
+        android:layout_margin="@dimen/five">
+
+        <ImageView
+            android:id="@+id/ivPlayAudio"
+            android:layout_width="@dimen/fifteen"
+            android:layout_height="@dimen/fifteen"
+            android:layout_gravity="center"
+            android:src="@drawable/player_state_bmp_play"/>
+
+        <ImageView
+            android:id="@+id/ivLoadingAudio"
+            android:layout_width="@dimen/eighteen"
+            android:layout_height="@dimen/eighteen"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_audio_loading"
+            android:visibility="gone"/>
+
+        <com.codepan.widget.CodePanButton
+            android:id="@+id/btnPlayAudio"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/state_oval_trans_light"/>
+
+    </FrameLayout>
+
+    <com.codepan.widget.CodePanLabel
+        android:id="@+id/tvDurationAudio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/time_progress"
+        android:textColor="@color/white"
+        android:textSize="@dimen/eleven"
+        codePan:typeface="@string/time_font"/>
+
+    <SeekBar
+        android:id="@+id/sbProgressAudio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="@dimen/two"
+        android:minHeight="@dimen/two"
+        android:paddingStart="@dimen/ten"
+        android:paddingLeft="@dimen/ten"
+        android:paddingTop="@dimen/seven"
+        android:paddingEnd="@dimen/ten"
+        android:paddingRight="@dimen/ten"
+        android:paddingBottom="@dimen/seven"
+        android:progressDrawable="@drawable/player_seekbar"
+        android:thumb="@drawable/player_thumb_normal"/>
+
+</LinearLayout>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:codePan="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/divider">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="@dimen/one"
+        android:layout_marginRight="@dimen/one"
+        android:layout_marginBottom="@dimen/one"
+        android:background="@color/white">
+
+        <com.codepan.widget.CodePanLabel
+            android:id="@+id/tvTableRowNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="3"
+            android:paddingStart="@dimen/five"
+            android:paddingLeft="@dimen/five"
+            android:paddingTop="@dimen/ten"
+            android:paddingEnd="@dimen/five"
+            android:paddingRight="@dimen/five"
+            android:paddingBottom="@dimen/ten"
+            android:textColor="@color/font_color"
+            android:textSize="@dimen/fifteen"
+            codePan:typeface="@string/calibri_regular"/>
+
+    </FrameLayout>
+
+</FrameLayout>

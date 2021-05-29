@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:codePan="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/llPageTable"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/llParentTable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.codepan.widget.TableScrollView
+                android:id="@+id/svLeftTable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/llLeftTable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"/>
+
+            </com.codepan.widget.TableScrollView>
+
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/llTopTable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"/>
+
+                <com.codepan.widget.TableScrollView
+                    android:id="@+id/svContentTable"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scrollbarSize="0dp"
+                    android:scrollbarThumbVertical="@color/transparent">
+
+                    <LinearLayout
+                        android:id="@+id/llContentTable"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"/>
+
+                </com.codepan.widget.TableScrollView>
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llPageTable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/one"
+            android:background="@color/divider"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/five">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/bg_spinner">
+
+                <ImageView
+                    android:layout_width="@dimen/ten"
+                    android:layout_height="@dimen/seven"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_margin="@dimen/ten"
+                    android:src="@drawable/ic_dropdown_disabled"/>
+
+                <Spinner
+                    android:id="@+id/spinLimitTable"
+                    style="@android:style/Widget.Holo.Light.Spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/state_rect_trans_rad_three"
+                    android:gravity="start|center_vertical"
+                    android:spinnerMode="dropdown"
+                    android:textColor="@color/gray_pri"
+                    android:textSize="@dimen/fifteen"/>
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/llNextPreviousTable"
+                android:layout_toLeftOf="@+id/llNextPreviousTable"
+                android:layout_marginEnd="@dimen/twenty"
+                android:layout_marginRight="@dimen/twenty"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_spinner">
+
+                    <ImageView
+                        android:layout_width="@dimen/ten"
+                        android:layout_height="@dimen/seven"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_margin="@dimen/ten"
+                        android:src="@drawable/ic_dropdown_disabled"/>
+
+                    <Spinner
+                        android:id="@+id/spinPageTable"
+                        style="@android:style/Widget.Holo.Light.Spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@drawable/state_rect_trans_rad_three"
+                        android:gravity="start|center_vertical"
+                        android:spinnerMode="dropdown"
+                        android:textColor="@color/gray_pri"
+                        android:textSize="@dimen/fifteen"/>
+
+                </FrameLayout>
+
+                <com.codepan.widget.CodePanLabel
+                    android:id="@+id/tvTotalTable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/fifteen"
+                    android:layout_marginStart="@dimen/five"
+                    android:layout_marginLeft="@dimen/five"
+                    android:textColor="@color/font_color"
+                    codePan:typeface="@string/calibri_regular"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llNextPreviousTable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:layout_width="@dimen/thirty"
+                    android:layout_height="@dimen/thirty"
+                    android:layout_marginEnd="@dimen/twenty"
+                    android:layout_marginRight="@dimen/twenty">
+
+                    <View
+                        android:id="@+id/vPreviousTable"
+                        android:layout_width="@dimen/eight"
+                        android:layout_height="@dimen/twelve"
+                        android:layout_gravity="center"
+                        android:background="@drawable/state_bmp_previous"/>
+
+                    <com.codepan.widget.CodePanButton
+                        android:id="@+id/btnPreviousTable"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/state_oval_trans_dark"/>
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="@dimen/thirty"
+                    android:layout_height="@dimen/thirty"
+                    android:layout_marginEnd="@dimen/ten"
+                    android:layout_marginRight="@dimen/ten">
+
+                    <View
+                        android:id="@+id/vNextTable"
+                        android:layout_width="@dimen/eight"
+                        android:layout_height="@dimen/twelve"
+                        android:layout_gravity="center"
+                        android:background="@drawable/state_bmp_next"/>
+
+                    <com.codepan.widget.CodePanButton
+                        android:id="@+id/btnNextTable"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/state_oval_trans_dark"/>
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="@dimen/thirty"
+                    android:layout_height="@dimen/thirty"
+                    android:layout_marginEnd="@dimen/ten"
+                    android:layout_marginRight="@dimen/ten"
+                    android:visibility="gone">
+
+                    <View
+                        android:layout_width="@dimen/twelve"
+                        android:layout_height="@dimen/twelve"
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_add"/>
+
+                    <com.codepan.widget.CodePanButton
+                        android:id="@+id/btnAddTable"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/state_oval_trans_dark"/>
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="player_primary">#EB410A</color>
+    <color name="player_secondary">#1E2836</color>
+    <string name="time_placeholder">00:00</string>
+    <string name="time_progress">00:00 / 00:00</string>
+    <string name="loading_video_failed"><u>Failed to load video.\nTap to retry.</u></string>
+    <string name="loading_audio_failed">Failed to load audio.</string>
+    <string name="time_font">@string/calibri_regular</string>
+    <string name="error_font">@string/calibri_regular</string>
+    <string name="title_font">@string/calibri_regular</string>
+</resources>

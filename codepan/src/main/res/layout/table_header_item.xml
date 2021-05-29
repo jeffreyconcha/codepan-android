@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:codePan="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/table_divider">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="@dimen/one"
+        android:layout_marginRight="@dimen/one"
+        android:layout_marginBottom="@dimen/one"
+        android:background="@color/table_header"
+        android:paddingStart="@dimen/five"
+        android:paddingLeft="@dimen/five"
+        android:paddingTop="@dimen/ten"
+        android:paddingEnd="@dimen/ten"
+        android:paddingRight="@dimen/ten"
+        android:paddingBottom="@dimen/ten">
+
+        <com.codepan.widget.CodePanLabel
+            android:id="@+id/tvTableTextHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/three"
+            android:layout_marginRight="@dimen/three"
+            android:layout_toStartOf="@+id/vFilterTextHeader"
+            android:layout_toLeftOf="@+id/vFilterTextHeader"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="@color/font_color"
+            android:textSize="@dimen/fifteen"
+            codePan:typeface="@string/calibri_bold"/>
+
+        <View
+            android:id="@+id/vFilterTextHeader"
+            android:layout_width="@dimen/ten"
+            android:layout_height="@dimen/seven"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/state_bmp_dropdown"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

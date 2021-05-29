@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:codePan="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/black">
+
+    <RelativeLayout
+        android:id="@+id/rlContentVideo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="visible">
+
+        <VideoView
+            android:id="@+id/vvContentVideo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"/>
+
+        <ImageView
+            android:id="@+id/ivContentVideo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            tools:ignore="ContentDescription"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlControllerVideo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black_trans_forty"
+        android:visibility="visible">
+
+        <FrameLayout
+            android:id="@+id/flFullScreenVideo"
+            android:layout_width="@dimen/fifty"
+            android:layout_height="@dimen/fifty"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/five">
+
+            <ImageView
+                android:layout_width="@dimen/twenty_five"
+                android:layout_height="@dimen/twenty_five"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_video_normal"/>
+
+            <com.codepan.widget.CodePanButton
+                android:id="@+id/btnFullScreenVideo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/state_oval_trans_light"/>
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/llPlayVideo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center">
+
+            <FrameLayout
+                android:layout_width="@dimen/fifty_three"
+                android:layout_height="@dimen/fifty_three">
+
+                <ImageView
+                    android:id="@+id/ivPreviousVideo"
+                    android:layout_width="@dimen/forty_three"
+                    android:layout_height="@dimen/forty_three"
+                    android:layout_gravity="center"
+                    android:src="@drawable/state_bmp_skip_previous"/>
+
+                <com.codepan.widget.CodePanButton
+                    android:id="@+id/btnPreviousVideo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/state_oval_trans_light"/>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="@dimen/sixty"
+                android:layout_height="@dimen/sixty"
+                android:layout_marginStart="@dimen/fifty_three"
+                android:layout_marginLeft="@dimen/fifty_three"
+                android:layout_marginEnd="@dimen/fifty_three"
+                android:layout_marginRight="@dimen/fifty_three">
+
+                <ImageView
+                    android:id="@+id/ivPlayVideo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/player_state_bmp_play_circular"/>
+
+                <com.codepan.widget.CodePanButton
+                    android:id="@+id/btnPlayVideo"
+                    android:layout_width="match_parent"
+                    android:layout_height="61dp"
+                    android:background="@drawable/state_oval_trans_dark"/>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="@dimen/fifty_three"
+                android:layout_height="@dimen/fifty_three">
+
+                <ImageView
+                    android:id="@+id/ivNextVideo"
+                    android:layout_width="@dimen/forty_three"
+                    android:layout_height="@dimen/forty_three"
+                    android:layout_gravity="center"
+                    android:src="@drawable/state_bmp_skip_next"/>
+
+                <com.codepan.widget.CodePanButton
+                    android:id="@+id/btnNextVideo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/state_oval_trans_light"/>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <com.codepan.widget.CodePanLabel
+            android:id="@+id/tvTitleVideo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="@dimen/seven"
+            android:layout_marginLeft="@dimen/seven"
+            android:layout_marginTop="@dimen/thirteen"
+            android:layout_toStartOf="@+id/flFullScreenVideo"
+            android:layout_toLeftOf="@+id/flFullScreenVideo"
+            android:textColor="@color/white"
+            android:textSize="@dimen/twenty"
+            codePan:typeface="@string/title_font"/>
+
+        <com.codepan.widget.CodePanLabel
+            android:id="@+id/tvProgressVideo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="@dimen/seven"
+            android:layout_marginLeft="@dimen/seven"
+            android:layout_marginBottom="@dimen/seven"
+            android:text="@string/time_placeholder"
+            android:textColor="@color/white"
+            android:textSize="@dimen/thirteen"
+            codePan:typeface="@string/time_font"/>
+
+        <SeekBar
+            android:id="@+id/sbProgressVideo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toStartOf="@+id/tvDurationVideo"
+            android:layout_toLeftOf="@+id/tvDurationVideo"
+            android:layout_toEndOf="@+id/tvProgressVideo"
+            android:layout_toRightOf="@+id/tvProgressVideo"
+            android:maxHeight="@dimen/two"
+            android:minHeight="@dimen/two"
+            android:paddingStart="@dimen/twelve"
+            android:paddingLeft="@dimen/twelve"
+            android:paddingTop="@dimen/ten"
+            android:paddingEnd="@dimen/twelve"
+            android:paddingRight="@dimen/twelve"
+            android:paddingBottom="@dimen/ten"
+            android:progressDrawable="@drawable/player_seekbar"
+            android:thumb="@drawable/player_thumb_normal"/>
+
+        <com.codepan.widget.CodePanLabel
+            android:id="@+id/tvDurationVideo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="@dimen/seven"
+            android:layout_marginRight="@dimen/seven"
+            android:layout_marginBottom="@dimen/seven"
+            android:text="@string/time_placeholder"
+            android:textColor="@color/white"
+            android:textSize="@dimen/thirteen"
+            codePan:typeface="@string/time_font"/>
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/ivLoadingVideo"
+        android:layout_width="@dimen/sixty"
+        android:layout_height="@dimen/sixty"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_video_loading"
+        android:visibility="gone"/>
+
+    <com.codepan.widget.CodePanLabel
+        android:id="@+id/tvErrorVideo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="@dimen/ten"
+        android:text="@string/loading_video_failed"
+        android:textColor="@color/white"
+        android:textSize="@dimen/twenty"
+        android:visibility="gone"
+        codePan:typeface="@string/error_font"/>
+
+</FrameLayout>

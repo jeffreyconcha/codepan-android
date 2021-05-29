@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.github.barteksc.pdfviewer.PDFView
+        android:id="@+id/pdfViewer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <FrameLayout
+        android:layout_width="@dimen/thirty"
+        android:layout_height="@dimen/thirty"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="@dimen/ten"
+        android:background="@drawable/bg_oval_dark">
+
+        <ImageView
+            android:layout_width="@dimen/twelve"
+            android:layout_height="@dimen/twelve"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_close"/>
+
+        <com.codepan.widget.CodePanButton
+            android:id="@+id/btnClosePDFViewer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/state_oval_trans_dark"/>
+
+    </FrameLayout>
+
+</RelativeLayout>

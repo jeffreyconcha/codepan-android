@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tp_title">Select Time</string>
+
+    <string name="tp_title_font">@string/calibri_regular</string>
+    <string name="tp_font">@string/calibri_regular</string>
+    <string name="tp_am">AM</string>
+    <string name="tp_pm">PM</string>
+    <string name="tp_cancel">CANCEL</string>
+    <string name="tp_confirm">CONFIRM</string>
+
+    <color name="tp_text">#6D6E71</color>
+    <color name="tp_primary">#27AE60</color>
+    <color name="tp_minute">#1D1D1D</color>
+    <color name="tp_hour">@color/tp_primary</color>
+    <color name="tp_not_selected_1">#C7C7C7</color>
+    <color name="tp_not_selected_2">#808080</color>
+    <color name="tp_divider">@color/tp_primary</color>
+    <color name="tp_hour_background">#5027AE60</color>
+    <color name="tp_min_background">#50707070</color>
+    <color name="tp_am_pm_border">#C4C4C4</color>
+</resources>

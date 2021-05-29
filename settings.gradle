@@ -1,0 +1,3 @@
+include ':codepan'
+include ':app'
+rootProject.name = "CodePan"
