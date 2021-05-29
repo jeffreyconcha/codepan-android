@@ -120,11 +120,13 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -2436,20 +2438,34 @@ public class CodePanUtils {
 	}
 
 	public static void sendSMS(String address, String message) {
-		if(message != null && !message.isEmpty() &&
+		if (message != null && !message.isEmpty() &&
 				address != null && !address.isEmpty()) {
 			SmsManager manager = SmsManager.getDefault();
 			manager.sendTextMessage(address, null, message, null, null);
 		}
 	}
 
+	public static void sendSMS(String address, String message, PendingIntent si) {
+		if (message != null && !message.isEmpty() &&
+				address != null && !address.isEmpty()) {
+			SmsManager manager = SmsManager.getDefault();
+			ArrayList<String> parts = manager.divideMessage(message);
+			ArrayList<PendingIntent> siList = new ArrayList<>();
+			for (String part : parts) {
+				siList.add(si);
+			}
+			manager.sendMultipartTextMessage(address, null, parts, siList, null);
+		}
+	}
+
+
 	public static boolean isValidMobile(String mobileNo) {
-		if(mobileNo != null) {
+		if (mobileNo != null) {
 			int length = mobileNo.length();
-			if(length >= 10 && length <= 13) {
-				if(length == 10) {
+			if (length >= 10 && length <= 13) {
+				if (length == 10) {
 					char first = mobileNo.charAt(0);
-					if(first == '0') {
+					if (first == '0') {
 						return false;
 					}
 				}
@@ -3247,5 +3263,22 @@ public class CodePanUtils {
 	public static boolean hasTelephonyFeature(Context context) {
 		PackageManager pm = context.getPackageManager();
 		return pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
+	}
+
+	public static String readFromFile(File file) {
+		StringBuilder sb = new StringBuilder();
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			String line;
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+				sb.append('\n');
+			}
+			br.close();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		return sb.toString();
 	}
 }
