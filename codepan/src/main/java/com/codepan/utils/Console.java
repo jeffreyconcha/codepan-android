@@ -126,7 +126,7 @@ public class Console {
 	}
 
 	public static void logUrl(String url) {
-		DEBUG_MODELog(URL, url);
+		debugLog(URL, url);
 	}
 
 	public static void logParams(String params) {
@@ -167,25 +167,25 @@ public class Console {
 
 	public static void largeLog(String tag, String content) {
 		if(content.length() > CHAR_LIMIT) {
-			DEBUG_MODELog(tag, content.substring(0, CHAR_LIMIT));
+			debugLog(tag, content.substring(0, CHAR_LIMIT));
 			appendLog(content.substring(CHAR_LIMIT));
 		}
 		else {
-			DEBUG_MODELog(tag, content);
+			debugLog(tag, content);
 		}
 	}
 
 	private static void appendLog(String content) {
 		if(content.length() > CHAR_LIMIT) {
-			DEBUG_MODELog(null, content.substring(0, CHAR_LIMIT));
+			debugLog(null, content.substring(0, CHAR_LIMIT));
 //			appendLog(content.substring(CHAR_LIMIT));
 		}
 		else {
-			DEBUG_MODELog(null, content);
+			debugLog(null, content);
 		}
 	}
 
-	private static void DEBUG_MODELog(String tag, String data) {
+	private static void debugLog(String tag, String data) {
 		if(BuildConfig.DEBUG_MODE) {
 			Log.i(tag, data);
 		}
