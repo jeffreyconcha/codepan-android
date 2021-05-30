@@ -8,13 +8,13 @@
     <com.codepan.widget.SquareFrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        codePan:reference="width">
+        android:layout_centerInParent="true"
+        codePan:reference="min">
 
         <com.codepan.widget.CodePanLabel
             android:id="@+id/tvDay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerInParent="true"
             android:layout_margin="@dimen/three"
             android:background="@drawable/state_oval_trans_dark"
             android:gravity="center"

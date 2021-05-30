@@ -49,7 +49,7 @@ public class CodePanLabel extends TextView {
 		backgroundDisabled = ta.getDrawable(R.styleable.codePan_backgroundDisabled);
 		isSquare = ta.getBoolean(R.styleable.codePan_setSquare, false);
 		isRequired = ta.getBoolean(R.styleable.codePan_setRequired, false);
-		reference = ta.getInt(R.styleable.codePan_reference, Reference.DYNAMIC);
+		reference = ta.getInt(R.styleable.codePan_reference, Reference.MAX);
 		String font = ta.getString(R.styleable.codePan_typeface);
 		if (font != null) {
 			setFont(font);
@@ -156,6 +156,10 @@ public class CodePanLabel extends TextView {
 		setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
 	}
 
+	public void setPadding(int padding) {
+		setPadding(padding, padding, padding, padding);
+	}
+
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -164,8 +168,11 @@ public class CodePanLabel extends TextView {
 			int height = getMeasuredHeight();
 			int dimension = 0;
 			switch (reference) {
-				case Reference.DYNAMIC:
+				case Reference.MAX:
 					dimension = Math.max(width, height);
+					break;
+				case Reference.MIN:
+					dimension = Math.min(width, height);
 					break;
 				case Reference.WIDTH:
 					dimension = width;

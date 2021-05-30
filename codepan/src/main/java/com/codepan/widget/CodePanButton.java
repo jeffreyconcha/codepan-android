@@ -39,8 +39,8 @@ public class CodePanButton extends Button {
 		}
 		setTextColor(isEnabled() ? textColorEnabled : textColorDisabled);
 		setBackgroundState(backgroundEnabled);
-		ta.recycle();
 		enableStatePressed(enableStatePressed);
+		ta.recycle();
 	}
 
 	public void setBackgroundState(Drawable background) {
@@ -115,5 +115,9 @@ public class CodePanButton extends Button {
 	@Override
 	public void setTextSize(float size) {
 		setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+	}
+
+	public void setPadding(int padding) {
+		setPadding(padding, padding, padding, padding);
 	}
 }

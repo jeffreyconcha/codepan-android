@@ -26,7 +26,7 @@ public class LockableScrollView extends ScrollView {
 
 	public void init(Context context, AttributeSet attrs) {
 		TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.codePan);
-		reference = ta.getInt(R.styleable.codePan_reference, Reference.DYNAMIC);
+		reference = ta.getInt(R.styleable.codePan_reference, Reference.MAX);
 		isSquare = ta.getBoolean(R.styleable.codePan_setSquare, false);
 		isScrollable = ta.getBoolean(R.styleable.codePan_setScrollable, false);
 		ta.recycle();
@@ -40,8 +40,11 @@ public class LockableScrollView extends ScrollView {
 			int height = getMeasuredHeight();
 			int dimension = 0;
 			switch(reference) {
-				case Reference.DYNAMIC:
-					dimension = width > height ? width : height;
+				case Reference.MAX:
+					dimension = Math.max(width, height);
+					break;
+				case Reference.MIN:
+					dimension = Math.min(width, height);
 					break;
 				case Reference.WIDTH:
 					dimension = width;

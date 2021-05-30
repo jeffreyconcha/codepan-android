@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import com.codepan.R;
 import com.codepan.adapter.ViewPagerAdapter;
 import com.codepan.utils.CodePanUtils;
+import com.codepan.utils.Console;
 import com.codepan.widget.CodePanButton;
 import com.codepan.widget.CodePanLabel;
 import com.codepan.widget.calendar.callback.Interface.OnPickMonthCallback;
@@ -44,6 +45,13 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 	private final int YEAR_MODE = 2;
 	private int lastPosition = CURRENT;
 	private int mode = DAY_MODE;
+
+	private int contentTextSize, titleTextSize, dateTextSize, yearTextSize,
+			monthTextSize, arrowSize, arrowIconWidth, arrowIconHeight,
+			buttonPadding, buttonTextSize, buttonWidth;
+	private int accentColor, contentTextColor, selectedColor;
+	private String title, titleFont, contentFont, buttonFont;
+
 	private CodePanButton btnCancelCalendar, btnConfirmCalendar, btnMonthYearCalendar,
 			btnPreviousCalendar, btnNextCalendar;
 	private CodePanLabel tvTitleCalendar, tvYearCalendar, tvDateCalendar;
@@ -51,6 +59,8 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 	private ArrayList<View> dayCalList, yearCalList, monthCalList;
 	private CalendarYear prevCalYear, currCalYear, nextCalYear;
 	private CalendarDay prevCalDay, currCalDay, nextCalDay;
+	private FrameLayout flNextCalendar, flPreviousCalendar;
+	private View vNextCalendar, vPreviousCalendar;
 	private OnPickDateCallback pickDateCallback;
 	private LinearLayout llDayCalendar;
 	private String date, selectedDate;
@@ -61,10 +71,6 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 	private final int yearRow;
 	private final int yearCol;
 	private Calendar cal;
-
-	private int contentTextSize, titleTextSize, dateTextSize, yearTextSize, monthTextSize;
-	private int accentColor, contentTextColor, selectedColor;
-	private String title, titleFont, contentFont;
 
 	public CalendarView(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
@@ -82,15 +88,23 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 		}
 		title = res.getString(R.string.cal_title);
 		titleFont = res.getString(R.string.cal_title_font);
-		contentFont = res.getString(R.string.cal_content_font);
-		accentColor = res.getColor(R.color.cal_accent_color);
-		contentTextColor = res.getColor(R.color.cal_content_text_color);
-		selectedColor = res.getColor(R.color.cal_selected_color);
-		contentTextSize = res.getDimensionPixelSize(R.dimen.cal_content_text_size);
 		titleTextSize = res.getDimensionPixelSize(R.dimen.cal_content_text_size);
+		contentFont = res.getString(R.string.cal_content_font);
+		contentTextColor = res.getColor(R.color.cal_content_text_color);
+		contentTextSize = res.getDimensionPixelSize(R.dimen.cal_content_text_size);
+		accentColor = res.getColor(R.color.cal_accent_color);
+		selectedColor = res.getColor(R.color.cal_selected_color);
 		dateTextSize = res.getDimensionPixelSize(R.dimen.cal_date_text_size);
 		yearTextSize = res.getDimensionPixelSize(R.dimen.cal_year_text_size);
 		monthTextSize = res.getDimensionPixelSize(R.dimen.cal_month_text_size);
+		arrowSize = res.getDimensionPixelSize(R.dimen.cal_arrow_size);
+		arrowIconWidth = res.getDimensionPixelSize(R.dimen.cal_arrow_icon_width);
+		arrowIconHeight = res.getDimensionPixelSize(R.dimen.cal_arrow_icon_height);
+		buttonFont = res.getString(R.string.cal_button_font);
+		buttonPadding = res.getDimensionPixelSize(R.dimen.cal_button_padding);
+		buttonWidth = res.getDimensionPixelSize(R.dimen.cal_button_width);
+		buttonTextSize = res.getDimensionPixelSize(R.dimen.cal_button_text_size);
+		Console.log(buttonWidth);
 		setProperties(attrs);
 	}
 
@@ -99,9 +113,11 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 		String _title = ta.getString(R.styleable.CalendarView_title);
 		String _titleFont = ta.getString(R.styleable.CalendarView_titleFont);
 		String _contentFont = ta.getString(R.styleable.CalendarView_contentFont);
+		String _buttonFont = ta.getString(R.styleable.CalendarView_buttonFont);
 		title = _title != null ? _title : title;
 		titleFont = _titleFont != null ? _titleFont : titleFont;
 		contentFont = _contentFont != null ? _contentFont : contentFont;
+		buttonFont = _buttonFont != null ? _buttonFont : buttonFont;
 		accentColor = ta.getColor(R.styleable.CalendarView_accentColor, accentColor);
 		contentTextColor = ta.getColor(R.styleable.CalendarView_contentTexColor, contentTextColor);
 		selectedColor = ta.getColor(R.styleable.CalendarView_selectedColor, selectedColor);
@@ -110,20 +126,43 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 		dateTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_dateTextSize, dateTextSize);
 		yearTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_yearTextSize, yearTextSize);
 		monthTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_monthTextSize, monthTextSize);
+		arrowSize = ta.getDimensionPixelSize(R.styleable.CalendarView_arrowSize, arrowSize);
+		arrowIconWidth = ta.getDimensionPixelSize(R.styleable.CalendarView_arrowIconWidth, arrowIconWidth);
+		arrowIconHeight = ta.getDimensionPixelSize(R.styleable.CalendarView_arrowIconHeight, arrowIconHeight);
+		buttonPadding = ta.getDimensionPixelSize(R.styleable.CalendarView_buttonPadding, buttonPadding);
+		buttonWidth = ta.getDimensionPixelSize(R.styleable.CalendarView_buttonWidth, buttonWidth);
+		buttonTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_buttonTextSize, buttonTextSize);
 		ta.recycle();
 	}
 
 	private void applyProperties() {
 		tvTitleCalendar.setText(title);
+		tvTitleCalendar.setTextSize(titleTextSize);
 		vDividerCalendar.setBackgroundColor(accentColor);
 		btnConfirmCalendar.setTextColor(accentColor);
-		btnMonthYearCalendar.setTextColorPressed(accentColor);
-		tvDateCalendar.setFont(contentFont);
-		tvYearCalendar.setFont(contentFont);
 		btnMonthYearCalendar.setFont(titleFont);
-		tvDateCalendar.setTextSize(dateTextSize);
-		tvYearCalendar.setTextSize(yearTextSize);
+		btnMonthYearCalendar.setTextColorPressed(accentColor);
 		btnMonthYearCalendar.setTextSize(monthTextSize);
+		tvDateCalendar.setFont(contentFont);
+		tvDateCalendar.setTextSize(dateTextSize);
+		tvYearCalendar.setFont(contentFont);
+		tvYearCalendar.setTextSize(yearTextSize);
+		flNextCalendar.getLayoutParams().width = arrowSize;
+		flNextCalendar.getLayoutParams().height = arrowSize;
+		flPreviousCalendar.getLayoutParams().width = arrowSize;
+		flPreviousCalendar.getLayoutParams().height = arrowSize;
+		vNextCalendar.getLayoutParams().width = arrowIconWidth;
+		vNextCalendar.getLayoutParams().height = arrowIconHeight;
+		vPreviousCalendar.getLayoutParams().width = arrowIconWidth;
+		vPreviousCalendar.getLayoutParams().height = arrowIconHeight;
+		btnCancelCalendar.setFont(buttonFont);
+		btnCancelCalendar.getLayoutParams().width = buttonWidth;
+		btnCancelCalendar.setPadding(buttonPadding);
+		btnCancelCalendar.setTextSize(buttonTextSize);
+		btnConfirmCalendar.setFont(buttonFont);
+		btnConfirmCalendar.getLayoutParams().width = buttonWidth;
+		btnConfirmCalendar.setPadding(buttonPadding);
+		btnConfirmCalendar.setTextSize(buttonTextSize);
 		int count = llDayCalendar.getChildCount();
 		for (int i = 0; i < count; i++) {
 			CodePanLabel label = (CodePanLabel) llDayCalendar.getChildAt(i);
@@ -145,6 +184,10 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 		btnPreviousCalendar = view.findViewById(R.id.btnPreviousCalendar);
 		btnNextCalendar = view.findViewById(R.id.btnNextCalendar);
 		llDayCalendar = view.findViewById(R.id.llDayCalendar);
+		flNextCalendar = view.findViewById(R.id.flNextCalendar);
+		flPreviousCalendar = view.findViewById(R.id.flPreviousCalendar);
+		vNextCalendar = view.findViewById(R.id.vNextCalendar);
+		vPreviousCalendar = view.findViewById(R.id.vPreviousCalendar);
 		vDividerCalendar = view.findViewById(R.id.vDividerCalendar);
 		vpCalendar = view.findViewById(R.id.vpCalendar);
 		btnMonthYearCalendar.setOnClickListener(v -> {
@@ -576,7 +619,6 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 	public void onPickMonth(MonthData month) {
 		cal.set(getYear(), month.id, getDay());
 		mode = DAY_MODE;
-//		vpCalendar.reset();
 		llDayCalendar.setVisibility(View.VISIBLE);
 		dayCalList = getDayCalList(CURRENT);
 		adapter = new ViewPagerAdapter(context, dayCalList);

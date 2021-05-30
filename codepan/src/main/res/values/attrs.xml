@@ -40,9 +40,10 @@
         <attr name="setSquare" format="boolean"/>
         <attr name="setRequired" format="boolean"/>
         <attr name="reference" format="enum">
-            <enum name="dynamic" value="0"/>
             <enum name="width" value="1"/>
             <enum name="height" value="2"/>
+            <enum name="min" value="3"/>
+            <enum name="max" value="4"/>
         </attr>
     </declare-styleable>
 
@@ -76,17 +77,24 @@
 
     <declare-styleable name="CalendarView">
         <attr name="title" format="string"/>
+        <attr name="titleFont" format="string"/>
+        <attr name="titleTextSize" format="dimension"/>
+        <attr name="titlePadding" format="dimension"/>
         <attr name="accentColor" format="color"/>
         <attr name="selectedColor" format="color"/>
         <attr name="contentTexColor" format="color"/>
-        <attr name="titleFont" format="string"/>
         <attr name="contentFont" format="string"/>
         <attr name="contentTextSize" format="dimension"/>
-        <attr name="titleTextSize" format="dimension"/>
         <attr name="dateTextSize" format="dimension"/>
         <attr name="yearTextSize" format="dimension"/>
         <attr name="monthTextSize" format="dimension"/>
-
+        <attr name="arrowSize" format="dimension"/>
+        <attr name="arrowIconWidth" format="dimension"/>
+        <attr name="arrowIconHeight" format="dimension"/>
+        <attr name="buttonFont" format="string"/>
+        <attr name="buttonPadding" format="dimension"/>
+        <attr name="buttonWidth" format="dimension"/>
+        <attr name="buttonTextSize" format="dimension"/>
     </declare-styleable>
 
     <!--sample
