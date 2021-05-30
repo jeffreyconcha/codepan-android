@@ -22,14 +22,16 @@ public class CalendarDay extends FrameLayout {
 	private CalendarDayAdapter adapter;
 	private ArrayList<DayData> dayList;
 	private GridView gvCalendarDay;
+	private CalendarView parent;
 	private final int numRows;
 	private final int spacing;
 
-	public CalendarDay(Context context) {
+	public CalendarDay(Context context, CalendarView parent) {
 		super(context);
 		Resources res = getResources();
 		this.numRows = res.getInteger(R.integer.day_row);
 		this.spacing = res.getDimensionPixelSize(R.dimen.cal_spacing);
+		this.parent = parent;
 	}
 
 	public void init(ArrayList<DayData> dayList, OnPickDateCallback pickDateCallback,
@@ -65,6 +67,9 @@ public class CalendarDay extends FrameLayout {
 		if (adapter == null) {
 			int itemHeight = (getHeight() / numRows) - spacing;
 			adapter = new CalendarDayAdapter(getContext(), dayList, itemHeight);
+			adapter.setTextColor(parent.getContentTextColor());
+			adapter.setTextSize(parent.getContentTextSize());
+			adapter.setFont(parent.getContentFont());
 			gvCalendarDay.setAdapter(adapter);
 		}
 	}

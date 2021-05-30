@@ -7,16 +7,18 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import com.codepan.R;
-import com.codepan.widget.calendar.model.MonthData;
 import com.codepan.widget.CodePanLabel;
+import com.codepan.widget.calendar.model.MonthData;
 
 import java.util.ArrayList;
 
 public class CalendarMonthAdapter extends ArrayAdapter<MonthData> {
 
-	private ArrayList<MonthData> items;
-	private LayoutInflater inflater;
-	private int itemHeight;
+	private final ArrayList<MonthData> items;
+	private final LayoutInflater inflater;
+	private int textColor, textSize;
+	private final int itemHeight;
+	private String font;
 
 	public CalendarMonthAdapter(Context context, ArrayList<MonthData> items, int itemHeight) {
 		super(context, 0, items);
@@ -36,16 +38,37 @@ public class CalendarMonthAdapter extends ArrayAdapter<MonthData> {
 				holder = new ViewHolder();
 				holder.tvMonth = view.findViewById(R.id.tvMonth);
 				holder.tvMonth.setHeight(itemHeight);
+				if (textColor != 0) {
+					holder.tvMonth.setTextColor(textColor);
+				}
+				if (textSize != 0) {
+					holder.tvMonth.setTextSize(textSize);
+				}
+				if (font != null) {
+					holder.tvMonth.setFont(font);
+				}
 				view.setTag(holder);
 			}
 			else {
 				holder = (ViewHolder) view.getTag();
 			}
-			if(holder.tvMonth != null) {
+			if (holder.tvMonth != null) {
 				holder.tvMonth.setText(obj.name);
 			}
 		}
 		return view;
+	}
+
+	public void setTextColor(int textColor) {
+		this.textColor = textColor;
+	}
+
+	public void setTextSize(int textSize) {
+		this.textSize = textSize;
+	}
+
+	public void setFont(String font) {
+		this.font = font;
 	}
 
 	private static class ViewHolder {

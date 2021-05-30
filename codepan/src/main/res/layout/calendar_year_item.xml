@@ -14,8 +14,8 @@
         android:background="@drawable/state_rect_white_rad_three"
         android:gravity="center"
         android:maxLines="1"
-        android:textColor="@color/cal_text"
-        android:textSize="@dimen/cal_text_size"
-        codePan:typeface="@string/cal_year_font"/>
+        android:textColor="@color/cal_content_text_color"
+        android:textSize="@dimen/cal_content_text_size"
+        codePan:typeface="@string/cal_content_font"/>
 
 </RelativeLayout>

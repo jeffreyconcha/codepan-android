@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="cal_primary">#27AE60</color>
-    <color name="cal_text">#6D6E71</color>
-    <color name="cal_header">@color/white</color>
-    <color name="cal_title">@color/cal_text</color>
-    <color name="cal_date">@color/cal_text</color>
-    <color name="cal_month">@color/cal_text</color>
-    <color name="cal_week">#B2B3B5</color>
-    <color name="cal_bg_selected">#3396D8</color>
+    <color name="cal_header_color">@color/white</color>
+    <color name="cal_accent_color">#27AE60</color>
+    <color name="cal_content_text_color">#6D6E71</color>
+
+    <dimen name="cal_content_text_size">@dimen/seventeen</dimen>
+    <dimen name="cal_title_text_size">@dimen/seventeen</dimen>
+    <dimen name="cal_year_text_size">@dimen/eighteen</dimen>
+    <dimen name="cal_date_text_size">@dimen/twenty_five</dimen>
+    <dimen name="cal_month_text_size">@dimen/eighteen</dimen>
+
+    <string name="cal_title_font">@string/calibri_bold</string>
+    <string name="cal_content_font">@string/calibri_regular</string>
+
+    <color name="cal_inactive_text_color">#B2B3B5</color>
+    <color name="cal_selected_color">#3396D8</color>
     <color name="cal_bg_pressed">#2376B8</color>
-    <color name="cal_day_active">@color/cal_text</color>
-    <color name="cal_day_inactive">#B2B3B5</color>
+    <color name="cal_day_active">@color/cal_content_text_color</color>
     <color name="cal_day_selected">@color/white</color>
     <color name="cal_background">@color/white</color>
     <color name="cal_date_background">#F1F2F2</color>
-    <color name="cal_cancel">@color/cal_text</color>
-    <color name="cal_save">@color/cal_primary</color>
-    <!--<color name="cal_grid">#D2D3D5</color>-->
-    <color name="cal_grid">@color/transparent</color>
-    <color name="cal_divider">@color/cal_primary</color>
+    <color name="cal_cancel">@color/cal_content_text_color</color>
+    <color name="cal_save">@color/cal_accent_color</color>
+    <color name="cal_grid">#D2D3D5</color>
     <string name="cal_title">Calendar</string>
     <string name="cal_cancel">CANCEL</string>
     <string name="cal_select">SELECT</string>
@@ -29,14 +33,6 @@
     <string name="cal_thursday">T</string>
     <string name="cal_friday">F</string>
     <string name="cal_saturday">S</string>
-    <string name="cal_title_font">@string/calibri_bold</string>
-    <string name="cal_month_font">@string/calibri_regular</string>
-    <string name="cal_year_font">@string/calibri_regular</string>
-    <string name="cal_week_font">@string/calibri_regular</string>
-    <string name="cal_day_font">@string/calibri_regular</string>
-    <string name="cal_date_font">@string/calibri_regular</string>
-    <dimen name="cal_text_size">@dimen/seventeen</dimen>
-    <dimen name="cal_text_dimen">@dimen/thirty_two</dimen>
     <dimen name="cal_padding">@dimen/five</dimen>
     <dimen name="cal_spacing">@dimen/one</dimen>
     <integer name="day_col">7</integer>

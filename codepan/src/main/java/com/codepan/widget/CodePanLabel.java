@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -32,7 +33,7 @@ public class CodePanLabel extends TextView {
 
 	public CodePanLabel(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		if(!isInEditMode()) {
+		if (!isInEditMode()) {
 			init(context, attrs);
 		}
 	}
@@ -49,9 +50,9 @@ public class CodePanLabel extends TextView {
 		isSquare = ta.getBoolean(R.styleable.codePan_setSquare, false);
 		isRequired = ta.getBoolean(R.styleable.codePan_setRequired, false);
 		reference = ta.getInt(R.styleable.codePan_reference, Reference.DYNAMIC);
-		String typeface = ta.getString(R.styleable.codePan_typeface);
-		if(typeface != null) {
-			setTypeface(TypefaceCache.get(getContext().getAssets(), typeface));
+		String font = ta.getString(R.styleable.codePan_typeface);
+		if (font != null) {
+			setFont(font);
 		}
 		setTextColor(isEnabled() ? textColorEnabled : textColorDisabled);
 		setBackgroundState(backgroundEnabled);
@@ -134,16 +135,37 @@ public class CodePanLabel extends TextView {
 		this.enableStatePressed = enableStatePressed;
 	}
 
+	public void setTextColorPressed(int color) {
+		this.textColorPressed = color;
+	}
+
+	public void setTextColorEnabled(int color) {
+		this.textColorEnabled = color;
+	}
+
+	public void setTextColorDisabled(int color) {
+		this.textColorDisabled = color;
+	}
+
+	public void setFont(String font) {
+		setTypeface(TypefaceCache.get(getContext(), font));
+	}
+
+	@Override
+	public void setTextSize(float size) {
+		setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+	}
+
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-		if(isSquare) {
+		if (isSquare) {
 			int width = getMeasuredWidth();
 			int height = getMeasuredHeight();
 			int dimension = 0;
-			switch(reference) {
+			switch (reference) {
 				case Reference.DYNAMIC:
-					dimension = width > height ? width : height;
+					dimension = Math.max(width, height);
 					break;
 				case Reference.WIDTH:
 					dimension = width;

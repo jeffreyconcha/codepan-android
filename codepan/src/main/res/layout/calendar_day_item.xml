@@ -20,8 +20,8 @@
             android:gravity="center"
             android:maxLines="1"
             android:textColor="@color/cal_day_active"
-            android:textSize="@dimen/cal_text_size"
-            codePan:typeface="@string/cal_day_font"/>
+            android:textSize="@dimen/cal_content_text_size"
+            codePan:typeface="@string/cal_content_font"/>
 
     </com.codepan.widget.SquareFrameLayout>
 

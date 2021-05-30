@@ -3,7 +3,6 @@ package com.codepan.widget.calendar.view;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 
@@ -14,20 +13,24 @@ import com.codepan.widget.calendar.model.YearData;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
+
 public class CalendarYear extends FrameLayout {
 
 	private OnPickYearCallback pickYearCallback;
 	private ArrayList<YearData> yearList;
 	private CalendarYearAdapter adapter;
 	private GridView gvCalendarYear;
+	private CalendarView parent;
 	private final int numRows;
 	private final int spacing;
 
-	public CalendarYear(Context context) {
+	public CalendarYear(@NonNull Context context, @NonNull CalendarView parent) {
 		super(context);
 		Resources res = getResources();
 		this.numRows = res.getInteger(R.integer.year_row);
 		this.spacing = res.getDimensionPixelSize(R.dimen.cal_spacing);
+		this.parent = parent;
 	}
 
 	public void init(ArrayList<YearData> yearList, OnPickYearCallback pickYearCallback) {
@@ -45,10 +48,6 @@ public class CalendarYear extends FrameLayout {
 				pickYearCallback.onPickYear(yearList.get(i));
 			}
 		});
-		ViewGroup parent = (ViewGroup) getParent();
-		int itemHeight = parent.getHeight() / numRows;
-		adapter = new CalendarYearAdapter(getContext(), yearList, itemHeight);
-		gvCalendarYear.setAdapter(adapter);
 	}
 
 	@Override
@@ -57,6 +56,9 @@ public class CalendarYear extends FrameLayout {
 		if (adapter == null) {
 			int itemHeight = (getHeight() / numRows) - spacing;
 			adapter = new CalendarYearAdapter(getContext(), yearList, itemHeight);
+			adapter.setTextColor(parent.getContentTextColor());
+			adapter.setTextSize(parent.getContentTextSize());
+			adapter.setFont(parent.getContentFont());
 			gvCalendarYear.setAdapter(adapter);
 		}
 	}

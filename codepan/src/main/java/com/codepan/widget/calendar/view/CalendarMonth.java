@@ -21,14 +21,16 @@ public class CalendarMonth extends FrameLayout {
 	private ArrayList<MonthData> monthList;
 	private CalendarMonthAdapter adapter;
 	private GridView gvCalendarMonth;
+	private CalendarView parent;
 	private final int numRows;
 	private final int spacing;
 
-	public CalendarMonth(@NonNull Context context) {
+	public CalendarMonth(@NonNull Context context, @NonNull CalendarView parent) {
 		super(context);
 		Resources res = getResources();
 		this.numRows = res.getInteger(R.integer.month_row);
 		this.spacing = res.getDimensionPixelSize(R.dimen.cal_spacing);
+		this.parent = parent;
 	}
 
 	public void init(ArrayList<MonthData> monthList, OnPickMonthCallback pickMonthCallback) {
@@ -54,6 +56,9 @@ public class CalendarMonth extends FrameLayout {
 		if (adapter == null) {
 			int itemHeight = (getHeight() / numRows) - spacing;
 			adapter = new CalendarMonthAdapter(getContext(), monthList, itemHeight);
+			adapter.setTextColor(parent.getContentTextColor());
+			adapter.setTextSize(parent.getContentTextSize());
+			adapter.setFont(parent.getContentFont());
 			gvCalendarMonth.setAdapter(adapter);
 		}
 	}

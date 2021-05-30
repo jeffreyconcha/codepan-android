@@ -7,16 +7,18 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import com.codepan.R;
-import com.codepan.widget.calendar.model.YearData;
 import com.codepan.widget.CodePanLabel;
+import com.codepan.widget.calendar.model.YearData;
 
 import java.util.ArrayList;
 
 public class CalendarYearAdapter extends ArrayAdapter<YearData> {
 
-	private ArrayList<YearData> items;
-	private LayoutInflater inflater;
-	private int itemHeight;
+	private final ArrayList<YearData> items;
+	private final LayoutInflater inflater;
+	private int textColor, textSize;
+	private final int itemHeight;
+	private String font;
 
 	public CalendarYearAdapter(Context context, ArrayList<YearData> items, int itemHeight) {
 		super(context, 0, items);
@@ -36,17 +38,39 @@ public class CalendarYearAdapter extends ArrayAdapter<YearData> {
 				holder = new ViewHolder();
 				holder.tvYear = view.findViewById(R.id.tvYear);
 				holder.tvYear.setHeight(itemHeight);
+				if (textColor != 0) {
+					holder.tvYear.setTextColor(textColor);
+				}
+				if (textSize != 0) {
+					holder.tvYear.setTextSize(textSize);
+				}
+				if (font != null) {
+					holder.tvYear.setFont(font);
+				}
 				view.setTag(holder);
 			}
 			else {
 				holder = (ViewHolder) view.getTag();
 			}
-			if(holder.tvYear != null) {
+			if (holder.tvYear != null) {
 				holder.tvYear.setText(obj.name);
 			}
 		}
 		return view;
 	}
+
+	public void setTextColor(int textColor) {
+		this.textColor = textColor;
+	}
+
+	public void setTextSize(int textSize) {
+		this.textSize = textSize;
+	}
+
+	public void setFont(String font) {
+		this.font = font;
+	}
+
 
 	private static class ViewHolder {
 		private CodePanLabel tvYear;

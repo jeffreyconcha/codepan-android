@@ -1,6 +1,7 @@
 package com.codepan.widget.calendar.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,17 +15,19 @@ import java.util.ArrayList;
 
 public class CalendarDayAdapter extends ArrayAdapter<DayData> {
 
-	private int inActive, active, selected;
-	private ArrayList<DayData> items;
-	private LayoutInflater inflater;
-	private int itemHeight;
+	private final int inActive, active, selected, itemHeight;
+	private final ArrayList<DayData> items;
+	private final LayoutInflater inflater;
+	private int textColor, textSize;
+	private String font;
 
 	public CalendarDayAdapter(Context context, ArrayList<DayData> items, int itemHeight) {
 		super(context, 0, items);
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.inActive = context.getResources().getColor(R.color.cal_day_inactive);
-		this.active = context.getResources().getColor(R.color.cal_day_active);
-		this.selected = context.getResources().getColor(R.color.cal_day_selected);
+		final Resources res = context.getResources();
+		this.inActive = res.getColor(R.color.cal_inactive_text_color);
+		this.active = res.getColor(R.color.cal_day_active);
+		this.selected = res.getColor(R.color.cal_day_selected);
 		this.items = items;
 		this.itemHeight = itemHeight;
 	}
@@ -39,6 +42,15 @@ public class CalendarDayAdapter extends ArrayAdapter<DayData> {
 				view = inflater.inflate(R.layout.calendar_day_item, parent, false);
 				holder = new ViewHolder();
 				holder.tvDay = view.findViewById(R.id.tvDay);
+				if (textColor != 0) {
+					holder.tvDay.setTextColor(textColor);
+				}
+				if (textSize != 0) {
+					holder.tvDay.setTextSize(textSize);
+				}
+				if (font != null) {
+					holder.tvDay.setFont(font);
+				}
 				view.getLayoutParams().height = itemHeight;
 				view.setTag(holder);
 			}
@@ -63,6 +75,18 @@ public class CalendarDayAdapter extends ArrayAdapter<DayData> {
 			}
 		}
 		return view;
+	}
+
+	public void setTextColor(int textColor) {
+		this.textColor = textColor;
+	}
+
+	public void setTextSize(int textSize) {
+		this.textSize = textSize;
+	}
+
+	public void setFont(String font) {
+		this.font = font;
 	}
 
 	private static class ViewHolder {

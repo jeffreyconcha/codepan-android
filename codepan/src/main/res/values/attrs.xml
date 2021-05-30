@@ -74,6 +74,21 @@
         <attr name="itemBackground" format="reference"/>
     </declare-styleable>
 
+    <declare-styleable name="CalendarView">
+        <attr name="title" format="string"/>
+        <attr name="accentColor" format="color"/>
+        <attr name="selectedColor" format="color"/>
+        <attr name="contentTexColor" format="color"/>
+        <attr name="titleFont" format="string"/>
+        <attr name="contentFont" format="string"/>
+        <attr name="contentTextSize" format="dimension"/>
+        <attr name="titleTextSize" format="dimension"/>
+        <attr name="dateTextSize" format="dimension"/>
+        <attr name="yearTextSize" format="dimension"/>
+        <attr name="monthTextSize" format="dimension"/>
+
+    </declare-styleable>
+
     <!--sample
     <com.codepan.widget.ProgressWheel
         android:id="@+id/progressLoadingDialog"

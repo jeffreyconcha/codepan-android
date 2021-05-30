@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -32,9 +33,9 @@ public class CodePanButton extends Button {
 		backgroundPressed = ta.getDrawable(R.styleable.codePan_backgroundPressed);
 		backgroundEnabled = ta.getDrawable(R.styleable.codePan_backgroundEnabled);
 		backgroundDisabled = ta.getDrawable(R.styleable.codePan_backgroundDisabled);
-		String typeface = ta.getString(R.styleable.codePan_typeface);
-		if(typeface != null) {
-			setTypeface(TypefaceCache.get(getContext().getAssets(), typeface));
+		String font = ta.getString(R.styleable.codePan_typeface);
+		if (font != null) {
+			setFont(font);
 		}
 		setTextColor(isEnabled() ? textColorEnabled : textColorDisabled);
 		setBackgroundState(backgroundEnabled);
@@ -93,5 +94,26 @@ public class CodePanButton extends Button {
 
 	public void enableStatePressed(boolean enableStatePressed) {
 		this.enableStatePressed = enableStatePressed;
+	}
+
+	public void setTextColorPressed(int color) {
+		this.textColorPressed = color;
+	}
+
+	public void setTextColorEnabled(int color) {
+		this.textColorEnabled = color;
+	}
+
+	public void setTextColorDisabled(int color) {
+		this.textColorDisabled = color;
+	}
+
+	public void setFont(String font) {
+		setTypeface(TypefaceCache.get(getContext(), font));
+	}
+
+	@Override
+	public void setTextSize(float size) {
+		setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
 	}
 }
