@@ -48,6 +48,8 @@ public class CalendarYear extends FrameLayout {
 				pickYearCallback.onPickYear(yearList.get(i));
 			}
 		});
+		int padding = parent.getContentPadding();
+		gvCalendarYear.setPadding(padding, 0, padding, 0);
 	}
 
 	@Override

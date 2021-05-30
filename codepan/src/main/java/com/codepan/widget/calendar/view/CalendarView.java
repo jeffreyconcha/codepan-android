@@ -13,7 +13,6 @@ import android.widget.LinearLayout;
 import com.codepan.R;
 import com.codepan.adapter.ViewPagerAdapter;
 import com.codepan.utils.CodePanUtils;
-import com.codepan.utils.Console;
 import com.codepan.widget.CodePanButton;
 import com.codepan.widget.CodePanLabel;
 import com.codepan.widget.calendar.callback.Interface.OnPickMonthCallback;
@@ -46,8 +45,8 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 	private int lastPosition = CURRENT;
 	private int mode = DAY_MODE;
 
-	private int contentTextSize, titleTextSize, dateTextSize, yearTextSize,
-			monthTextSize, arrowSize, arrowIconWidth, arrowIconHeight,
+	private int contentTextSize, contentPadding, titleTextSize, titlePadding, dateTextSize,
+			yearTextSize, monthTextSize, arrowSize, arrowIconWidth, arrowIconHeight,
 			buttonPadding, buttonTextSize, buttonWidth;
 	private int accentColor, contentTextColor, selectedColor;
 	private String title, titleFont, contentFont, buttonFont;
@@ -88,9 +87,11 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 		}
 		title = res.getString(R.string.cal_title);
 		titleFont = res.getString(R.string.cal_title_font);
+		titlePadding = res.getDimensionPixelSize(R.dimen.cal_title_padding);
 		titleTextSize = res.getDimensionPixelSize(R.dimen.cal_content_text_size);
 		contentFont = res.getString(R.string.cal_content_font);
 		contentTextColor = res.getColor(R.color.cal_content_text_color);
+		contentPadding = res.getDimensionPixelSize(R.dimen.cal_content_padding);
 		contentTextSize = res.getDimensionPixelSize(R.dimen.cal_content_text_size);
 		accentColor = res.getColor(R.color.cal_accent_color);
 		selectedColor = res.getColor(R.color.cal_selected_color);
@@ -104,7 +105,6 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 		buttonPadding = res.getDimensionPixelSize(R.dimen.cal_button_padding);
 		buttonWidth = res.getDimensionPixelSize(R.dimen.cal_button_width);
 		buttonTextSize = res.getDimensionPixelSize(R.dimen.cal_button_text_size);
-		Console.log(buttonWidth);
 		setProperties(attrs);
 	}
 
@@ -116,19 +116,21 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 		String _buttonFont = ta.getString(R.styleable.CalendarView_buttonFont);
 		title = _title != null ? _title : title;
 		titleFont = _titleFont != null ? _titleFont : titleFont;
-		contentFont = _contentFont != null ? _contentFont : contentFont;
-		buttonFont = _buttonFont != null ? _buttonFont : buttonFont;
-		accentColor = ta.getColor(R.styleable.CalendarView_accentColor, accentColor);
-		contentTextColor = ta.getColor(R.styleable.CalendarView_contentTexColor, contentTextColor);
-		selectedColor = ta.getColor(R.styleable.CalendarView_selectedColor, selectedColor);
-		contentTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_contentTextSize, contentTextSize);
+		titlePadding = ta.getDimensionPixelSize(R.styleable.CalendarView_titlePadding, titlePadding);
 		titleTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_titleTextSize, titleTextSize);
+		contentFont = _contentFont != null ? _contentFont : contentFont;
+		contentTextColor = ta.getColor(R.styleable.CalendarView_contentTexColor, contentTextColor);
+		contentPadding = ta.getDimensionPixelSize(R.styleable.CalendarView_contentPadding, contentPadding);
+		contentTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_contentTextSize, contentTextSize);
+		accentColor = ta.getColor(R.styleable.CalendarView_accentColor, accentColor);
+		selectedColor = ta.getColor(R.styleable.CalendarView_selectedColor, selectedColor);
 		dateTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_dateTextSize, dateTextSize);
 		yearTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_yearTextSize, yearTextSize);
 		monthTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_monthTextSize, monthTextSize);
 		arrowSize = ta.getDimensionPixelSize(R.styleable.CalendarView_arrowSize, arrowSize);
 		arrowIconWidth = ta.getDimensionPixelSize(R.styleable.CalendarView_arrowIconWidth, arrowIconWidth);
 		arrowIconHeight = ta.getDimensionPixelSize(R.styleable.CalendarView_arrowIconHeight, arrowIconHeight);
+		buttonFont = _buttonFont != null ? _buttonFont : buttonFont;
 		buttonPadding = ta.getDimensionPixelSize(R.styleable.CalendarView_buttonPadding, buttonPadding);
 		buttonWidth = ta.getDimensionPixelSize(R.styleable.CalendarView_buttonWidth, buttonWidth);
 		buttonTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_buttonTextSize, buttonTextSize);
@@ -138,11 +140,13 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 	private void applyProperties() {
 		tvTitleCalendar.setText(title);
 		tvTitleCalendar.setTextSize(titleTextSize);
+		tvTitleCalendar.setPadding(titlePadding);
 		vDividerCalendar.setBackgroundColor(accentColor);
 		btnConfirmCalendar.setTextColor(accentColor);
 		btnMonthYearCalendar.setFont(titleFont);
 		btnMonthYearCalendar.setTextColorPressed(accentColor);
 		btnMonthYearCalendar.setTextSize(monthTextSize);
+		llDayCalendar.setPadding(contentPadding, 0, contentPadding, 0);
 		tvDateCalendar.setFont(contentFont);
 		tvDateCalendar.setTextSize(dateTextSize);
 		tvYearCalendar.setFont(contentFont);
@@ -650,5 +654,9 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 
 	public int getSelectedColor() {
 		return this.selectedColor;
+	}
+
+	public int getContentPadding() {
+		return this.contentPadding;
 	}
 }

@@ -59,6 +59,8 @@ public class CalendarDay extends FrameLayout {
 				selectDateCallback.onSelectDate(dayList.get(position).date);
 			}
 		});
+		int padding = parent.getContentPadding();
+		gvCalendarDay.setPadding(padding, 0, padding, 0);
 	}
 
 	@Override

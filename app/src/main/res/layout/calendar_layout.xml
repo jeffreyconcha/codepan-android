@@ -10,6 +10,8 @@
         android:layout_height="@dimen/five_hundred"
         CalendarView:titleFont="@string/calibri_bold"
         CalendarView:contentFont="@string/calibri_regular"
+        CalendarView:contentPadding="@dimen/twenty"
+        CalendarView:titlePadding="@dimen/two"
         CalendarView:contentTextSize="@dimen/ten"
         CalendarView:arrowIconHeight="@dimen/ten"
         CalendarView:arrowIconWidth="@dimen/seven"

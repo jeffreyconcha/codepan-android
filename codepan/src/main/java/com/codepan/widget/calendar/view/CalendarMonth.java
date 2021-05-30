@@ -48,6 +48,8 @@ public class CalendarMonth extends FrameLayout {
 				pickMonthCallback.onPickMonth(monthList.get(i));
 			}
 		});
+		int padding = parent.getContentPadding();
+		gvCalendarMonth.setPadding(padding, 0, padding, 0);
 	}
 
 	@Override

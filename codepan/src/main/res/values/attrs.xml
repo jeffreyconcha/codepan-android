@@ -84,6 +84,7 @@
         <attr name="selectedColor" format="color"/>
         <attr name="contentTexColor" format="color"/>
         <attr name="contentFont" format="string"/>
+        <attr name="contentPadding" format="dimension"/>
         <attr name="contentTextSize" format="dimension"/>
         <attr name="dateTextSize" format="dimension"/>
         <attr name="yearTextSize" format="dimension"/>
