@@ -149,7 +149,7 @@ public class Do {
 			}
 			catch(SSLProtocolException spe) {
 				spe.printStackTrace();
-				if(BuildConfig.DEBUG) {
+				if(BuildConfig.DEBUG_MODE) {
 					return getHttpsResponse(host, params,
 							authorization, timeOut, method);
 				}

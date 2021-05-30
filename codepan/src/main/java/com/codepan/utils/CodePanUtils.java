@@ -458,11 +458,8 @@ public class CodePanUtils {
 	public static Calendar getCalendar(String date) {
 		Calendar cal = Calendar.getInstance();
 		if(date != null) {
-			String[] array = date.split("-");
-			int year = Integer.parseInt(array[0]);
-			int month = Integer.parseInt(array[1]);
-			int day = Integer.parseInt(array[2]);
-			cal.set(year, month - 1, day);
+			long timestamp = dateToMillis(date);
+			cal.setTimeInMillis(timestamp);
 		}
 		return cal;
 	}

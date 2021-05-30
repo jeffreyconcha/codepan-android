@@ -65,68 +65,68 @@ public class Console {
 		Log.e(TAG, String.valueOf(input));
 	}
 
-	public static void debug(String input) {
+	public static void DEBUG_MODE(String input) {
 		Log.d(TAG, String.valueOf(input));
 	}
 
-	public static void debug(int input) {
+	public static void DEBUG_MODE(int input) {
 		Log.d(TAG, String.valueOf(input));
 	}
 
-	public static void debug(double input) {
+	public static void DEBUG_MODE(double input) {
 		Log.d(TAG, String.valueOf(input));
 	}
 
-	public static void debug(long input) {
+	public static void DEBUG_MODE(long input) {
 		Log.d(TAG, String.valueOf(input));
 	}
 
-	public static void debug(float input) {
+	public static void DEBUG_MODE(float input) {
 		Log.d(TAG, String.valueOf(input));
 	}
 
-	public static void debug(boolean input) {
+	public static void DEBUG_MODE(boolean input) {
 		Log.d(TAG, String.valueOf(input));
 	}
 
 	public static void log(String input) {
-		if(BuildConfig.DEBUG) {
+		if(BuildConfig.DEBUG_MODE) {
 			Log.i(TAG, String.valueOf(input));
 		}
 	}
 
 	public static void log(int input) {
-		if(BuildConfig.DEBUG) {
+		if(BuildConfig.DEBUG_MODE) {
 			Log.i(TAG, String.valueOf(input));
 		}
 	}
 
 	public static void log(double input) {
-		if(BuildConfig.DEBUG) {
+		if(BuildConfig.DEBUG_MODE) {
 			Log.i(TAG, String.valueOf(input));
 		}
 	}
 
 	public static void log(long input) {
-		if(BuildConfig.DEBUG) {
+		if(BuildConfig.DEBUG_MODE) {
 			Log.i(TAG, String.valueOf(input));
 		}
 	}
 
 	public static void log(float input) {
-		if(BuildConfig.DEBUG) {
+		if(BuildConfig.DEBUG_MODE) {
 			Log.i(TAG, String.valueOf(input));
 		}
 	}
 
 	public static void log(boolean input) {
-		if(BuildConfig.DEBUG) {
+		if(BuildConfig.DEBUG_MODE) {
 			Log.i(TAG, String.valueOf(input));
 		}
 	}
 
 	public static void logUrl(String url) {
-		debugLog(URL, url);
+		DEBUG_MODELog(URL, url);
 	}
 
 	public static void logParams(String params) {
@@ -167,26 +167,26 @@ public class Console {
 
 	public static void largeLog(String tag, String content) {
 		if(content.length() > CHAR_LIMIT) {
-			debugLog(tag, content.substring(0, CHAR_LIMIT));
+			DEBUG_MODELog(tag, content.substring(0, CHAR_LIMIT));
 			appendLog(content.substring(CHAR_LIMIT));
 		}
 		else {
-			debugLog(tag, content);
+			DEBUG_MODELog(tag, content);
 		}
 	}
 
 	private static void appendLog(String content) {
 		if(content.length() > CHAR_LIMIT) {
-			debugLog(null, content.substring(0, CHAR_LIMIT));
+			DEBUG_MODELog(null, content.substring(0, CHAR_LIMIT));
 //			appendLog(content.substring(CHAR_LIMIT));
 		}
 		else {
-			debugLog(null, content);
+			DEBUG_MODELog(null, content);
 		}
 	}
 
-	private static void debugLog(String tag, String data) {
-		if(BuildConfig.DEBUG) {
+	private static void DEBUG_MODELog(String tag, String data) {
+		if(BuildConfig.DEBUG_MODE) {
 			Log.i(tag, data);
 		}
 	}

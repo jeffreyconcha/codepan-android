@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
 
     <com.codepan.widget.calendar.view.CalendarView
+        android:id="@+id/cvCalendar"
         android:layout_width="@dimen/three_hundred"
         android:layout_height="@dimen/five_hundred"
         CalendarView:titleFont="@string/calibri_bold"

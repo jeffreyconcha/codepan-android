@@ -11,12 +11,18 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 8
-        versionName "1.0.8"
+        versionCode 9
+        versionName "1.0.9"
         renderscriptTargetApi 17
         renderscriptSupportModeEnabled false
+        buildConfigField 'boolean', 'DEBUG_MODE', 'false'
     }
     buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            buildConfigField 'boolean', 'DEBUG_MODE', 'true'
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

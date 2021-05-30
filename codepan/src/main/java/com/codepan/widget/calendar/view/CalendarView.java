@@ -79,14 +79,6 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 		Resources res = getResources();
 		yearRow = res.getInteger(R.integer.year_row);
 		yearCol = res.getInteger(R.integer.year_col);
-		cal = Calendar.getInstance();
-		if (date != null) {
-			cal = CodePanUtils.getCalendar(date);
-			selectedDate = date;
-		}
-		else {
-			selectedDate = CodePanUtils.getDate();
-		}
 		title = res.getString(R.string.cal_title);
 		titleFont = res.getString(R.string.cal_title_font);
 		titlePadding = res.getDimensionPixelSize(R.dimen.cal_title_padding);
@@ -231,6 +223,14 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 				cancelCallback.onCancel();
 			}
 		});
+		cal = Calendar.getInstance();
+		if (date != null) {
+			cal = CodePanUtils.getCalendar(date);
+			selectedDate = date;
+		}
+		else {
+			selectedDate = CodePanUtils.getDate();
+		}
 		dayCalList = getDayCalList(lastPosition);
 		adapter = new ViewPagerAdapter(context, dayCalList);
 		vpCalendar.setAdapter(adapter);
@@ -392,7 +392,7 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 		int reset = 0;
 		ArrayList<DayData> dayList = new ArrayList<>();
 		for (int x = 1; x <= 42; x++) {
-			DayData obj = new DayData();
+			DayData data = new DayData();
 			if (x == 1) {
 				day = firstElement;
 			}
@@ -404,7 +404,7 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 				}
 			}
 			day++;
-			obj.id = day;
+			data.id = day;
 			int m = 0;
 			switch (reset) {
 				case 0:
@@ -413,7 +413,7 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 						year -= 1;
 					}
 					m = month;
-					obj.isActive = false;
+					data.isActive = false;
 					break;
 				case 1:
 					if (month == 12) {
@@ -421,7 +421,7 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 						year += 1;
 					}
 					m = month + 1;
-					obj.isActive = true;
+					data.isActive = true;
 					break;
 				case 2:
 					if (month == 11) {
@@ -429,15 +429,15 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 						year += 1;
 					}
 					m = month + 2;
-					obj.isActive = false;
+					data.isActive = false;
 					break;
 			}
-			obj.date = year + "-" + String.format(Locale.ENGLISH, "%02d", m) + "-" +
-					String.format(Locale.ENGLISH, "%02d", day);
-			if (obj.date.equals(selectedDate)) {
-				obj.isSelect = true;
+			data.date = year + "-" + String.format(Locale.ENGLISH, "%02d", m) + "-" +
+				String.format(Locale.ENGLISH, "%02d", day);
+			if (data.date.equals(selectedDate)) {
+				data.isSelect = true;
 			}
-			dayList.add(obj);
+			dayList.add(data);
 		}
 		return dayList;
 	}
