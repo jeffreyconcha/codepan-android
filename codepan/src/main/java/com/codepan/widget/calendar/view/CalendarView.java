@@ -15,6 +15,7 @@ import com.codepan.adapter.ViewPagerAdapter;
 import com.codepan.utils.CodePanUtils;
 import com.codepan.widget.CodePanButton;
 import com.codepan.widget.CodePanLabel;
+import com.codepan.widget.calendar.callback.Interface.OnCancelCallback;
 import com.codepan.widget.calendar.callback.Interface.OnPickMonthCallback;
 import com.codepan.widget.calendar.callback.Interface.OnPickYearCallback;
 import com.codepan.widget.calendar.callback.Interface.OnSelectDateCallback;
@@ -61,6 +62,7 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 	private FrameLayout flNextCalendar, flPreviousCalendar;
 	private View vNextCalendar, vPreviousCalendar;
 	private OnPickDateCallback pickDateCallback;
+	private OnCancelCallback cancelCallback;
 	private LinearLayout llDayCalendar;
 	private String date, selectedDate;
 	private ViewPagerAdapter adapter;
@@ -220,13 +222,14 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 			vpCalendar.setCurrentItem(NEXT, true);
 		});
 		btnConfirmCalendar.setOnClickListener(v -> {
-//			manager.popBackStack();
 			if (pickDateCallback != null) {
 				pickDateCallback.onPickDate(selectedDate);
 			}
 		});
 		btnCancelCalendar.setOnClickListener(v -> {
-//			manager.popBackStack();
+			if (cancelCallback != null) {
+				cancelCallback.onCancel();
+			}
 		});
 		dayCalList = getDayCalList(lastPosition);
 		adapter = new ViewPagerAdapter(context, dayCalList);
@@ -590,6 +593,10 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 
 	public void setOnPickDateCallback(OnPickDateCallback pickDateCallback) {
 		this.pickDateCallback = pickDateCallback;
+	}
+
+	public void setOnCancelCallback(OnCancelCallback cancelCallback) {
+		this.cancelCallback = cancelCallback;
 	}
 
 	/**

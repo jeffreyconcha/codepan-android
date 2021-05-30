@@ -34,6 +34,17 @@ class PermissionValue(vararg values: String) {
         val readSms = PermissionValue(
             Manifest.permission.READ_SMS
         );
+        val receiveSms = PermissionValue(
+            Manifest.permission.RECEIVE_SMS
+        );
+        val sendSms = PermissionValue(
+            Manifest.permission.SEND_SMS
+        );
+        val sms = PermissionValue(
+            Manifest.permission.READ_SMS,
+            Manifest.permission.RECEIVE_SMS,
+            Manifest.permission.SEND_SMS,
+        );
         val phoneNumbers: PermissionValue
             get() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -41,11 +52,5 @@ class PermissionValue(vararg values: String) {
                 }
                 return PermissionValue(Manifest.permission.READ_PHONE_STATE);
             }
-        val receiveSms = PermissionValue(
-            Manifest.permission.READ_SMS
-        );
-        val sendSms = PermissionValue(
-            Manifest.permission.SEND_SMS
-        );
     }
 }

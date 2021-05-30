@@ -19,4 +19,8 @@ public class Interface {
 	public interface OnSelectDateCallback {
 		void onSelectDate(String date);
 	}
+
+	public interface OnCancelCallback {
+		void onCancel();
+	}
 }
