@@ -1,18 +1,16 @@
 package com.codepan.widget.calendar.view;
 
+import android.content.Context;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.LayoutInflater;
+import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.codepan.R;
-import com.codepan.adapter.FragmentPagerAdapter;
-import com.codepan.app.CPFragment;
+import com.codepan.adapter.ViewPagerAdapter;
 import com.codepan.utils.CodePanUtils;
 import com.codepan.widget.CodePanButton;
 import com.codepan.widget.CodePanLabel;
@@ -27,12 +25,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
 import static com.codepan.widget.calendar.callback.Interface.OnPickDateCallback;
 
-public class CalendarDialog extends CPFragment implements OnPickDateCallback, OnSelectDateCallback,
+public class CalendarView extends FrameLayout implements OnPickDateCallback, OnSelectDateCallback,
 		OnPickMonthCallback, OnPickYearCallback {
 
 	private final int PREVIOUS = 0;
@@ -43,41 +43,43 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 	private final int YEAR_MODE = 2;
 	private int lastPosition = CURRENT;
 	private int mode = DAY_MODE;
+	private CodePanButton btnCancelCalendar, btnConfirmCalendar, btnMonthYearCalendar,
+			btnPreviousCalendar, btnNextCalendar;
 	private CodePanLabel tvYearCalendar, tvDateCalendar;
-	private CodePanButton btnCancelCalendar, btnSaveCalendar, btnMonthYearCalendar;
-	private int height, monthRow, monthCol, yearRow, yearCol, spacing;
-	private Button btnPreviousCalendar, btnNextCalendar;
 	private OnPickDateCallback pickDateCallback;
-	private ArrayList<CPFragment> dayCalList;
-	private ArrayList<CPFragment> yearCalList;
-	private ArrayList<CPFragment> monthCalList;
+	private ArrayList<View> dayCalList;
+	private ArrayList<View> yearCalList;
+	private ArrayList<View> monthCalList;
 	private LinearLayout llDayCalendar;
 	private String date, selectedDate;
-	private FragmentPagerAdapter adapter;
-	private CalendarPager vpCalendar;
 	private CalendarMonth prevCalMonth;
 	private CalendarMonth currCalMonth;
 	private CalendarMonth nextCalMonth;
 	private CalendarYear prevCalYear;
 	private CalendarYear currCalYear;
 	private CalendarYear nextCalYear;
+	private ViewPagerAdapter adapter;
 	private CalendarDay prevCalDay;
 	private CalendarDay currCalDay;
 	private CalendarDay nextCalDay;
+	private ViewPager vpCalendar;
+	private final Context context;
+	private final int yearRow;
+	private final int yearCol;
 	private Calendar cal;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		super.disableBackPressed();
+	public CalendarView(@NonNull Context context, @Nullable AttributeSet attrs) {
+		super(context, attrs);
+		this.context = context;
 		Resources res = getResources();
-		spacing = res.getDimensionPixelSize(R.dimen.cal_spacing);
-		monthRow = res.getInteger(R.integer.month_row);
-		monthCol = res.getInteger(R.integer.month_col);
 		yearRow = res.getInteger(R.integer.year_row);
 		yearCol = res.getInteger(R.integer.year_col);
+		init();
+	}
+
+	private void init() {
 		cal = Calendar.getInstance();
-		if(date != null) {
+		if (date != null) {
 			cal = CodePanUtils.getCalendar(date);
 			selectedDate = date;
 		}
@@ -87,34 +89,32 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.calendar_dialog_layout, container, false);
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		View view = inflate(context, R.layout.calendar_view_layout, this);
 		tvYearCalendar = view.findViewById(R.id.tvYearCalendar);
 		tvDateCalendar = view.findViewById(R.id.tvDateCalendar);
 		btnMonthYearCalendar = view.findViewById(R.id.btnMonthYearCalendar);
 		btnCancelCalendar = view.findViewById(R.id.btnCancelCalendar);
-		btnSaveCalendar = view.findViewById(R.id.btnSaveCalendar);
+		btnConfirmCalendar = view.findViewById(R.id.btnConfirmCalendar);
 		btnPreviousCalendar = view.findViewById(R.id.btnPreviousCalendar);
 		btnNextCalendar = view.findViewById(R.id.btnNextCalendar);
 		llDayCalendar = view.findViewById(R.id.llDayCalendar);
 		vpCalendar = view.findViewById(R.id.vpCalendar);
 		btnMonthYearCalendar.setOnClickListener(v -> {
-			switch(mode) {
+			switch (mode) {
 				case DAY_MODE:
 					mode = MONTH_MODE;
-					int tHeight = llDayCalendar.getHeight() + vpCalendar.getHeight();
-					height = (tHeight / monthRow) - spacing;
-					vpCalendar.getLayoutParams().height = tHeight;
 					llDayCalendar.setVisibility(View.GONE);
 					monthCalList = getMonthCalList(CURRENT);
-					adapter = new FragmentPagerAdapter(getChildFragmentManager(), monthCalList);
+					adapter = new ViewPagerAdapter(context, monthCalList);
 					vpCalendar.setAdapter(adapter);
 					vpCalendar.setCurrentItem(CURRENT, false);
 					break;
 				case MONTH_MODE:
 					mode = YEAR_MODE;
 					yearCalList = getYearCalList(CURRENT);
-					adapter = new FragmentPagerAdapter(getChildFragmentManager(), yearCalList);
+					adapter = new ViewPagerAdapter(context, yearCalList);
 					vpCalendar.setAdapter(adapter);
 					vpCalendar.setCurrentItem(CURRENT, false);
 					break;
@@ -126,17 +126,17 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 		btnNextCalendar.setOnClickListener(v -> {
 			vpCalendar.setCurrentItem(NEXT, true);
 		});
-		btnSaveCalendar.setOnClickListener(v -> {
-			manager.popBackStack();
+		btnConfirmCalendar.setOnClickListener(v -> {
+//			manager.popBackStack();
 			if (pickDateCallback != null) {
 				pickDateCallback.onPickDate(selectedDate);
 			}
 		});
 		btnCancelCalendar.setOnClickListener(v -> {
-			manager.popBackStack();
+//			manager.popBackStack();
 		});
 		dayCalList = getDayCalList(lastPosition);
-		adapter = new FragmentPagerAdapter(getChildFragmentManager(), dayCalList);
+		adapter = new ViewPagerAdapter(context, dayCalList);
 		vpCalendar.setAdapter(adapter);
 		vpCalendar.setCurrentItem(CURRENT, false);
 		btnMonthYearCalendar.setText(getTitleMonthYear());
@@ -188,57 +188,53 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 
 			@Override
 			public void onPageScrollStateChanged(int state) {
-				if(state == ViewPager.SCROLL_STATE_IDLE) {
+				if (state == ViewPager.SCROLL_STATE_IDLE) {
 					switchItem(lastPosition);
 				}
 			}
 		});
 		displayDate(selectedDate);
-		return view;
 	}
 
-	public void switchItem(final int position) {
+	private void switchItem(final int position) {
 		final Handler handler = new Handler(Looper.getMainLooper(), msg -> {
-			ArrayList<CPFragment> fragmentList = new ArrayList<>();
+			ArrayList<View> viewList = new ArrayList<>();
 			switch (mode) {
 				case DAY_MODE:
-					fragmentList = dayCalList;
+					viewList = dayCalList;
 					break;
 				case MONTH_MODE:
-					fragmentList = monthCalList;
+					viewList = monthCalList;
 					break;
 				case YEAR_MODE:
-					fragmentList = yearCalList;
+					viewList = yearCalList;
 					break;
 			}
-			adapter = new FragmentPagerAdapter(getChildFragmentManager(), fragmentList);
+			adapter = new ViewPagerAdapter(context, viewList);
 			vpCalendar.setAdapter(adapter);
 			vpCalendar.setCurrentItem(CURRENT, false);
 			return true;
 		});
-		Thread bg = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				switch (mode) {
-					case DAY_MODE:
-						dayCalList = getDayCalList(position);
-						break;
-					case MONTH_MODE:
-						monthCalList = getMonthCalList(position);
-						break;
-					case YEAR_MODE:
-						yearCalList = getYearCalList(position);
-						break;
-				}
-				handler.sendMessage(handler.obtainMessage());
+		Thread bg = new Thread(() -> {
+			switch (mode) {
+				case DAY_MODE:
+					dayCalList = getDayCalList(position);
+					break;
+				case MONTH_MODE:
+					monthCalList = getMonthCalList(position);
+					break;
+				case YEAR_MODE:
+					yearCalList = getYearCalList(position);
+					break;
 			}
+			handler.sendMessage(handler.obtainMessage());
 		});
 		bg.start();
 	}
 
-	public ArrayList<CPFragment> getDayCalList(final int position) {
-		ArrayList<CPFragment> fragmentList = new ArrayList<>();
-		switch(position) {
+	private ArrayList<View> getDayCalList(final int position) {
+		ArrayList<View> viewList = new ArrayList<>();
+		switch (position) {
 			case PREVIOUS:
 				nextCalDay = currCalDay;
 				currCalDay = prevCalDay;
@@ -255,37 +251,37 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 				nextCalDay = getNextCalDay();
 				break;
 		}
-		fragmentList.add(prevCalDay);
-		fragmentList.add(currCalDay);
-		fragmentList.add(nextCalDay);
-		return fragmentList;
+		viewList.add(prevCalDay);
+		viewList.add(currCalDay);
+		viewList.add(nextCalDay);
+		return viewList;
 	}
 
-	public CalendarDay getPrevCalDay() {
+	private CalendarDay getPrevCalDay() {
 		Calendar cal = Calendar.getInstance();
 		cal.set(getYear(), getMonth() - 1, getDay());
-		CalendarDay previous = new CalendarDay();
+		CalendarDay previous = new CalendarDay(context);
 		previous.init(plotCalendar(cal), this, this);
 		return previous;
 	}
 
-	public CalendarDay getCurrCalDay() {
+	private CalendarDay getCurrCalDay() {
 		Calendar cal = Calendar.getInstance();
 		cal.set(getYear(), getMonth(), getDay());
-		CalendarDay current = new CalendarDay();
+		CalendarDay current = new CalendarDay(context);
 		current.init(plotCalendar(cal), this, this);
 		return current;
 	}
 
-	public CalendarDay getNextCalDay() {
+	private CalendarDay getNextCalDay() {
 		Calendar cal = Calendar.getInstance();
 		cal.set(getYear(), getMonth() + 1, getDay());
-		CalendarDay next = new CalendarDay();
+		CalendarDay next = new CalendarDay(context);
 		next.init(plotCalendar(cal), this, this);
 		return next;
 	}
 
-	public ArrayList<DayData> plotCalendar(Calendar cal) {
+	private ArrayList<DayData> plotCalendar(Calendar cal) {
 		int year = cal.get(Calendar.YEAR);
 		int month = cal.get(Calendar.MONTH);
 		int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
@@ -297,25 +293,25 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 		int limit = previous.noOfDays;
 		int day = 0;
 		int reset = 0;
-		ArrayList<DayData> dayList = new ArrayList<DayData>();
-		for(int x = 1; x <= 42; x++) {
+		ArrayList<DayData> dayList = new ArrayList<>();
+		for (int x = 1; x <= 42; x++) {
 			DayData obj = new DayData();
-			if(x == 1) {
+			if (x == 1) {
 				day = firstElement;
 			}
 			else {
-				if(day == limit) {
+				if (day == limit) {
 					day = 0;
 					limit = current.noOfDays;
 					reset++;
 				}
 			}
 			day++;
-			obj.ID = day;
+			obj.id = day;
 			int m = 0;
-			switch(reset) {
+			switch (reset) {
 				case 0:
-					if(month == 0) {
+					if (month == 0) {
 						month = 12;
 						year -= 1;
 					}
@@ -323,7 +319,7 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 					obj.isActive = false;
 					break;
 				case 1:
-					if(month == 12) {
+					if (month == 12) {
 						month = 0;
 						year += 1;
 					}
@@ -331,7 +327,7 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 					obj.isActive = true;
 					break;
 				case 2:
-					if(month == 11) {
+					if (month == 11) {
 						month = -1;
 						year += 1;
 					}
@@ -341,7 +337,7 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 			}
 			obj.date = year + "-" + String.format(Locale.ENGLISH, "%02d", m) + "-" +
 					String.format(Locale.ENGLISH, "%02d", day);
-			if(obj.date.equals(selectedDate)) {
+			if (obj.date.equals(selectedDate)) {
 				obj.isSelect = true;
 			}
 			dayList.add(obj);
@@ -349,9 +345,9 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 		return dayList;
 	}
 
-	public ArrayList<CPFragment> getMonthCalList(final int position) {
-		ArrayList<CPFragment> fragmentList = new ArrayList<>();
-		switch(position) {
+	private ArrayList<View> getMonthCalList(final int position) {
+		ArrayList<View> viewList = new ArrayList<>();
+		switch (position) {
 			case PREVIOUS:
 				nextCalMonth = currCalMonth;
 				currCalMonth = prevCalMonth;
@@ -368,25 +364,25 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 				nextCalMonth = getCalMonth();
 				break;
 		}
-		fragmentList.add(prevCalMonth);
-		fragmentList.add(currCalMonth);
-		fragmentList.add(nextCalMonth);
-		return fragmentList;
+		viewList.add(prevCalMonth);
+		viewList.add(currCalMonth);
+		viewList.add(nextCalMonth);
+		return viewList;
 	}
 
-	public CalendarMonth getCalMonth() {
-		CalendarMonth month = new CalendarMonth();
-		month.init(getMonthList(), height, this);
+	private CalendarMonth getCalMonth() {
+		CalendarMonth month = new CalendarMonth(context);
+		month.init(getMonthList(), this);
 		return month;
 	}
 
-	public ArrayList<MonthData> getMonthList() {
+	private ArrayList<MonthData> getMonthList() {
 		ArrayList<MonthData> monthList = new ArrayList<>();
-		for(int i = 0; i < 12; i++) {
+		for (int i = 0; i < 12; i++) {
 			Calendar cal = Calendar.getInstance();
 			cal.set(getYear(), i, 1);
 			MonthData month = new MonthData();
-			month.ID = i;
+			month.id = i;
 			month.name = cal.getDisplayName(Calendar.MONTH, Calendar.SHORT,
 					Locale.getDefault());
 			monthList.add(month);
@@ -394,9 +390,9 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 		return monthList;
 	}
 
-	public ArrayList<CPFragment> getYearCalList(final int position) {
-		ArrayList<CPFragment> fragmentList = new ArrayList<>();
-		switch(position) {
+	private ArrayList<View> getYearCalList(final int position) {
+		ArrayList<View> viewList = new ArrayList<>();
+		switch (position) {
 			case PREVIOUS:
 				nextCalYear = currCalYear;
 				currCalYear = prevCalYear;
@@ -413,45 +409,45 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 				nextCalYear = getNextCalYear();
 				break;
 		}
-		fragmentList.add(prevCalYear);
-		fragmentList.add(currCalYear);
-		fragmentList.add(nextCalYear);
-		return fragmentList;
+		viewList.add(prevCalYear);
+		viewList.add(currCalYear);
+		viewList.add(nextCalYear);
+		return viewList;
 	}
 
-	public CalendarYear getPrevCalYear() {
+	private CalendarYear getPrevCalYear() {
 		int count = yearCol * yearRow;
 		int start = getYear() - count;
 		ArrayList<YearData> yearList = getYearList(start, count);
-		CalendarYear year = new CalendarYear();
-		year.init(yearList, height, this);
+		CalendarYear year = new CalendarYear(context);
+		year.init(yearList, this);
 		return year;
 	}
 
-	public CalendarYear getCurrCalYear() {
+	private CalendarYear getCurrCalYear() {
 		int count = yearCol * yearRow;
 		int start = getYear();
 		ArrayList<YearData> yearList = getYearList(start, count);
-		CalendarYear year = new CalendarYear();
-		year.init(yearList, height, this);
+		CalendarYear year = new CalendarYear(context);
+		year.init(yearList, this);
 		return year;
 	}
 
-	public CalendarYear getNextCalYear() {
+	private CalendarYear getNextCalYear() {
 		int count = yearCol * yearRow;
 		int start = getYear() + count;
 		ArrayList<YearData> yearList = getYearList(start, count);
-		CalendarYear year = new CalendarYear();
-		year.init(yearList, height, this);
+		CalendarYear year = new CalendarYear(context);
+		year.init(yearList, this);
 		return year;
 	}
 
-	public ArrayList<YearData> getYearList(int start, int count) {
+	private ArrayList<YearData> getYearList(int start, int count) {
 		int limit = start + count;
 		ArrayList<YearData> yearList = new ArrayList<>();
-		for(int i = start; i < limit; i++) {
+		for (int i = start; i < limit; i++) {
 			YearData year = new YearData();
-			year.ID = i;
+			year.id = i;
 			year.name = String.valueOf(i);
 			yearList.add(year);
 		}
@@ -509,16 +505,6 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 		this.date = date;
 	}
 
-	public String getDate() {
-		Calendar cal = Calendar.getInstance();
-		int year = cal.get(Calendar.YEAR);
-		int month = cal.get(Calendar.MONTH);
-		int day = cal.get(Calendar.DAY_OF_MONTH);
-		return year + "-" + String.format(Locale.ENGLISH, "%02d", (month + 1)) + "-" +
-				String.format(Locale.ENGLISH, "%02d", day);
-	}
-
-
 	@Override
 	public void onPickDate(String date) {
 		this.date = date;
@@ -541,22 +527,22 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 
 	@Override
 	public void onPickMonth(MonthData month) {
-		cal.set(getYear(), month.ID, getDay());
+		cal.set(getYear(), month.id, getDay());
 		mode = DAY_MODE;
-		vpCalendar.reset();
+//		vpCalendar.reset();
 		llDayCalendar.setVisibility(View.VISIBLE);
 		dayCalList = getDayCalList(CURRENT);
-		adapter = new FragmentPagerAdapter(getChildFragmentManager(), dayCalList);
+		adapter = new ViewPagerAdapter(context, dayCalList);
 		vpCalendar.setAdapter(adapter);
 		vpCalendar.setCurrentItem(CURRENT, false);
 	}
 
 	@Override
 	public void onPickYear(YearData year) {
-		cal.set(year.ID, getMonth(), getDay());
+		cal.set(year.id, getMonth(), getDay());
 		mode = MONTH_MODE;
 		monthCalList = getMonthCalList(CURRENT);
-		adapter = new FragmentPagerAdapter(getChildFragmentManager(), monthCalList);
+		adapter = new ViewPagerAdapter(context, monthCalList);
 		vpCalendar.setAdapter(adapter);
 		vpCalendar.setCurrentItem(CURRENT, false);
 	}

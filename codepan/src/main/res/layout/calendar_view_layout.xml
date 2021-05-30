@@ -5,8 +5,6 @@
     xmlns:codePan="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black_trans_sixty"
-    android:clickable="true"
     android:padding="@dimen/ten">
 
     <RelativeLayout
@@ -253,17 +251,19 @@
             android:layout_marginTop="@dimen/eight"
             android:background="@color/cal_grid"/>
 
-        <com.codepan.widget.calendar.view.CalendarPager
+        <androidx.viewpager.widget.ViewPager
             android:id="@+id/vpCalendar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_below="@+id/vDividerDayCalendar"
+            android:layout_above="@+id/llOptions"
             android:layout_centerHorizontal="true"/>
 
         <LinearLayout
+            android:id="@+id/llOptions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/vpCalendar"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:orientation="horizontal"
             android:padding="@dimen/ten">
@@ -280,7 +280,7 @@
                 codePan:typeface="@string/calibri_bold"/>
 
             <com.codepan.widget.CodePanButton
-                android:id="@+id/btnSaveCalendar"
+                android:id="@+id/btnConfirmCalendar"
                 android:layout_width="@dimen/one_hundred"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/five"

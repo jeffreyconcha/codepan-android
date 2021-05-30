@@ -1,55 +1,60 @@
 package com.codepan.widget.calendar.view;
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 
 import com.codepan.R;
-import com.codepan.app.CPFragment;
 import com.codepan.widget.calendar.adapter.CalendarMonthAdapter;
 import com.codepan.widget.calendar.callback.Interface.OnPickMonthCallback;
 import com.codepan.widget.calendar.model.MonthData;
 
 import java.util.ArrayList;
 
-public class CalendarMonth extends CPFragment {
+import androidx.annotation.NonNull;
+
+public class CalendarMonth extends FrameLayout {
 
 	private OnPickMonthCallback pickMonthCallback;
 	private ArrayList<MonthData> monthList;
 	private CalendarMonthAdapter adapter;
 	private GridView gvCalendarMonth;
-	private int height;
+	private final int numRows;
+	private final int spacing;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		super.disableBackPressed();
+	public CalendarMonth(@NonNull Context context) {
+		super(context);
+		Resources res = getResources();
+		this.numRows = res.getInteger(R.integer.month_row);
+		this.spacing = res.getDimensionPixelSize(R.dimen.cal_spacing);
 	}
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.calendar_month_layout, container, false);
-		gvCalendarMonth = view.findViewById(R.id.gvCalendarMonth);
-		gvCalendarMonth.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-				if(pickMonthCallback != null) {
-					pickMonthCallback.onPickMonth(monthList.get(i));
-				}
-			}
-		});
-		adapter = new CalendarMonthAdapter(activity, monthList, height);
-		gvCalendarMonth.setAdapter(adapter);
-		return view;
-	}
-
-	public void init(ArrayList<MonthData> monthList, int height, OnPickMonthCallback pickMonthCallback) {
+	public void init(ArrayList<MonthData> monthList, OnPickMonthCallback pickMonthCallback) {
 		this.monthList = monthList;
 		this.pickMonthCallback = pickMonthCallback;
-		this.height = height;
+	}
+
+	@Override
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		View view = inflate(getContext(), R.layout.calendar_month_layout, this);
+		gvCalendarMonth = view.findViewById(R.id.gvCalendarMonth);
+		gvCalendarMonth.setOnItemClickListener((adapterView, view1, i, l) -> {
+			if (pickMonthCallback != null) {
+				pickMonthCallback.onPickMonth(monthList.get(i));
+			}
+		});
+	}
+
+	@Override
+	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+		super.onLayout(changed, left, top, right, bottom);
+		if (adapter == null) {
+			int itemHeight = (getHeight() / numRows) - spacing;
+			adapter = new CalendarMonthAdapter(getContext(), monthList, itemHeight);
+			gvCalendarMonth.setAdapter(adapter);
+		}
 	}
 }

@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.Handler
+import android.os.Looper
 import androidx.annotation.RequiresPermission
 import com.codepan.permission.PermissionHandler
 import com.codepan.permission.PermissionType
@@ -41,7 +42,7 @@ class SmsEventManager(val context: Context) : SmsNotifier {
     private val resolver = context.contentResolver
     private lateinit var observer: SmsObserver
     private var callback: SmsEvents? = null
-    private val handler = Handler()
+    private val handler = Handler(Looper.getMainLooper())
 
     private var lastId: Int = 0
         get() = preferences.getValue(LAST_SMS_ID, 0)

@@ -16,13 +16,13 @@ public class CalendarMonthAdapter extends ArrayAdapter<MonthData> {
 
 	private ArrayList<MonthData> items;
 	private LayoutInflater inflater;
-	private int height;
+	private int itemHeight;
 
-	public CalendarMonthAdapter(Context context, ArrayList<MonthData> items, int height) {
+	public CalendarMonthAdapter(Context context, ArrayList<MonthData> items, int itemHeight) {
 		super(context, 0, items);
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.items = items;
-		this.height = height;
+		this.itemHeight = itemHeight;
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class CalendarMonthAdapter extends ArrayAdapter<MonthData> {
 				view = inflater.inflate(R.layout.calendar_month_item, parent, false);
 				holder = new ViewHolder();
 				holder.tvMonth = view.findViewById(R.id.tvMonth);
-				holder.tvMonth.setHeight(height);
+				holder.tvMonth.setHeight(itemHeight);
 				view.setTag(holder);
 			}
 			else {
@@ -48,7 +48,7 @@ public class CalendarMonthAdapter extends ArrayAdapter<MonthData> {
 		return view;
 	}
 
-	private class ViewHolder {
+	private static class ViewHolder {
 		private CodePanLabel tvMonth;
 	}
 }

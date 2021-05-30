@@ -7,6 +7,6 @@
     android:layout_height="wrap_content"
     android:gravity="start|center_vertical"
     android:padding="@dimen/ten"
-    android:textColor="@color/gray_pri"
+    android:textColor="@color/font_color"
     android:textSize="@dimen/fifteen"
     codePan:typeface="@string/calibri_regular"/>

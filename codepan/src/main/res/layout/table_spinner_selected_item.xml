@@ -14,7 +14,7 @@
     android:paddingStart="@dimen/eight"
     android:paddingRight="@dimen/twenty_five"
     android:singleLine="true"
-    android:textColor="@color/gray_pri"
+    android:textColor="@color/font_color"
     android:textSize="@dimen/fifteen"
     codePan:typeface="@string/calibri_regular"
     tools:ignore="RtlHardcoded"/>

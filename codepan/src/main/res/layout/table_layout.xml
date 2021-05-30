@@ -110,7 +110,7 @@
                     android:background="@drawable/state_rect_trans_rad_three"
                     android:gravity="start|center_vertical"
                     android:spinnerMode="dropdown"
-                    android:textColor="@color/gray_pri"
+                    android:textColor="@color/font_color"
                     android:textSize="@dimen/fifteen"/>
 
             </FrameLayout>
@@ -147,7 +147,7 @@
                         android:background="@drawable/state_rect_trans_rad_three"
                         android:gravity="start|center_vertical"
                         android:spinnerMode="dropdown"
-                        android:textColor="@color/gray_pri"
+                        android:textColor="@color/font_color"
                         android:textSize="@dimen/fifteen"/>
 
                 </FrameLayout>

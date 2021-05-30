@@ -16,13 +16,13 @@ public class CalendarYearAdapter extends ArrayAdapter<YearData> {
 
 	private ArrayList<YearData> items;
 	private LayoutInflater inflater;
-	private int height;
+	private int itemHeight;
 
-	public CalendarYearAdapter(Context context, ArrayList<YearData> items, int height) {
+	public CalendarYearAdapter(Context context, ArrayList<YearData> items, int itemHeight) {
 		super(context, 0, items);
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.items = items;
-		this.height = height;
+		this.itemHeight = itemHeight;
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class CalendarYearAdapter extends ArrayAdapter<YearData> {
 				view = inflater.inflate(R.layout.calendar_year_item, parent, false);
 				holder = new ViewHolder();
 				holder.tvYear = view.findViewById(R.id.tvYear);
-				holder.tvYear.setHeight(height);
+				holder.tvYear.setHeight(itemHeight);
 				view.setTag(holder);
 			}
 			else {
@@ -48,7 +48,7 @@ public class CalendarYearAdapter extends ArrayAdapter<YearData> {
 		return view;
 	}
 
-	private class ViewHolder {
+	private static class ViewHolder {
 		private CodePanLabel tvYear;
 	}
 }
