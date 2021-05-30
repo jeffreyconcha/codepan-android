@@ -22,6 +22,7 @@ enum class PermissionType(val value: PermissionValue) {
     READ_SMS(PermissionValue.readSms),
     RECEIVE_SMS(PermissionValue.receiveSms),
     SEND_SMS(PermissionValue.sendSms),
+    SMS(PermissionValue.sms),
 }
 
 interface PermissionEvents {
