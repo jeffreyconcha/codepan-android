@@ -67,6 +67,7 @@ public class CalendarDay extends FrameLayout {
 		if (adapter == null) {
 			int itemHeight = (getHeight() / numRows) - spacing;
 			adapter = new CalendarDayAdapter(getContext(), dayList, itemHeight);
+			adapter.setSelectedColor(parent.getSelectedColor());
 			adapter.setTextColor(parent.getContentTextColor());
 			adapter.setTextSize(parent.getContentTextSize());
 			adapter.setFont(parent.getContentFont());

@@ -11,6 +11,7 @@
         CalendarView:contentFont="@string/calibri_regular"
         CalendarView:contentTextSize="@dimen/ten"
         CalendarView:title="Select Date"
+        CalendarView:selectedColor="#FD602F"
         CalendarView:accentColor="#FD602F"/>
 
 </RelativeLayout>

@@ -2,6 +2,7 @@ package com.codepan.widget.calendar.adapter;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +17,9 @@ import java.util.ArrayList;
 public class CalendarDayAdapter extends ArrayAdapter<DayData> {
 
 	private final int inActive, active, selected, itemHeight;
+	private int textColor, textSize, selectedColor;
 	private final ArrayList<DayData> items;
 	private final LayoutInflater inflater;
-	private int textColor, textSize;
 	private String font;
 
 	public CalendarDayAdapter(Context context, ArrayList<DayData> items, int itemHeight) {
@@ -61,6 +62,8 @@ public class CalendarDayAdapter extends ArrayAdapter<DayData> {
 				holder.tvDay.setText(String.valueOf(day.id));
 				if (day.isSelect) {
 					holder.tvDay.setBackgroundResource(R.drawable.state_oval_cal_selected);
+					GradientDrawable drawable = (GradientDrawable) holder.tvDay.getBackground();
+					drawable.setColor(selectedColor);
 					holder.tvDay.setTextColor(selected);
 				}
 				else {
@@ -87,6 +90,10 @@ public class CalendarDayAdapter extends ArrayAdapter<DayData> {
 
 	public void setFont(String font) {
 		this.font = font;
+	}
+
+	public void setSelectedColor(int selectedColor) {
+		this.selectedColor = selectedColor;
 	}
 
 	private static class ViewHolder {

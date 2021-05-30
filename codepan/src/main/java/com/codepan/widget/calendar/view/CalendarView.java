@@ -85,6 +85,7 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 		contentFont = res.getString(R.string.cal_content_font);
 		accentColor = res.getColor(R.color.cal_accent_color);
 		contentTextColor = res.getColor(R.color.cal_content_text_color);
+		selectedColor = res.getColor(R.color.cal_selected_color);
 		contentTextSize = res.getDimensionPixelSize(R.dimen.cal_content_text_size);
 		titleTextSize = res.getDimensionPixelSize(R.dimen.cal_content_text_size);
 		dateTextSize = res.getDimensionPixelSize(R.dimen.cal_date_text_size);
@@ -103,6 +104,7 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 		contentFont = _contentFont != null ? _contentFont : contentFont;
 		accentColor = ta.getColor(R.styleable.CalendarView_accentColor, accentColor);
 		contentTextColor = ta.getColor(R.styleable.CalendarView_contentTexColor, contentTextColor);
+		selectedColor = ta.getColor(R.styleable.CalendarView_selectedColor, selectedColor);
 		contentTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_contentTextSize, contentTextSize);
 		titleTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_titleTextSize, titleTextSize);
 		dateTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_dateTextSize, dateTextSize);
@@ -602,5 +604,9 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 
 	public int getContentTextSize() {
 		return this.contentTextSize;
+	}
+
+	public int getSelectedColor() {
+		return this.selectedColor;
 	}
 }

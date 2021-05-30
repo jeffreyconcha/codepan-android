@@ -15,7 +15,6 @@
 
     <color name="cal_inactive_text_color">#B2B3B5</color>
     <color name="cal_selected_color">#3396D8</color>
-    <color name="cal_bg_pressed">#2376B8</color>
     <color name="cal_day_active">@color/cal_content_text_color</color>
     <color name="cal_day_selected">@color/white</color>
     <color name="cal_background">@color/white</color>
