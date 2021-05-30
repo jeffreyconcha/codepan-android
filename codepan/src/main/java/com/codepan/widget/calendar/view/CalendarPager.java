@@ -1,8 +1,10 @@
 package com.codepan.widget.calendar.view;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ListAdapter;
 
@@ -29,11 +31,13 @@ public class CalendarPager extends ViewPager {
 				ListAdapter adapter = gvCalendarDay.getAdapter();
 				if(adapter instanceof CalendarDayAdapter) {
 					CalendarDayAdapter day = (CalendarDayAdapter) adapter;
-					int mWidth = day.getParent().getMeasuredWidth();
-					int mHeight = day.getParent().getMeasuredHeight();
-					int numCol = getResources().getInteger(R.integer.day_col);
-					int numRow = getResources().getInteger(R.integer.day_row);
-					int spacing = getResources().getDimensionPixelSize(R.dimen.cal_spacing);
+					final ViewGroup parent = day.getParent();
+					int mWidth = parent.getMeasuredWidth();
+					int mHeight = parent.getMeasuredHeight();
+					final Resources res = getResources();
+					int numCol = res.getInteger(R.integer.day_col);
+					int numRow = res.getInteger(R.integer.day_row);
+					int spacing = res.getDimensionPixelSize(R.dimen.cal_spacing);
 					int width = (mWidth + spacing) * numCol;
 					//getLayoutParams().width = width;
 					getLayoutParams().height = (mHeight + spacing) * numRow;
