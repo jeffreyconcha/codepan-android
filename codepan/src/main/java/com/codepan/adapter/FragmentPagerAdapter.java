@@ -11,15 +11,15 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 
 public class FragmentPagerAdapter extends FragmentStatePagerAdapter {
 
-	private List<CPFragment> fragments;
-	private String tabItems[];
+	private final List<CPFragment> fragments;
+	private String[] tabItems;
 
 	public FragmentPagerAdapter(FragmentManager fm, List<CPFragment> fragments) {
 		super(fm);
 		this.fragments = fragments;
 	}
 
-	public FragmentPagerAdapter(FragmentManager fm, List<CPFragment> fragments, String tabItems[]) {
+	public FragmentPagerAdapter(FragmentManager fm, List<CPFragment> fragments, String[] tabItems) {
 		super(fm);
 		this.fragments = fragments;
 		this.tabItems = tabItems;

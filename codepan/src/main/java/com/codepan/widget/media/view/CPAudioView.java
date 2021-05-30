@@ -1,4 +1,4 @@
-package com.codepan.media.view;
+package com.codepan.widget.media.view;
 
 import android.content.Context;
 import android.media.AudioAttributes;
@@ -24,7 +24,7 @@ import com.codepan.R;
 import com.codepan.callback.Interface.OnCompletionCallback;
 import com.codepan.callback.Interface.OnProgressCallback;
 import com.codepan.callback.Interface.OnResultCallback;
-import com.codepan.media.callback.Interface.OnMediaInterruptedCallback;
+import com.codepan.widget.media.callback.Interface.OnMediaInterruptedCallback;
 import com.codepan.utils.CodePanUtils;
 import com.codepan.widget.CodePanButton;
 import com.codepan.widget.CodePanLabel;

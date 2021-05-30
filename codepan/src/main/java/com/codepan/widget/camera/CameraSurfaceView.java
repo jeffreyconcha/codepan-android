@@ -1,4 +1,4 @@
-package com.codepan.camera;
+package com.codepan.widget.camera;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -17,7 +17,6 @@ import android.hardware.Camera.Size;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -261,43 +260,37 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	}
 
 	public void saveBitmap(final String fileName, final Bitmap bitmap) {
-		final Handler handler = new Handler(new Handler.Callback() {
-			@Override
-			public boolean handleMessage(Message msg) {
-				File dir = context.getDir(folder, Context.MODE_PRIVATE);
-				File file = new File(dir, fileName);
-				if(file.exists() && file.length() > 0) {
-					captureCallback.onCapture(fileName);
-				}
-				else {
-					captureCallback.onCapture(null);
-				}
-				return true;
+		final Handler handler = new Handler(Looper.getMainLooper(), msg -> {
+			File dir = context.getDir(folder, Context.MODE_PRIVATE);
+			File file = new File(dir, fileName);
+			if(file.exists() && file.length() > 0) {
+				captureCallback.onCapture(fileName);
 			}
+			else {
+				captureCallback.onCapture(null);
+			}
+			return true;
 		});
-		Thread bg = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				Looper.prepare();
+		Thread bg = new Thread(() -> {
+			Looper.prepare();
+			try {
 				try {
-					try {
-						File dir = context.getDir(folder, Context.MODE_PRIVATE);
-						File file = new File(dir, fileName);
-						if(!dir.exists()) {
-							dir.mkdir();
-						}
-						FileOutputStream fos = new FileOutputStream(file);
-						bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-						fos.close();
-						handler.obtainMessage().sendToTarget();
+					File dir = context.getDir(folder, Context.MODE_PRIVATE);
+					File file = new File(dir, fileName);
+					if(!dir.exists()) {
+						dir.mkdir();
 					}
-					catch(IOException e) {
-						e.printStackTrace();
-					}
+					FileOutputStream fos = new FileOutputStream(file);
+					bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+					fos.close();
+					handler.obtainMessage().sendToTarget();
 				}
-				catch(Exception e) {
+				catch(IOException e) {
 					e.printStackTrace();
 				}
+			}
+			catch(Exception e) {
+				e.printStackTrace();
 			}
 		});
 		bg.start();

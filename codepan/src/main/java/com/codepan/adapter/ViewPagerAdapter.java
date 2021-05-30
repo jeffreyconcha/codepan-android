@@ -5,6 +5,8 @@ import android.os.Parcelable;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 import androidx.viewpager.widget.PagerAdapter;
@@ -29,6 +31,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 		return viewList.size();
 	}
 
+	@NotNull
 	@Override
 	public Object instantiateItem(ViewGroup container, int position) {
 		View view = viewList.get(position);
@@ -37,7 +40,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 	}
 
 	@Override
-	public boolean isViewFromObject(View view, Object object) {
+	public boolean isViewFromObject(View view, @NotNull Object object) {
 		return view.equals(object);
 	}
 

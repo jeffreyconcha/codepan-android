@@ -253,7 +253,7 @@
             android:layout_marginTop="@dimen/eight"
             android:background="@color/cal_grid"/>
 
-        <com.codepan.widget.calendar.widget.CalendarPager
+        <com.codepan.widget.calendar.view.CalendarPager
             android:id="@+id/vpCalendar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

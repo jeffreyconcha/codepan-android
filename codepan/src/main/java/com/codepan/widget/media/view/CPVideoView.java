@@ -1,4 +1,4 @@
-package com.codepan.media.view;
+package com.codepan.widget.media.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -27,10 +27,10 @@ import android.widget.VideoView;
 import com.codepan.R;
 import com.codepan.callback.Interface.OnCompletionCallback;
 import com.codepan.callback.Interface.OnProgressCallback;
-import com.codepan.media.callback.Interface.OnFullscreenCallback;
-import com.codepan.media.callback.Interface.OnMediaInterruptedCallback;
-import com.codepan.media.callback.Interface.OnSkipNextCallback;
-import com.codepan.media.callback.Interface.OnSkipPreviousCallback;
+import com.codepan.widget.media.callback.Interface.OnFullscreenCallback;
+import com.codepan.widget.media.callback.Interface.OnMediaInterruptedCallback;
+import com.codepan.widget.media.callback.Interface.OnSkipNextCallback;
+import com.codepan.widget.media.callback.Interface.OnSkipPreviousCallback;
 import com.codepan.utils.CodePanUtils;
 import com.codepan.widget.CodePanButton;
 import com.codepan.widget.CodePanLabel;

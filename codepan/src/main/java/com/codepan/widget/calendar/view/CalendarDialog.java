@@ -3,11 +3,9 @@ package com.codepan.widget.calendar.view;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Handler.Callback;
-import android.os.Message;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -15,16 +13,15 @@ import android.widget.LinearLayout;
 import com.codepan.R;
 import com.codepan.adapter.FragmentPagerAdapter;
 import com.codepan.app.CPFragment;
+import com.codepan.utils.CodePanUtils;
+import com.codepan.widget.CodePanButton;
+import com.codepan.widget.CodePanLabel;
 import com.codepan.widget.calendar.callback.Interface.OnPickMonthCallback;
 import com.codepan.widget.calendar.callback.Interface.OnPickYearCallback;
 import com.codepan.widget.calendar.callback.Interface.OnSelectDateCallback;
 import com.codepan.widget.calendar.model.DayData;
 import com.codepan.widget.calendar.model.MonthData;
 import com.codepan.widget.calendar.model.YearData;
-import com.codepan.widget.calendar.widget.CalendarPager;
-import com.codepan.utils.CodePanUtils;
-import com.codepan.widget.CodePanButton;
-import com.codepan.widget.CodePanLabel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -101,57 +98,42 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 		btnNextCalendar = view.findViewById(R.id.btnNextCalendar);
 		llDayCalendar = view.findViewById(R.id.llDayCalendar);
 		vpCalendar = view.findViewById(R.id.vpCalendar);
-		btnMonthYearCalendar.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				switch(mode) {
-					case DAY_MODE:
-						mode = MONTH_MODE;
-						int tHeight = llDayCalendar.getHeight() + vpCalendar.getHeight();
-						height = (tHeight / monthRow) - spacing;
-						vpCalendar.getLayoutParams().height = tHeight;
-						llDayCalendar.setVisibility(View.GONE);
-						monthCalList = getMonthCalList(CURRENT);
-						adapter = new FragmentPagerAdapter(getChildFragmentManager(), monthCalList);
-						vpCalendar.setAdapter(adapter);
-						vpCalendar.setCurrentItem(CURRENT, false);
-						break;
-					case MONTH_MODE:
-						mode = YEAR_MODE;
-						yearCalList = getYearCalList(CURRENT);
-						adapter = new FragmentPagerAdapter(getChildFragmentManager(), yearCalList);
-						vpCalendar.setAdapter(adapter);
-						vpCalendar.setCurrentItem(CURRENT, false);
-						break;
-				}
+		btnMonthYearCalendar.setOnClickListener(v -> {
+			switch(mode) {
+				case DAY_MODE:
+					mode = MONTH_MODE;
+					int tHeight = llDayCalendar.getHeight() + vpCalendar.getHeight();
+					height = (tHeight / monthRow) - spacing;
+					vpCalendar.getLayoutParams().height = tHeight;
+					llDayCalendar.setVisibility(View.GONE);
+					monthCalList = getMonthCalList(CURRENT);
+					adapter = new FragmentPagerAdapter(getChildFragmentManager(), monthCalList);
+					vpCalendar.setAdapter(adapter);
+					vpCalendar.setCurrentItem(CURRENT, false);
+					break;
+				case MONTH_MODE:
+					mode = YEAR_MODE;
+					yearCalList = getYearCalList(CURRENT);
+					adapter = new FragmentPagerAdapter(getChildFragmentManager(), yearCalList);
+					vpCalendar.setAdapter(adapter);
+					vpCalendar.setCurrentItem(CURRENT, false);
+					break;
 			}
 		});
-		btnPreviousCalendar.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				vpCalendar.setCurrentItem(PREVIOUS, true);
+		btnPreviousCalendar.setOnClickListener(v -> {
+			vpCalendar.setCurrentItem(PREVIOUS, true);
+		});
+		btnNextCalendar.setOnClickListener(v -> {
+			vpCalendar.setCurrentItem(NEXT, true);
+		});
+		btnSaveCalendar.setOnClickListener(v -> {
+			manager.popBackStack();
+			if (pickDateCallback != null) {
+				pickDateCallback.onPickDate(selectedDate);
 			}
 		});
-		btnNextCalendar.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				vpCalendar.setCurrentItem(NEXT, true);
-			}
-		});
-		btnSaveCalendar.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				manager.popBackStack();
-				if(pickDateCallback != null) {
-					pickDateCallback.onPickDate(selectedDate);
-				}
-			}
-		});
-		btnCancelCalendar.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				manager.popBackStack();
-			}
+		btnCancelCalendar.setOnClickListener(v -> {
+			manager.popBackStack();
 		});
 		dayCalList = getDayCalList(lastPosition);
 		adapter = new FragmentPagerAdapter(getChildFragmentManager(), dayCalList);
@@ -216,10 +198,28 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 	}
 
 	public void switchItem(final int position) {
+		final Handler handler = new Handler(Looper.getMainLooper(), msg -> {
+			ArrayList<CPFragment> fragmentList = new ArrayList<>();
+			switch (mode) {
+				case DAY_MODE:
+					fragmentList = dayCalList;
+					break;
+				case MONTH_MODE:
+					fragmentList = monthCalList;
+					break;
+				case YEAR_MODE:
+					fragmentList = yearCalList;
+					break;
+			}
+			adapter = new FragmentPagerAdapter(getChildFragmentManager(), fragmentList);
+			vpCalendar.setAdapter(adapter);
+			vpCalendar.setCurrentItem(CURRENT, false);
+			return true;
+		});
 		Thread bg = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				switch(mode) {
+				switch (mode) {
 					case DAY_MODE:
 						dayCalList = getDayCalList(position);
 						break;
@@ -235,28 +235,6 @@ public class CalendarDialog extends CPFragment implements OnPickDateCallback, On
 		});
 		bg.start();
 	}
-
-	Handler handler = new Handler(new Callback() {
-		@Override
-		public boolean handleMessage(Message message) {
-			ArrayList<CPFragment> fragmentList = new ArrayList<>();
-			switch(mode) {
-				case DAY_MODE:
-					fragmentList = dayCalList;
-					break;
-				case MONTH_MODE:
-					fragmentList = monthCalList;
-					break;
-				case YEAR_MODE:
-					fragmentList = yearCalList;
-					break;
-			}
-			adapter = new FragmentPagerAdapter(getChildFragmentManager(), fragmentList);
-			vpCalendar.setAdapter(adapter);
-			vpCalendar.setCurrentItem(CURRENT, false);
-			return true;
-		}
-	});
 
 	public ArrayList<CPFragment> getDayCalList(final int position) {
 		ArrayList<CPFragment> fragmentList = new ArrayList<>();

@@ -1,4 +1,4 @@
-package com.codepan.media.view;
+package com.codepan.widget.media.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

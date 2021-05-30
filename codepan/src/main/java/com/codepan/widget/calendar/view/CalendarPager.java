@@ -1,4 +1,4 @@
-package com.codepan.widget.calendar.widget;
+package com.codepan.widget.calendar.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -35,9 +35,8 @@ public class CalendarPager extends ViewPager {
 					int numRow = getResources().getInteger(R.integer.day_row);
 					int spacing = getResources().getDimensionPixelSize(R.dimen.cal_spacing);
 					int width = (mWidth + spacing) * numCol;
-					int height = (mHeight + spacing) * numRow;
 					//getLayoutParams().width = width;
-					getLayoutParams().height = height;
+					getLayoutParams().height = (mHeight + spacing) * numRow;
 				}
 			}
 			isSet = true;

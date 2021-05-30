@@ -1,8 +1,8 @@
-package com.codepan.media.callback;
+package com.codepan.widget.media.callback;
 
 import android.graphics.Bitmap;
 
-import com.codepan.media.view.CPVideoView;
+import com.codepan.widget.media.view.CPVideoView;
 
 public class Interface {
 
