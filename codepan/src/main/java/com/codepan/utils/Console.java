@@ -2,8 +2,6 @@ package com.codepan.utils;
 
 import android.util.Log;
 
-import com.codepan.BuildConfig;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,116 +15,38 @@ public class Console {
 	private static final String PARAMS = TAG + " PARAMS";
 	private static final String RESPONSE = TAG + " RESPONSE";
 
-	public static void info(String input) {
-		Log.i(TAG, String.valueOf(input));
+	public static void verbose(Object input) {
+		Log.v(TAG, String.valueOf(input));
 	}
 
-	public static void info(int input) {
-		Log.i(TAG, String.valueOf(input));
-	}
-
-	public static void info(double input) {
-		Log.i(TAG, String.valueOf(input));
-	}
-
-	public static void info(long input) {
-		Log.i(TAG, String.valueOf(input));
-	}
-
-	public static void info(float input) {
-		Log.i(TAG, String.valueOf(input));
-	}
-
-	public static void info(boolean input) {
-		Log.i(TAG, String.valueOf(input));
-	}
-
-	public static void error(String input) {
-		Log.e(TAG, String.valueOf(input));
-	}
-
-	public static void error(int input) {
-		Log.e(TAG, String.valueOf(input));
-	}
-
-	public static void error(double input) {
-		Log.e(TAG, String.valueOf(input));
-	}
-
-	public static void error(long input) {
-		Log.e(TAG, String.valueOf(input));
-	}
-
-	public static void error(boolean input) {
-		Log.e(TAG, String.valueOf(input));
-	}
-
-	public static void error(float input) {
-		Log.e(TAG, String.valueOf(input));
-	}
-
-	public static void DEBUG_MODE(String input) {
+	public static void debug(Object input) {
 		Log.d(TAG, String.valueOf(input));
 	}
 
-	public static void DEBUG_MODE(int input) {
-		Log.d(TAG, String.valueOf(input));
+	public static void info(Object input) {
+		Log.i(TAG, String.valueOf(input));
 	}
 
-	public static void DEBUG_MODE(double input) {
-		Log.d(TAG, String.valueOf(input));
+	public static void warn(Object input) {
+		Log.w(TAG, String.valueOf(input));
 	}
 
-	public static void DEBUG_MODE(long input) {
-		Log.d(TAG, String.valueOf(input));
+	public static void error(Object input) {
+		Log.e(TAG, String.valueOf(input));
 	}
 
-	public static void DEBUG_MODE(float input) {
-		Log.d(TAG, String.valueOf(input));
+	public static void log(Object input) {
+		info(input);
 	}
 
-	public static void DEBUG_MODE(boolean input) {
-		Log.d(TAG, String.valueOf(input));
-	}
-
-	public static void log(String input) {
-		if(BuildConfig.DEBUG_MODE) {
-			Log.i(TAG, String.valueOf(input));
-		}
-	}
-
-	public static void log(int input) {
-		if(BuildConfig.DEBUG_MODE) {
-			Log.i(TAG, String.valueOf(input));
-		}
-	}
-
-	public static void log(double input) {
-		if(BuildConfig.DEBUG_MODE) {
-			Log.i(TAG, String.valueOf(input));
-		}
-	}
-
-	public static void log(long input) {
-		if(BuildConfig.DEBUG_MODE) {
-			Log.i(TAG, String.valueOf(input));
-		}
-	}
-
-	public static void log(float input) {
-		if(BuildConfig.DEBUG_MODE) {
-			Log.i(TAG, String.valueOf(input));
-		}
-	}
-
-	public static void log(boolean input) {
-		if(BuildConfig.DEBUG_MODE) {
-			Log.i(TAG, String.valueOf(input));
+	public static void log(Object input, boolean isDebug) {
+		if (isDebug) {
+			info(input);
 		}
 	}
 
 	public static void logUrl(String url) {
-		debugLog(URL, url);
+		appendLog(URL, url);
 	}
 
 	public static void logParams(String params) {
@@ -167,27 +87,24 @@ public class Console {
 
 	public static void largeLog(String tag, String content) {
 		if(content.length() > CHAR_LIMIT) {
-			debugLog(tag, content.substring(0, CHAR_LIMIT));
+			appendLog(tag, content.substring(0, CHAR_LIMIT));
 			appendLog(content.substring(CHAR_LIMIT));
 		}
 		else {
-			debugLog(tag, content);
+			appendLog(tag, content);
 		}
 	}
 
 	private static void appendLog(String content) {
-		if(content.length() > CHAR_LIMIT) {
-			debugLog(null, content.substring(0, CHAR_LIMIT));
-//			appendLog(content.substring(CHAR_LIMIT));
+		if (content.length() > CHAR_LIMIT) {
+			appendLog(null, content.substring(0, CHAR_LIMIT));
 		}
 		else {
-			debugLog(null, content);
+			appendLog(null, content);
 		}
 	}
 
-	private static void debugLog(String tag, String data) {
-		if(BuildConfig.DEBUG_MODE) {
-			Log.i(tag, data);
-		}
+	private static void appendLog(String tag, String data) {
+		Log.i(tag, data);
 	}
 }

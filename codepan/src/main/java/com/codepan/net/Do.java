@@ -2,7 +2,6 @@ package com.codepan.net;
 
 import android.content.Context;
 
-import com.codepan.BuildConfig;
 import com.codepan.callback.Interface.OnDownloadFileCallback;
 import com.codepan.utils.Console;
 
@@ -149,14 +148,8 @@ public class Do {
 			}
 			catch(SSLProtocolException spe) {
 				spe.printStackTrace();
-				if(BuildConfig.DEBUG_MODE) {
-					return getHttpsResponse(host, params,
-							authorization, timeOut, method);
-				}
-				else {
-					exception = spe.toString();
-					message = spe.getMessage();
-				}
+				return getHttpsResponse(host, params,
+					authorization, timeOut, method);
 			}
 			catch(SocketTimeoutException ste) {
 				ste.printStackTrace();
