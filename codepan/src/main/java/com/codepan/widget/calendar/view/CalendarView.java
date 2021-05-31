@@ -553,7 +553,7 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 
 	public String getTitleMonthYear() {
 		String strMonth = cal.getDisplayName(Calendar.MONTH,
-				Calendar.LONG, Locale.getDefault());
+			Calendar.LONG, Locale.getDefault());
 		return strMonth + " " + cal.get(Calendar.YEAR);
 	}
 
@@ -582,13 +582,13 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 	}
 
 	public MonthData getMonthDetails(int year, int month, int day) {
-		MonthData obj = new MonthData();
+		MonthData data = new MonthData();
 		Calendar cal = Calendar.getInstance();
 		cal.set(year, month, day);
 		cal.set(year, month, 1);
-		obj.firstDayOfMonth = cal.get(Calendar.DAY_OF_WEEK);
-		obj.noOfDays = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
-		return obj;
+		data.firstDayOfMonth = cal.get(Calendar.DAY_OF_WEEK);
+		data.noOfDays = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		return data;
 	}
 
 	public void setOnPickDateCallback(OnPickDateCallback pickDateCallback) {
@@ -628,7 +628,7 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 
 	@Override
 	public void onPickMonth(MonthData month) {
-		cal.set(getYear(), month.id, getDay());
+		cal.set(getYear(), month.id, 1);
 		mode = DAY_MODE;
 		llDayCalendar.setVisibility(View.VISIBLE);
 		dayCalList = getDayCalList(CURRENT);
@@ -639,7 +639,7 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 
 	@Override
 	public void onPickYear(YearData year) {
-		cal.set(year.id, getMonth(), getDay());
+		cal.set(year.id, getMonth(), 1);
 		mode = MONTH_MODE;
 		monthCalList = getMonthCalList(CURRENT);
 		adapter = new ViewPagerAdapter(context, monthCalList);
