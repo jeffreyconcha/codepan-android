@@ -6,6 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import androidx.annotation.NonNull;
+
 public class Console {
 
 	private static final int CHAR_LIMIT = 4096;
@@ -37,6 +39,12 @@ public class Console {
 
 	public static void log(Object input) {
 		info(input);
+	}
+
+	public static void log(@NonNull Object... inputs) {
+		for (Object input : inputs) {
+			info(input);
+		}
 	}
 
 	public static void log(Object input, boolean isDebug) {
