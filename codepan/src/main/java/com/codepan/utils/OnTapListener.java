@@ -25,12 +25,7 @@ public abstract class OnTapListener implements View.OnClickListener {
 		}
 		else {
 			final Handler handler = new Handler();
-			final Runnable runnable = new Runnable() {
-				@Override
-				public void run() {
-					onSingleTap(v);
-				}
-			};
+			final Runnable runnable = () -> onSingleTap(v);
 			TimerTask task = new TimerTask() {
 				@Override
 				public void run() {

@@ -306,12 +306,7 @@ public class DynamicListView<T> extends ListView {
 			hoverCellCurrentBounds.offsetTo(hoverCellOriginalBounds.left, mobileView.getTop());
 			ObjectAnimator hoverViewAnimator = ObjectAnimator.ofObject(hoverCell, "bounds",
 					sBoundEvaluator, hoverCellCurrentBounds);
-			hoverViewAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-				@Override
-				public void onAnimationUpdate(ValueAnimator valueAnimator) {
-					invalidate();
-				}
-			});
+			hoverViewAnimator.addUpdateListener(valueAnimator -> invalidate());
 			hoverViewAnimator.addListener(new AnimatorListenerAdapter() {
 				@Override
 				public void onAnimationStart(Animator animation) {

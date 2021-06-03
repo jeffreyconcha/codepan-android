@@ -742,19 +742,16 @@ public class CodePanUtils {
 		int value = isVertical ? view.getMeasuredHeight() : view.getMeasuredWidth();
 		ValueAnimator animator = ValueAnimator.ofInt(0, value);
 		animator.setDuration(250);
-		animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-			@Override
-			public void onAnimationUpdate(ValueAnimator valueAnimator) {
-				int value = (Integer) valueAnimator.getAnimatedValue();
-				LayoutParams layoutParams = view.getLayoutParams();
-				if(isVertical) {
-					layoutParams.height = value;
-				}
-				else {
-					layoutParams.width = value;
-				}
-				view.setLayoutParams(layoutParams);
+		animator.addUpdateListener(valueAnimator -> {
+			int value1 = (Integer) valueAnimator.getAnimatedValue();
+			LayoutParams layoutParams = view.getLayoutParams();
+			if(isVertical) {
+				layoutParams.height = value1;
 			}
+			else {
+				layoutParams.width = value1;
+			}
+			view.setLayoutParams(layoutParams);
 		});
 		animator.addListener(new AnimatorListener() {
 
@@ -787,19 +784,16 @@ public class CodePanUtils {
 		int value = isVertical ? view.getMeasuredHeight() : view.getMeasuredWidth();
 		ValueAnimator animator = ValueAnimator.ofInt(value, 0);
 		animator.setDuration(250);
-		animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-			@Override
-			public void onAnimationUpdate(ValueAnimator valueAnimator) {
-				int value = (Integer) valueAnimator.getAnimatedValue();
-				LayoutParams layoutParams = view.getLayoutParams();
-				if(isVertical) {
-					layoutParams.height = value;
-				}
-				else {
-					layoutParams.width = value;
-				}
-				view.setLayoutParams(layoutParams);
+		animator.addUpdateListener(valueAnimator -> {
+			int value1 = (Integer) valueAnimator.getAnimatedValue();
+			LayoutParams layoutParams = view.getLayoutParams();
+			if(isVertical) {
+				layoutParams.height = value1;
 			}
+			else {
+				layoutParams.width = value1;
+			}
+			view.setLayoutParams(layoutParams);
 		});
 		animator.addListener(new AnimatorListener() {
 
@@ -1236,7 +1230,7 @@ public class CodePanUtils {
 
 	public static MockData getMockLocationApp(Context context, String[] exceptions) {
 		PackageManager pm = context.getPackageManager();
-		List<String> appList = exceptions != null ? Arrays.asList(exceptions) : new ArrayList<String>();
+		List<String> appList = exceptions != null ? Arrays.asList(exceptions) : new ArrayList<>();
 		List<ApplicationInfo> packageList = pm.getInstalledApplications(PackageManager.GET_META_DATA);
 		for(ApplicationInfo info : packageList) {
 			int mask = ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
@@ -2213,19 +2207,12 @@ public class CodePanUtils {
 				if(dialog != null) {
 					dialog.show();
 					dialog.setCancelable(true);
-					dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-						public void onDismiss(DialogInterface dialog) {
-							if(ConnectionResult.SERVICE_INVALID == resultCode) {
-								activity.finish();
-							}
-						}
-					});
-					dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-						@Override
-						public void onCancel(DialogInterface dialog) {
+					dialog.setOnDismissListener(dialog12 -> {
+						if(ConnectionResult.SERVICE_INVALID == resultCode) {
 							activity.finish();
 						}
 					});
+					dialog.setOnCancelListener(dialog1 -> activity.finish());
 				}
 			}
 		}

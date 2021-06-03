@@ -27,23 +27,20 @@ public class PasswordVisibilityHandler extends FrameLayout {
 		super.onAttachedToWindow();
 		final View view = inflater.inflate(R.layout.password_visibility_handler_layout, this, false);
 		final CheckBox cbIconPasswordVisibilityHandler = view.findViewById(R.id.cbIconPasswordVisibilityHandler);
-		view.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				isPasswordVisible = !isPasswordVisible;
-				ViewGroup parent = (ViewGroup) PasswordVisibilityHandler.this.getParent();
-				final int count = parent.getChildCount();
-				for(int i = 0; i < count; i++) {
-					View child = parent.getChildAt(i);
-					if(child instanceof EditText) {
-						EditText field = (EditText) child;
-						TransformationMethod transformation = isPasswordVisible ? null : new PasswordTransformationMethod();
-						field.setTransformationMethod(transformation);
-						String text = field.getText().toString();
-						field.setSelection(text.length());
-					}
-					cbIconPasswordVisibilityHandler.setChecked(isPasswordVisible);
+		view.setOnClickListener(v -> {
+			isPasswordVisible = !isPasswordVisible;
+			ViewGroup parent = (ViewGroup) PasswordVisibilityHandler.this.getParent();
+			final int count = parent.getChildCount();
+			for(int i = 0; i < count; i++) {
+				View child = parent.getChildAt(i);
+				if(child instanceof EditText) {
+					EditText field = (EditText) child;
+					TransformationMethod transformation = isPasswordVisible ? null : new PasswordTransformationMethod();
+					field.setTransformationMethod(transformation);
+					String text = field.getText().toString();
+					field.setSelection(text.length());
 				}
+				cbIconPasswordVisibilityHandler.setChecked(isPasswordVisible);
 			}
 		});
 		addView(view);

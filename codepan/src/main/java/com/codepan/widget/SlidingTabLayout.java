@@ -58,7 +58,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
 	private boolean distributeEvenly;
 
 	private ViewPager viewPager;
-	private SparseArray<String> contentDescriptions = new SparseArray<String>();
+	private SparseArray<String> contentDescriptions = new SparseArray<>();
 	private ViewPager.OnPageChangeListener viewPagerPageChangeListener;
 
 	private final SlidingTabStrip tabStrip;

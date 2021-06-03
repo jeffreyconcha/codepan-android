@@ -18,12 +18,7 @@ public class MarkerAnimation {
 
 	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 	public static void animateMarkerToICS(Marker marker, LatLng position, final LatLngInterpolator interpolator) {
-		TypeEvaluator<LatLng> evaluator = new TypeEvaluator<LatLng>() {
-			@Override
-			public LatLng evaluate(float fraction, LatLng startValue, LatLng endValue) {
-				return interpolator.interpolate(fraction, startValue, endValue);
-			}
-		};
+		TypeEvaluator<LatLng> evaluator = interpolator::interpolate;
 		Property<Marker, LatLng> property = Property.of(Marker.class, LatLng.class, "position");
 		ObjectAnimator animator = ObjectAnimator.ofObject(marker, property, evaluator, position);
 		animator.setDuration(DELAY);

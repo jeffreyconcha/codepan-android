@@ -114,59 +114,39 @@ public class CPVideoView extends FrameLayout implements OnSeekBarChangeListener,
 			if(isSeekDisabled) {
 				sbProgressVideo.setEnabled(false);
 			}
-			btnPlayVideo.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					doPlayPause();
-				}
-			});
-			rlContentVideo.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					if(!hasError) {
-						if(!isControllerVisible()) {
-							CodePanUtils.fadeIn(rlControllerVideo);
-							updatePlayStatus();
-							if(!isInitialized && isAutoPlayEnabled) {
-								llPlayVideo.setVisibility(View.GONE);
-							}
-						}
-						else {
-							hideController();
-							elapsed = 0L;
+			btnPlayVideo.setOnClickListener(view16 -> doPlayPause());
+			rlContentVideo.setOnClickListener(view15 -> {
+				if(!hasError) {
+					if(!isControllerVisible()) {
+						CodePanUtils.fadeIn(rlControllerVideo);
+						updatePlayStatus();
+						if(!isInitialized && isAutoPlayEnabled) {
+							llPlayVideo.setVisibility(View.GONE);
 						}
 					}
-				}
-			});
-			tvErrorVideo.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					hasError = (false);
-					loadVideo(url, title);
-				}
-			});
-			btnNextVideo.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					if(nextCallback != null) {
-						nextCallback.onSkipNext(CPVideoView.this);
+					else {
+						hideController();
+						elapsed = 0L;
 					}
 				}
 			});
-			btnPreviousVideo.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					if(previousCallback != null) {
-						previousCallback.onSkipPrevious(CPVideoView.this);
-					}
+			tvErrorVideo.setOnClickListener(view14 -> {
+				hasError = (false);
+				loadVideo(url, title);
+			});
+			btnNextVideo.setOnClickListener(view13 -> {
+				if(nextCallback != null) {
+					nextCallback.onSkipNext(CPVideoView.this);
 				}
 			});
-			btnFullScreenVideo.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					if(fullscreenCallback != null) {
-						fullscreenCallback.onFullScreen(CPVideoView.this);
-					}
+			btnPreviousVideo.setOnClickListener(view12 -> {
+				if(previousCallback != null) {
+					previousCallback.onSkipPrevious(CPVideoView.this);
+				}
+			});
+			btnFullScreenVideo.setOnClickListener(view1 -> {
+				if(fullscreenCallback != null) {
+					fullscreenCallback.onFullScreen(CPVideoView.this);
 				}
 			});
 			if(isAutoPlayEnabled) {
@@ -308,22 +288,19 @@ public class CPVideoView extends FrameLayout implements OnSeekBarChangeListener,
 	}
 
 	private void loadThumbnail() {
-		Thread bg = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					if(url != null) {
-						if(url.contains("file://")) {
-							retriever.setDataSource(getContext(), Uri.parse(url));
-						}
-						else {
-							retriever.setDataSource(url, new HashMap<String, String>());
-						}
+		Thread bg = new Thread(() -> {
+			try {
+				if(url != null) {
+					if(url.contains("file://")) {
+						retriever.setDataSource(getContext(), Uri.parse(url));
+					}
+					else {
+						retriever.setDataSource(url, new HashMap<>());
 					}
 				}
-				catch(Exception e) {
-					e.printStackTrace();
-				}
+			}
+			catch(Exception e) {
+				e.printStackTrace();
 			}
 		});
 		bg.start();

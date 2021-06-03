@@ -61,7 +61,7 @@ public class SignatureView extends SurfaceView implements OnTouchListener, Callb
 		this.invalidate();
 	}
 
-	private class Dot {
+	private static class Dot {
 		public float X = 0;
 		public float Y = 0;
 
@@ -75,7 +75,7 @@ public class SignatureView extends SurfaceView implements OnTouchListener, Callb
 	public boolean onTouch(View view, MotionEvent event) {
 		switch(event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
-				dots.add(new ArrayList<Dot>());
+				dots.add(new ArrayList<>());
 				dots.get(dots.size() - 1).add(new Dot(event.getX(), event.getY()));
 				this.invalidate();
 				break;

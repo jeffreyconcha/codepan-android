@@ -5,6 +5,7 @@
     xmlns:codePan="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
+        android:id="@+id/llMainTable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/llPageTable"

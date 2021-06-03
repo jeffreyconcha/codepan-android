@@ -91,13 +91,9 @@ public class FullscreenFragment extends Fragment implements Runnable {
 	@TargetApi(VERSION_CODES.HONEYCOMB)
 	private void registerSystemUiVisibility() {
 		final View decorView = getActivity().getWindow().getDecorView();
-		decorView.setOnSystemUiVisibilityChangeListener(new OnSystemUiVisibilityChangeListener() {
-
-			@Override
-			public void onSystemUiVisibilityChange(int visibility) {
-				if((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-					setFullScreen(getActivity());
-				}
+		decorView.setOnSystemUiVisibilityChangeListener(visibility -> {
+			if((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+				setFullScreen(getActivity());
 			}
 		});
 	}

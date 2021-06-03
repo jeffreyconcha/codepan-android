@@ -82,43 +82,29 @@ public class TimePickerDialog extends CPFragment {
 		btnSaveTimePicker = view.findViewById(R.id.btnSaveTimePicker);
 		loadItems(TimeElementType.HOUR, rvHourTimePicker);
 		loadItems(TimeElementType.MINUTE, rvMinutesTimePicker);
-		tvAMTimePicker.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				period = getString(R.string.tp_am);
-				setDayPeriod(period);
-			}
+		tvAMTimePicker.setOnClickListener(v -> {
+			period = getString(R.string.tp_am);
+			setDayPeriod(period);
 		});
-		tvPMTimePicker.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				period = getString(R.string.tp_pm);
-				setDayPeriod(period);
-			}
+		tvPMTimePicker.setOnClickListener(v -> {
+			period = getString(R.string.tp_pm);
+			setDayPeriod(period);
 		});
-		btnCancelTimePicker.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				onBackPressed();
-			}
-		});
-		btnSaveTimePicker.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				manager.popBackStack();
-				String time = hour.display + ":" + minute.display + " " + period;
-				SimpleDateFormat input = new SimpleDateFormat(PATTERN_12HR, Locale.ENGLISH);
-				SimpleDateFormat output = new SimpleDateFormat(PATTERN_24HR, Locale.ENGLISH);
-				try {
-					Date date = input.parse(time);
-					String military = output.format(date);
-					if(pickTimeCallback != null) {
-						pickTimeCallback.onPickTime(military);
-					}
+		btnCancelTimePicker.setOnClickListener(v -> onBackPressed());
+		btnSaveTimePicker.setOnClickListener(v -> {
+			manager.popBackStack();
+			String time = hour.display + ":" + minute.display + " " + period;
+			SimpleDateFormat input = new SimpleDateFormat(PATTERN_12HR, Locale.ENGLISH);
+			SimpleDateFormat output = new SimpleDateFormat(PATTERN_24HR, Locale.ENGLISH);
+			try {
+				Date date = input.parse(time);
+				String military = output.format(date);
+				if(pickTimeCallback != null) {
+					pickTimeCallback.onPickTime(military);
 				}
-				catch(ParseException e) {
-					e.printStackTrace();
-				}
+			}
+			catch(ParseException e) {
+				e.printStackTrace();
 			}
 		});
 		setDayPeriod(period);
@@ -159,27 +145,24 @@ public class TimePickerDialog extends CPFragment {
 		manager.setOrientation(LinearLayoutManager.VERTICAL);
 		view.setLayoutManager(manager);
 		final TimePickerAdapter adapter = new TimePickerAdapter(activity, itemList, type);
-		adapter.setOnItemClickCallback(new OnItemClickCallback() {
-			@Override
-			public void onItemClick(int position, View v, ViewGroup parent) {
-				switch(type) {
-					case HOUR:
-						if(position < hourLastPosition) {
-							view.smoothScrollToPosition(position - 1);
-						}
-						else if(position > hourLastPosition) {
-							view.smoothScrollToPosition(position + 1);
-						}
-						break;
-					case MINUTE:
-						if(position < minuteLastPosition) {
-							view.smoothScrollToPosition(position - 1);
-						}
-						else if(position > minuteLastPosition) {
-							view.smoothScrollToPosition(position + 1);
-						}
-						break;
-				}
+		adapter.setOnItemClickCallback((position, v, parent) -> {
+			switch(type) {
+				case HOUR:
+					if(position < hourLastPosition) {
+						view.smoothScrollToPosition(position - 1);
+					}
+					else if(position > hourLastPosition) {
+						view.smoothScrollToPosition(position + 1);
+					}
+					break;
+				case MINUTE:
+					if(position < minuteLastPosition) {
+						view.smoothScrollToPosition(position - 1);
+					}
+					else if(position > minuteLastPosition) {
+						view.smoothScrollToPosition(position + 1);
+					}
+					break;
 			}
 		});
 		view.setAdapter(adapter);

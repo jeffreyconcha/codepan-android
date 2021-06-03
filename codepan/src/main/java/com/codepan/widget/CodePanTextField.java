@@ -82,12 +82,7 @@ public class CodePanTextField extends EditText {
 						int start = span.getStart();
 						int end = span.getEnd();
 						editable.replace(start, end, "");
-						post(new Runnable() {
-							@Override
-							public void run() {
-								setSelection(editable.length());
-							}
-						});
+						post(() -> setSelection(editable.length()));
 					}
 				}
 			}
@@ -110,13 +105,10 @@ public class CodePanTextField extends EditText {
 
 	public void autoHideKeyboard(boolean autoHideKeyboard) {
 		if(autoHideKeyboard) {
-			focusChangeListener = new OnFocusChangeListener() {
-				@Override
-				public void onFocusChange(View v, boolean hasFocus) {
-					if(!hasFocus && (focusSearch(FOCUS_DOWN) == null ||
-							(focusSearch(FOCUS_DOWN) != null && !focusSearch(FOCUS_DOWN).hasFocus()))) {
-						CodePanUtils.hideKeyboard(v, context);
-					}
+			focusChangeListener = (v, hasFocus) -> {
+				if(!hasFocus && (focusSearch(FOCUS_DOWN) == null ||
+						(focusSearch(FOCUS_DOWN) != null && !focusSearch(FOCUS_DOWN).hasFocus()))) {
+					CodePanUtils.hideKeyboard(v, context);
 				}
 			};
 			setOnFocusChangeListener(focusChangeListener);

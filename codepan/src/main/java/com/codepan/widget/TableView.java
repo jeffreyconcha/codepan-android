@@ -19,7 +19,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.codepan.R;
-import com.codepan.callback.Interface.OnScrollChangeCallback;
 import com.codepan.callback.Interface.OnTableAddRowCallback;
 import com.codepan.callback.Interface.OnTableCellClickCallback;
 import com.codepan.callback.Interface.OnTableCellCreatedCallback;
@@ -37,28 +36,29 @@ public class TableView extends FrameLayout {
 
 	private final int LIMIT = 50;
 	private final String[] limits = {
-			"30", "50", "100"
+		"30", "50", "100"
 	};
 	private final String DELIMITER = " - ";
 	private final String PARENT_TAG = "parent";
-	private LinearLayout llContentTable, llTopTable, llLeftTable, llParentTable;
+	private LinearLayout llMainTable, llContentTable, llTopTable, llLeftTable, llParentTable;
 	private CodePanButton btnNextTable, btnPreviousTable, btnAddTable;
+	private boolean isInitialized, withRowNumbers, isRowFlexible;
 	private OnTableCellCreatedCallback tableCellCreatedCallback;
 	private OnTableColumnClickCallback tableColumnClickCallback;
-	private boolean isInitialized, withRowNumbers, isRowFlexible;
 	private OnTableCellClickCallback tableCellClickCallback;
 	private OnTableRowClickCallback tableRowClickCallback;
 	private TableScrollView svLeftTable, svContentTable;
 	private OnTableAddRowCallback tableAddRowCallback;
 	private ArrayList<ArrayList<CellData>> mapList;
+	private final ArrayList<FilterData> filterList;
 	private Spinner spinLimitTable, spinPageTable;
 	private boolean freezeFirstColumn = true;
-	private ArrayList<FilterData> filterList;
 	private ArrayList<ColumnData> columnList;
 	private View vPreviousTable, vNextTable;
-	private int current, count, numWidth;
+	private final LayoutInflater inflater;
 	private CodePanLabel tvTotalTable;
-	private LayoutInflater inflater;
+	private final int numWidth;
+	private int current, count;
 	private int limit = LIMIT;
 	private int[] cellResIds;
 	private int headerResId;
@@ -93,6 +93,7 @@ public class TableView extends FrameLayout {
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
 		final View view = inflater.inflate(R.layout.table_layout, this, false);
+		llMainTable = view.findViewById(R.id.llMainTable);
 		llContentTable = view.findViewById(R.id.llContentTable);
 		llTopTable = view.findViewById(R.id.llTopTable);
 		llLeftTable = view.findViewById(R.id.llLeftTable);
@@ -128,47 +129,32 @@ public class TableView extends FrameLayout {
 			public void onNothingSelected(AdapterView<?> parent) {
 			}
 		});
-		svContentTable.setOnScrollChangeCallback(new OnScrollChangeCallback() {
-			@Override
-			public void onScrollChanged(int l, int t, int ol, int ot) {
-				svLeftTable.scrollTo(0, t);
+		svContentTable.setOnScrollChangeCallback((l, t, ol, ot) -> {
+			svLeftTable.scrollTo(0, t);
+		});
+		svLeftTable.setOnScrollChangeCallback((l, t, ol, ot) -> {
+			svContentTable.scrollTo(0, t);
+		});
+		btnNextTable.setOnClickListener(v -> {
+			int next = current + 1;
+			if (next < count) {
+				spinPageTable.setSelection(next);
 			}
 		});
-		svLeftTable.setOnScrollChangeCallback(new OnScrollChangeCallback() {
-			@Override
-			public void onScrollChanged(int l, int t, int ol, int ot) {
-				svContentTable.scrollTo(0, t);
+		btnPreviousTable.setOnClickListener(v -> {
+			int previous = current - 1;
+			if (previous >= 0) {
+				spinPageTable.setSelection(previous);
 			}
 		});
-		btnNextTable.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				int next = current + 1;
-				if(next < count) {
-					spinPageTable.setSelection(next);
+		btnAddTable.setOnClickListener(v -> {
+			if (isInitialized && mapList != null) {
+				if (tableAddRowCallback != null) {
+					tableAddRowCallback.onTableAddRow();
 				}
 			}
 		});
-		btnPreviousTable.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				int previous = current - 1;
-				if(previous >= 0) {
-					spinPageTable.setSelection(previous);
-				}
-			}
-		});
-		btnAddTable.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if(isInitialized && mapList != null) {
-					if(tableAddRowCallback != null) {
-						tableAddRowCallback.onTableAddRow();
-					}
-				}
-			}
-		});
-		if(isRowFlexible) {
+		if (isRowFlexible) {
 			btnAddTable.setParentVisibility(View.VISIBLE);
 		}
 		update();
@@ -204,14 +190,11 @@ public class TableView extends FrameLayout {
 						int mci = columnList.indexOf(h);
 						ArrayList<String> filter = getFilterItemList(mci);
 						vFilterTextHeader.setEnabled(filter != null && !filter.isEmpty());
-						header.setOnClickListener(new OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								if(tableColumnClickCallback != null) {
-									int mci = columnList.indexOf(h);
-									ArrayList<String> list = getDistinctItems(h);
-									tableColumnClickCallback.onTableColumnClick(mci, list);
-								}
+						header.setOnClickListener(v -> {
+							if (tableColumnClickCallback != null) {
+								int mci1 = columnList.indexOf(h);
+								ArrayList<String> list = getDistinctItems(h);
+								tableColumnClickCallback.onTableColumnClick(mci1, list);
 							}
 						});
 					}
@@ -376,11 +359,8 @@ public class TableView extends FrameLayout {
 					}
 					cell.getLayoutParams().width = column.width;
 					if(tableCellClickCallback != null) {
-						cell.setOnClickListener(new OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								tableCellClickCallback.onTableCellClick(cell, ri, mri, mci);
-							}
+						cell.setOnClickListener(v -> {
+							tableCellClickCallback.onTableCellClick(cell, ri, mri, mci);
 						});
 					}
 					if(tableCellCreatedCallback != null) {
@@ -391,27 +371,24 @@ public class TableView extends FrameLayout {
 					}
 					else {
 						if(tableRowClickCallback != null) {
-							cell.setOnTouchListener(new OnTouchListener() {
-								@Override
-								public boolean onTouch(View v, MotionEvent event) {
-									switch(event.getAction()) {
-										case MotionEvent.ACTION_DOWN:
-											v.setPressed(true);
-											row.setPressed(true);
-											break;
-										case MotionEvent.ACTION_UP:
-											v.setPressed(false);
-											row.setPressed(false);
-											tableRowClickCallback.onTableCellClick(cell, ri, mri);
-											break;
-										case MotionEvent.ACTION_CANCEL:
-											v.setPressed(false);
-											row.setPressed(false);
-											break;
-									}
-									performClick();
-									return true;
+							cell.setOnTouchListener((v, event) -> {
+								switch (event.getAction()) {
+									case MotionEvent.ACTION_DOWN:
+										v.setPressed(true);
+										row.setPressed(true);
+										break;
+									case MotionEvent.ACTION_UP:
+										v.setPressed(false);
+										row.setPressed(false);
+										tableRowClickCallback.onTableCellClick(cell, ri, mri);
+										break;
+									case MotionEvent.ACTION_CANCEL:
+										v.setPressed(false);
+										row.setPressed(false);
+										break;
 								}
+								performClick();
+								return true;
 							});
 						}
 						if(withRowNumbers()) {
@@ -448,33 +425,33 @@ public class TableView extends FrameLayout {
 					}
 				}
 				if(tableRowClickCallback != null) {
-					row.setOnTouchListener(new OnTouchListener() {
-						@Override
-						public boolean onTouch(View v, MotionEvent event) {
-							View cell = llLeftTable.getChildAt(mri);
-							switch(event.getAction()) {
-								case MotionEvent.ACTION_DOWN:
-									v.setPressed(true);
-									cell.setPressed(true);
-									break;
-								case MotionEvent.ACTION_UP:
-									v.setPressed(false);
-									cell.setPressed(false);
-									tableRowClickCallback.onTableCellClick(cell, ri, mri);
-									break;
-								case MotionEvent.ACTION_CANCEL:
-									v.setPressed(false);
-									cell.setPressed(false);
-									break;
-							}
-							performClick();
-							return true;
+					row.setOnTouchListener((v, event) -> {
+						View cell = llLeftTable.getChildAt(mri);
+						switch (event.getAction()) {
+							case MotionEvent.ACTION_DOWN:
+								v.setPressed(true);
+								cell.setPressed(true);
+								break;
+							case MotionEvent.ACTION_UP:
+								v.setPressed(false);
+								cell.setPressed(false);
+								tableRowClickCallback.onTableCellClick(cell, ri, mri);
+								break;
+							case MotionEvent.ACTION_CANCEL:
+								v.setPressed(false);
+								cell.setPressed(false);
+								break;
 						}
+						performClick();
+						return true;
 					});
 				}
 				llContentTable.addView(row);
 				loadedList.add(map);
 				rowIndex++;
+			}
+			if (llMainTable.getVisibility() == View.GONE) {
+				llMainTable.setVisibility(View.VISIBLE);
 			}
 			equalizeHeight(loadedList);
 			isInitialized = true;
@@ -585,11 +562,11 @@ public class TableView extends FrameLayout {
 	}
 
 	public View getView(int x, int y) {
-		if(x < llContentTable.getChildCount()) {
-			if(y != 0) {
+		if (x < llContentTable.getChildCount()) {
+			if (y != 0) {
 				int index = y - 1;
 				LinearLayout row = (LinearLayout) llContentTable.getChildAt(x);
-				if(index < row.getChildCount()) {
+				if (index < row.getChildCount()) {
 					return row.getChildAt(index);
 				}
 			}
@@ -662,14 +639,14 @@ public class TableView extends FrameLayout {
 			int size = columnList.size();
 			for(ArrayList<CellData> row : mapList) {
 				int count = 0;
-				for(CellData cell : row) {
+				for (CellData cell : row) {
 					int mci = row.indexOf(cell);
 					ArrayList<String> filter = getFilterItemList(mci);
-					if(filter == null || filter.contains(cell.name)) {
+					if (filter == null || filter.contains(cell.name)) {
 						count++;
 					}
 				}
-				if(size == count) {
+				if (size == count) {
 					filteredList.add(row);
 				}
 			}
@@ -678,12 +655,28 @@ public class TableView extends FrameLayout {
 		return mapList;
 	}
 
+	public void freezeFirstColumn() {
+		this.freezeFirstColumn = true;
+		llMainTable.setVisibility(View.GONE);
+		updateAndRetainPage();
+	}
+
+	public void unfreezeFirstColumn() {
+		this.freezeFirstColumn = false;
+		llMainTable.setVisibility(View.GONE);
+		updateAndRetainPage();
+	}
+
 	/**
 	 * @param freezeFirstColumn Set to true if you want the first column to freeze. <br/>
 	 *                          Will automatically add row numbers if set to false. <br/>
 	 */
 	public void setFreezeFirstColumn(boolean freezeFirstColumn) {
 		this.freezeFirstColumn = freezeFirstColumn;
+	}
+
+	public boolean isFreezeFirstColumn() {
+		return this.freezeFirstColumn;
 	}
 
 	public boolean withRowNumbers() {

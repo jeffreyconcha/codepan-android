@@ -10,7 +10,6 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -906,7 +905,7 @@ public class TouchImageView extends ImageView {
 	}
 
 	@TargetApi(VERSION_CODES.GINGERBREAD)
-	private class CompatScroller {
+	private static class CompatScroller {
 		Scroller scroller;
 		OverScroller overScroller;
 		boolean isPreGingerbread;
@@ -988,7 +987,7 @@ public class TouchImageView extends ImageView {
 		}
 	}
 
-	private class ZoomVariables {
+	private static class ZoomVariables {
 		public float scale;
 		public float focusX;
 		public float focusY;

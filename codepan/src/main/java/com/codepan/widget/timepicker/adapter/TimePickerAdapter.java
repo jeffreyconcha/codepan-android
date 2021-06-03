@@ -57,13 +57,10 @@ public class TimePickerAdapter extends RecyclerView.Adapter<TimePickerAdapter.Vi
 			else {
 				holder.tvValue.setTextColor(defaultColor);
 			}
-			holder.tvValue.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if(itemClickCallback != null) {
-						ViewGroup parent = (ViewGroup) v.getParent();
-						itemClickCallback.onItemClick(position, v, parent);
-					}
+			holder.tvValue.setOnClickListener(v -> {
+				if(itemClickCallback != null) {
+					ViewGroup parent = (ViewGroup) v.getParent();
+					itemClickCallback.onItemClick(position, v, parent);
 				}
 			});
 		}
@@ -82,7 +79,7 @@ public class TimePickerAdapter extends RecyclerView.Adapter<TimePickerAdapter.Vi
 		this.itemClickCallback = itemClickCallback;
 	}
 
-	class ViewHolder extends RecyclerView.ViewHolder {
+	static class ViewHolder extends RecyclerView.ViewHolder {
 
 		CodePanLabel tvValue;
 

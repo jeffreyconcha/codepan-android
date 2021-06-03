@@ -440,22 +440,19 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 				params.setMeteringAreas(focusList);
 				camera.setParameters(params);
 				camera.cancelAutoFocus();
-				camera.autoFocus(new AutoFocusCallback() {
-					@Override
-					public void onAutoFocus(boolean success, Camera camera) {
-						if(success) {
-							String focusMode = Parameters.FOCUS_MODE_CONTINUOUS_PICTURE;
-							Parameters params = camera.getParameters();
-							List<String> focusModeList = params.getSupportedFocusModes();
-							if(focusModeList.contains(focusMode)) {
-								if(!params.getFocusMode().equals(focusMode)) {
-									params.setFocusMode(focusMode);
-									if(params.getMaxNumFocusAreas() > 0) {
-										params.setFocusAreas(null);
-									}
-									camera.setParameters(params);
-									camera.startPreview();
+				camera.autoFocus((success, camera) -> {
+					if(success) {
+						String focusMode = Parameters.FOCUS_MODE_CONTINUOUS_PICTURE;
+						Parameters params1 = camera.getParameters();
+						List<String> focusModeList = params1.getSupportedFocusModes();
+						if(focusModeList.contains(focusMode)) {
+							if(!params1.getFocusMode().equals(focusMode)) {
+								params1.setFocusMode(focusMode);
+								if(params1.getMaxNumFocusAreas() > 0) {
+									params1.setFocusAreas(null);
 								}
+								camera.setParameters(params1);
+								camera.startPreview();
 							}
 						}
 					}
@@ -493,13 +490,9 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 					focusIndicatorView.setHaveTouch(true, touchRect);
 					focusIndicatorView.invalidate();
 					Handler handler = new Handler();
-					handler.postDelayed(new Runnable() {
-
-						@Override
-						public void run() {
-							focusIndicatorView.setHaveTouch(false, new Rect(0, 0, 0, 0));
-							focusIndicatorView.invalidate();
-						}
+					handler.postDelayed(() -> {
+						focusIndicatorView.setHaveTouch(false, new Rect(0, 0, 0, 0));
+						focusIndicatorView.invalidate();
 					}, DELAY);
 				}
 			}

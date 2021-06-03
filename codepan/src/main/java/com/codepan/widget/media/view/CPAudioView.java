@@ -70,20 +70,17 @@ public class CPAudioView extends FrameLayout implements OnPreparedListener, OnEr
 			tvDurationAudio = view.findViewById(R.id.tvDurationAudio);
 			sbProgressAudio = view.findViewById(R.id.sbProgressAudio);
 			sbProgressAudio.setOnSeekBarChangeListener(this);
-			btnPlayAudio.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if(mp != null) {
-						if(mp.isPlaying()) {
-							pause();
-						}
-						else {
-							play();
-						}
+			btnPlayAudio.setOnClickListener(v -> {
+				if(mp != null) {
+					if(mp.isPlaying()) {
+						pause();
 					}
 					else {
-						loadAudio(url);
+						play();
 					}
+				}
+				else {
+					loadAudio(url);
 				}
 			});
 			setProgress();
