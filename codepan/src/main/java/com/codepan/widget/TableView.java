@@ -417,12 +417,18 @@ public class TableView extends FrameLayout {
 						if(withRowNumbers()) {
 							final View number = inflater.inflate(R.layout.table_row_number_item, this, false);
 							CodePanLabel text = number.findViewById(R.id.tvTableRowNumber);
-							text.setText(c.rowID);
+							if (c.rowID != null) {
+								text.setText(c.rowID);
+							}
+							else {
+								String rowNo = String.valueOf(mri + 1);
+								text.setText(rowNo);
+							}
 							number.getLayoutParams().width = numWidth;
-							if(freezeFirstColumn) {
+							if (freezeFirstColumn) {
 								final int totalWidth = numWidth + column.width;
 								final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(totalWidth,
-										LinearLayout.LayoutParams.WRAP_CONTENT);
+									LinearLayout.LayoutParams.WRAP_CONTENT);
 								final LinearLayout layout = new LinearLayout(context);
 								layout.setOrientation(LinearLayout.HORIZONTAL);
 								layout.setGravity(Gravity.CENTER_VERTICAL);
