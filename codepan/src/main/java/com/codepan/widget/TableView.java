@@ -57,12 +57,12 @@ public class TableView extends FrameLayout {
 	private View vPreviousTable, vNextTable;
 	private final LayoutInflater inflater;
 	private CodePanLabel tvTotalTable;
+	private final Context context;
 	private final int numWidth;
 	private int current, count;
 	private int limit = LIMIT;
 	private int[] cellResIds;
 	private int headerResId;
-	private Context context;
 
 	public TableView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -340,51 +340,52 @@ public class TableView extends FrameLayout {
 			ArrayList<ArrayList<CellData>> loadedList = new ArrayList<>();
 			int rowIndex = 0;
 			for(int i = start; i < end; i++) {
-				final ArrayList<CellData> map = mapList.get(i);
-				final LinearLayout row = new LinearLayout(context);
-				row.setOrientation(LinearLayout.HORIZONTAL);
-				row.setGravity(Gravity.CENTER_VERTICAL);
+				final ArrayList<CellData> row = mapList.get(i);
+				final LinearLayout llRow = new LinearLayout(context);
+				llRow.setOrientation(LinearLayout.HORIZONTAL);
+				llRow.setGravity(Gravity.CENTER_VERTICAL);
 				final int ri = rowIndex;
-				final int mri = mapList.indexOf(map);
-				for(final CellData c : map) {
-					final int mci = map.indexOf(c);
+				final int mri = mapList.indexOf(row);
+				llRow.setTag(mri);
+				for (final CellData c : row) {
+					final int mci = row.indexOf(c);
 					ColumnData column = columnList.get(mci);
 					c.column = column;
 					int defaultId = column.cellResId != 0 ? column.cellResId : R.layout.table_cell_item;
 					int resId = cellResIds != null ? cellResIds[mci] : defaultId;
 					final View cell = inflater.inflate(resId, this, false);
 					TextView tvTableTextCell = cell.findViewById(R.id.tvTableTextCell);
-					if(c.name != null) {
+					if (c.name != null) {
 						tvTableTextCell.setText(c.name);
 					}
 					cell.getLayoutParams().width = column.width;
-					if(tableCellClickCallback != null) {
+					if (tableCellClickCallback != null) {
 						cell.setOnClickListener(v -> {
 							tableCellClickCallback.onTableCellClick(cell, ri, mri, mci);
 						});
 					}
-					if(tableCellCreatedCallback != null) {
+					if (tableCellCreatedCallback != null) {
 						tableCellCreatedCallback.onTableCellCreated(cell, ri, mri, mci);
 					}
-					if(mci != 0) {
-						row.addView(cell);
+					if (mci != 0) {
+						llRow.addView(cell);
 					}
 					else {
-						if(tableRowClickCallback != null) {
+						if (tableRowClickCallback != null) {
 							cell.setOnTouchListener((v, event) -> {
 								switch (event.getAction()) {
 									case MotionEvent.ACTION_DOWN:
 										v.setPressed(true);
-										row.setPressed(true);
+										llRow.setPressed(true);
 										break;
 									case MotionEvent.ACTION_UP:
 										v.setPressed(false);
-										row.setPressed(false);
+										llRow.setPressed(false);
 										tableRowClickCallback.onTableCellClick(cell, ri, mri);
 										break;
 									case MotionEvent.ACTION_CANCEL:
 										v.setPressed(false);
-										row.setPressed(false);
+										llRow.setPressed(false);
 										break;
 								}
 								performClick();
@@ -412,20 +413,22 @@ public class TableView extends FrameLayout {
 								layout.addView(number);
 								layout.addView(cell);
 								layout.setLayoutParams(params);
+								layout.setTag(mri);
 								llLeftTable.addView(layout);
 							}
 							else {
 								llLeftTable.addView(number);
-								row.addView(cell);
+								llRow.addView(cell);
 							}
 						}
 						else {
+							cell.setTag(mri);
 							llLeftTable.addView(cell);
 						}
 					}
 				}
 				if(tableRowClickCallback != null) {
-					row.setOnTouchListener((v, event) -> {
+					llRow.setOnTouchListener((v, event) -> {
 						View cell = llLeftTable.getChildAt(mri);
 						switch (event.getAction()) {
 							case MotionEvent.ACTION_DOWN:
@@ -446,8 +449,8 @@ public class TableView extends FrameLayout {
 						return true;
 					});
 				}
-				llContentTable.addView(row);
-				loadedList.add(map);
+				llContentTable.addView(llRow);
+				loadedList.add(row);
 				rowIndex++;
 			}
 			if (llMainTable.getVisibility() == View.GONE) {
@@ -514,18 +517,68 @@ public class TableView extends FrameLayout {
 		});
 	}
 
+	/**
+	 * @param dataList Data set of cells in columns. Each cell must have a rowID
+	 * @param mci      Column index to be updated.
+	 */
+	public void updateCellsInColumn(ArrayList<CellData> dataList, int mci) {
+		final ArrayList<CellData> cellList = new ArrayList<>(dataList);
+		for (int ri = 0; ri < mapList.size(); ri++) {
+			final ArrayList<CellData> row = mapList.get(ri);
+			if (row != null && !row.isEmpty()) {
+				final String rowID = row.get(0).rowID;
+				final CellData cell = getCell(rowID, cellList);
+				if (cell != null) {
+					final int index = cellList.indexOf(cell);
+					row.set(mci, cell);
+					cellList.remove(index);
+				}
+			}
+		}
+
+		if (mci != 0 || !freezeFirstColumn) {
+			int count = llContentTable.getChildCount();
+			for (int i = 0; i < count; i++) {
+				View child = llContentTable.getChildAt(i);
+				int mri = (int) child.getTag();
+				CellData cell = mapList.get(mri).get(mci);
+				TextView tvTableTextCell = child.findViewById(R.id.tvTableTextCell);
+				tvTableTextCell.setText(cell.name);
+			}
+		}
+		else {
+			int count = llLeftTable.getChildCount();
+			for (int i = 0; i < count; i++) {
+				View child = llLeftTable.getChildAt(i);
+				int mri = (int) child.getTag();
+				CellData cell = mapList.get(mri).get(0);
+				TextView tvTableTextCell = child.findViewById(R.id.tvTableTextCell);
+				tvTableTextCell.setText(cell.name);
+			}
+		}
+	}
+
+	private CellData getCell(String rowID, ArrayList<CellData> cellList) {
+		for (CellData cell : cellList) {
+			if (rowID != null && rowID.equals(cell.rowID)) {
+				return cell;
+			}
+		}
+		return null;
+	}
+
 	public void setMapList(ArrayList<ArrayList<CellData>> mapList) {
 		this.mapList = mapList;
 	}
 
 	public void addRowItems(int count) {
-		if(mapList != null && !mapList.isEmpty()) {
+		if (mapList != null && !mapList.isEmpty()) {
 			int lastIndex = mapList.size() - 1;
 			CellData last = mapList.get(lastIndex).get(0);
 			int lastId = Integer.parseInt(last.rowID);
-			for(int ri = 0; ri < count; ri++) {
+			for (int ri = 0; ri < count; ri++) {
 				ArrayList<CellData> map = new ArrayList<>();
-				for(ColumnData c : columnList) {
+				for (ColumnData c : columnList) {
 					String rowID = String.valueOf(lastId + ri + 1);
 					final CellData cell = new CellData(rowID, null);
 					map.add(cell);
