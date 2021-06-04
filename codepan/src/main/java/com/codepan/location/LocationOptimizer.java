@@ -4,7 +4,7 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 
-import com.codepan.callback.Interface.OnLocationAverageChangedCallback;
+import com.codepan.location.Callback.OnLocationAverageChangedCallback;
 import com.codepan.utils.CodePanUtils;
 import com.google.android.gms.maps.model.LatLng;
 

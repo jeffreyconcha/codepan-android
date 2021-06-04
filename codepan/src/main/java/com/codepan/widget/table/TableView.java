@@ -1,4 +1,4 @@
-package com.codepan.widget;
+package com.codepan.widget.table;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -19,15 +19,21 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.codepan.R;
-import com.codepan.callback.Interface.OnTableAddRowCallback;
-import com.codepan.callback.Interface.OnTableCellClickCallback;
-import com.codepan.callback.Interface.OnTableCellCreatedCallback;
-import com.codepan.callback.Interface.OnTableColumnClickCallback;
-import com.codepan.callback.Interface.OnTableRowClickCallback;
-import com.codepan.model.CellData;
-import com.codepan.model.ColumnData;
-import com.codepan.model.FilterData;
 import com.codepan.utils.CodePanUtils;
+import com.codepan.utils.Console;
+import com.codepan.widget.CodePanButton;
+import com.codepan.widget.CodePanLabel;
+import com.codepan.widget.TableScrollView;
+import com.codepan.widget.table.Callback.OnTableAddRowCallback;
+import com.codepan.widget.table.Callback.OnTableCellClickCallback;
+import com.codepan.widget.table.Callback.OnTableCellCreatedCallback;
+import com.codepan.widget.table.Callback.OnTableColumnClickCallback;
+import com.codepan.widget.table.Callback.OnTableRowClickCallback;
+import com.codepan.widget.table.model.CellData;
+import com.codepan.widget.table.model.ColumnData;
+import com.codepan.widget.table.model.FilterData;
+import com.codepan.widget.table.model.PositionData;
+import com.codepan.widget.table.model.RowData;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,13 +55,13 @@ public class TableView extends FrameLayout {
 	private OnTableRowClickCallback tableRowClickCallback;
 	private TableScrollView svLeftTable, svContentTable;
 	private OnTableAddRowCallback tableAddRowCallback;
-	private ArrayList<ArrayList<CellData>> mapList;
 	private final ArrayList<FilterData> filterList;
 	private Spinner spinLimitTable, spinPageTable;
 	private boolean freezeFirstColumn = true;
 	private ArrayList<ColumnData> columnList;
 	private View vPreviousTable, vNextTable;
 	private final LayoutInflater inflater;
+	private ArrayList<RowData> rowList;
 	private CodePanLabel tvTotalTable;
 	private final Context context;
 	private final int numWidth;
@@ -77,10 +83,10 @@ public class TableView extends FrameLayout {
 		TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.table);
 		headerResId = ta.getResourceId(R.styleable.table_headerLayout, R.layout.table_header_item);
 		int cellId = ta.getResourceId(R.styleable.table_cellLayouts, 0);
-		if(cellId != 0) {
+		if (cellId != 0) {
 			final TypedArray ra = getResources().obtainTypedArray(cellId);
 			cellResIds = new int[ra.length()];
-			for(int i = 0; i < ra.length(); i++) {
+			for (int i = 0; i < ra.length(); i++) {
 				final int resId = ra.getResourceId(i, R.layout.table_cell_item);
 				cellResIds[i] = resId;
 			}
@@ -92,73 +98,77 @@ public class TableView extends FrameLayout {
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		final View view = inflater.inflate(R.layout.table_layout, this, false);
-		llMainTable = view.findViewById(R.id.llMainTable);
-		llContentTable = view.findViewById(R.id.llContentTable);
-		llTopTable = view.findViewById(R.id.llTopTable);
-		llLeftTable = view.findViewById(R.id.llLeftTable);
-		llParentTable = view.findViewById(R.id.llParentTable);
-		svContentTable = view.findViewById(R.id.svContentTable);
-		svLeftTable = view.findViewById(R.id.svLeftTable);
-		spinLimitTable = view.findViewById(R.id.spinLimitTable);
-		spinPageTable = view.findViewById(R.id.spinPageTable);
-		tvTotalTable = view.findViewById(R.id.tvTotalTable);
-		btnNextTable = view.findViewById(R.id.btnNextTable);
-		btnPreviousTable = view.findViewById(R.id.btnPreviousTable);
-		btnAddTable = view.findViewById(R.id.btnAddTable);
-		vNextTable = view.findViewById(R.id.vNextTable);
-		vPreviousTable = view.findViewById(R.id.vPreviousTable);
-		svLeftTable.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
-		ArrayAdapter<String> limitAdapter = new ArrayAdapter<>(context, R.layout.table_spinner_selected_item);
-		limitAdapter.setDropDownViewResource(R.layout.table_spinner_selection_item);
-		limitAdapter.addAll(limits);
-		spinLimitTable.setAdapter(limitAdapter);
-		spinLimitTable.setSelection(1);
-		spinLimitTable.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if(isInitialized && mapList != null) {
-					String text = limits[position];
-					limit = Integer.parseInt(text);
-					populateContent(mapList, 0);
-					setPageList();
+		if (columnList != null && rowList != null) {
+			final View view = inflate(context, R.layout.table_layout, this);
+			llMainTable = view.findViewById(R.id.llMainTable);
+			llContentTable = view.findViewById(R.id.llContentTable);
+			llTopTable = view.findViewById(R.id.llTopTable);
+			llLeftTable = view.findViewById(R.id.llLeftTable);
+			llParentTable = view.findViewById(R.id.llParentTable);
+			svContentTable = view.findViewById(R.id.svContentTable);
+			svLeftTable = view.findViewById(R.id.svLeftTable);
+			spinLimitTable = view.findViewById(R.id.spinLimitTable);
+			spinPageTable = view.findViewById(R.id.spinPageTable);
+			tvTotalTable = view.findViewById(R.id.tvTotalTable);
+			btnNextTable = view.findViewById(R.id.btnNextTable);
+			btnPreviousTable = view.findViewById(R.id.btnPreviousTable);
+			btnAddTable = view.findViewById(R.id.btnAddTable);
+			vNextTable = view.findViewById(R.id.vNextTable);
+			vPreviousTable = view.findViewById(R.id.vPreviousTable);
+			svLeftTable.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
+			ArrayAdapter<String> limitAdapter = new ArrayAdapter<>(context, R.layout.table_spinner_selected_item);
+			limitAdapter.setDropDownViewResource(R.layout.table_spinner_selection_item);
+			limitAdapter.addAll(limits);
+			spinLimitTable.setAdapter(limitAdapter);
+			spinLimitTable.setSelection(1);
+			spinLimitTable.setOnItemSelectedListener(new OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+					if (isInitialized && rowList != null) {
+						String text = limits[position];
+						limit = Integer.parseInt(text);
+						populateContent(rowList, 0);
+						setPageList();
+					}
 				}
-			}
 
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-			}
-		});
-		svContentTable.setOnScrollChangeCallback((l, t, ol, ot) -> {
-			svLeftTable.scrollTo(0, t);
-		});
-		svLeftTable.setOnScrollChangeCallback((l, t, ol, ot) -> {
-			svContentTable.scrollTo(0, t);
-		});
-		btnNextTable.setOnClickListener(v -> {
-			int next = current + 1;
-			if (next < count) {
-				spinPageTable.setSelection(next);
-			}
-		});
-		btnPreviousTable.setOnClickListener(v -> {
-			int previous = current - 1;
-			if (previous >= 0) {
-				spinPageTable.setSelection(previous);
-			}
-		});
-		btnAddTable.setOnClickListener(v -> {
-			if (isInitialized && mapList != null) {
-				if (tableAddRowCallback != null) {
-					tableAddRowCallback.onTableAddRow();
+				@Override
+				public void onNothingSelected(AdapterView<?> parent) {
 				}
+			});
+			svContentTable.setOnScrollChangeCallback((l, t, ol, ot) -> {
+				svLeftTable.scrollTo(0, t);
+			});
+			svLeftTable.setOnScrollChangeCallback((l, t, ol, ot) -> {
+				svContentTable.scrollTo(0, t);
+			});
+			btnNextTable.setOnClickListener(v -> {
+				int next = current + 1;
+				if (next < count) {
+					spinPageTable.setSelection(next);
+				}
+			});
+			btnPreviousTable.setOnClickListener(v -> {
+				int previous = current - 1;
+				if (previous >= 0) {
+					spinPageTable.setSelection(previous);
+				}
+			});
+			btnAddTable.setOnClickListener(v -> {
+				if (isInitialized && rowList != null) {
+					if (tableAddRowCallback != null) {
+						tableAddRowCallback.onTableAddRow();
+					}
+				}
+			});
+			if (isRowFlexible) {
+				btnAddTable.setParentVisibility(View.VISIBLE);
 			}
-		});
-		if (isRowFlexible) {
-			btnAddTable.setParentVisibility(View.VISIBLE);
+			update();
 		}
-		update();
-		addView(view);
+		else {
+			Console.error("Row list and column list are required.");
+		}
 	}
 
 	public void update() {
@@ -167,34 +177,34 @@ public class TableView extends FrameLayout {
 	}
 
 	public void updateAndRetainPage() {
-		ArrayList<ArrayList<CellData>> mapList = getFilteredMapList();
-		if(mapList != null && columnList != null) {
+		ArrayList<RowData> rowList = getFilteredRowList();
+		if (rowList != null && columnList != null) {
 			View child = llParentTable.getChildAt(0);
 			Object object = child.getTag();
-			if(object instanceof String) {
+			if (object instanceof String) {
 				String tag = (String) object;
-				if(tag.equals(PARENT_TAG)) {
+				if (tag.equals(PARENT_TAG)) {
 					llParentTable.removeView(child);
 				}
 			}
 			llTopTable.removeAllViews();
-			for(final ColumnData h : columnList) {
-				final int resId = h.headerResId != 0 ? h.headerResId : headerResId;
+			for (final ColumnData column : columnList) {
+				int mci = columnList.indexOf(column);
+				final int resId = column.headerResId != 0 ? column.headerResId : headerResId;
 				View header = inflater.inflate(resId, this, false);
+				header.setTag(mci);
 				CodePanLabel tvTableTextHeader = header.findViewById(R.id.tvTableTextHeader);
 				View vFilterTextHeader = header.findViewById(R.id.vFilterTextHeader);
-				tvTableTextHeader.setText(h.value);
-				if(vFilterTextHeader != null) {
-					if(h.isFilterEnabled) {
+				tvTableTextHeader.setText(column.value);
+				if (vFilterTextHeader != null) {
+					if (column.isFilterEnabled) {
 						vFilterTextHeader.setVisibility(View.VISIBLE);
-						int mci = columnList.indexOf(h);
 						ArrayList<String> filter = getFilterItemList(mci);
 						vFilterTextHeader.setEnabled(filter != null && !filter.isEmpty());
 						header.setOnClickListener(v -> {
 							if (tableColumnClickCallback != null) {
-								int mci1 = columnList.indexOf(h);
-								ArrayList<String> list = getDistinctItems(h);
-								tableColumnClickCallback.onTableColumnClick(mci1, list);
+								ArrayList<String> list = getDistinctItems(column);
+								tableColumnClickCallback.onTableColumnClick(mci, list);
 							}
 						});
 					}
@@ -202,24 +212,24 @@ public class TableView extends FrameLayout {
 						vFilterTextHeader.setVisibility(View.GONE);
 					}
 				}
-				header.getLayoutParams().width = h.width;
-				if(columnList.indexOf(h) != 0) {
+				header.getLayoutParams().width = column.width;
+				if (columnList.indexOf(column) != 0) {
 					llTopTable.addView(header);
 				}
 				else {
-					if(withRowNumbers()) {
+					if (withRowNumbers()) {
 						View number = inflater.inflate(resId, this, false);
 						CodePanLabel text = number.findViewById(R.id.tvTableTextHeader);
 						View filter = number.findViewById(R.id.vFilterTextHeader);
-						if(filter != null) {
+						if (filter != null) {
 							filter.setVisibility(View.GONE);
 						}
 						text.setText("#");
 						number.getLayoutParams().width = numWidth;
-						if(freezeFirstColumn) {
-							final int totalWidth = numWidth + h.width;
+						if (freezeFirstColumn) {
+							final int totalWidth = numWidth + column.width;
 							final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(totalWidth,
-									LinearLayout.LayoutParams.WRAP_CONTENT);
+								LinearLayout.LayoutParams.WRAP_CONTENT);
 							final LinearLayout layout = new LinearLayout(context);
 							layout.setOrientation(LinearLayout.HORIZONTAL);
 							layout.setGravity(Gravity.CENTER_VERTICAL);
@@ -241,7 +251,7 @@ public class TableView extends FrameLayout {
 					}
 				}
 			}
-			String total = context.getString(R.string.of) + " " + mapList.size();
+			String total = context.getString(R.string.of) + " " + rowList.size();
 			tvTotalTable.setText(total);
 			btnAddTable.setParentVisibility(isRowFlexible ? View.VISIBLE : View.GONE);
 			setPageList();
@@ -252,9 +262,9 @@ public class TableView extends FrameLayout {
 		if(column != null) {
 			ArrayList<String> list = new ArrayList<>();
 			int columnIndex = columnList.indexOf(column);
-			for(ArrayList<CellData> map : mapList) {
-				CellData cell = map.get(columnIndex);
-				if(cell.name != null) {
+			for (RowData row : rowList) {
+				CellData cell = row.cellList.get(columnIndex);
+				if (cell.name != null) {
 					list.add(cell.name);
 				}
 			}
@@ -265,18 +275,18 @@ public class TableView extends FrameLayout {
 	}
 
 	private void setPageList() {
-		final ArrayList<ArrayList<CellData>> mapList = getFilteredMapList();
-		if(mapList != null) {
+		final ArrayList<RowData> rowList = getFilteredRowList();
+		if (rowList != null) {
 			final ArrayAdapter<String> pageAdapter = new ArrayAdapter<>(context, R.layout.table_spinner_selected_item);
 			pageAdapter.setDropDownViewResource(R.layout.table_spinner_selection_item);
-			final int size = mapList.size();
-			if(size > limit) {
+			final int size = rowList.size();
+			if (size > limit) {
 				count = size / limit;
 				int remainder = size % limit;
 				count = remainder != 0 ? count + 1 : count;
-				for(int i = 0; i < count; i++) {
+				for (int i = 0; i < count; i++) {
 					int start = (i * limit) + 1;
-					if(i < count - 1) {
+					if (i < count - 1) {
 						int end = start + limit - 1;
 						pageAdapter.add(start + DELIMITER + end);
 					}
@@ -302,7 +312,7 @@ public class TableView extends FrameLayout {
 					if(page != null) {
 						String[] array = page.split(DELIMITER);
 						int start = Integer.parseInt(array[0]) - 1;
-						populateContent(mapList, start);
+						populateContent(rowList, start);
 					}
 					current = position;
 					if(current == 0) {
@@ -330,30 +340,32 @@ public class TableView extends FrameLayout {
 	}
 
 	@SuppressLint("ClickableViewAccessibility")
-	private void populateContent(final ArrayList<ArrayList<CellData>> mapList, int start) {
+	private void populateContent(final ArrayList<RowData> rowList, int start) {
 		llLeftTable.removeAllViews();
 		llContentTable.removeAllViews();
-		if(mapList != null && !mapList.isEmpty()) {
-			int size = mapList.size();
+		if (rowList != null && !rowList.isEmpty()) {
+			int size = rowList.size();
 			int end = start + limit;
 			end = Math.min(end, size);
-			ArrayList<ArrayList<CellData>> loadedList = new ArrayList<>();
+			ArrayList<RowData> loadedList = new ArrayList<>();
 			int rowIndex = 0;
-			for(int i = start; i < end; i++) {
-				final ArrayList<CellData> row = mapList.get(i);
+			for (int i = start; i < end; i++) {
+				final RowData row = rowList.get(i);
+				final ArrayList<CellData> cellList = row.cellList;
 				final LinearLayout llRow = new LinearLayout(context);
 				llRow.setOrientation(LinearLayout.HORIZONTAL);
 				llRow.setGravity(Gravity.CENTER_VERTICAL);
 				final int ri = rowIndex;
-				final int mri = mapList.indexOf(row);
+				final int mri = rowList.indexOf(row);
 				llRow.setTag(mri);
-				for (final CellData c : row) {
-					final int mci = row.indexOf(c);
+				for (final CellData c : cellList) {
+					final int mci = cellList.indexOf(c);
 					ColumnData column = columnList.get(mci);
 					c.column = column;
 					int defaultId = column.cellResId != 0 ? column.cellResId : R.layout.table_cell_item;
 					int resId = cellResIds != null ? cellResIds[mci] : defaultId;
 					final View cell = inflater.inflate(resId, this, false);
+					cell.setTag(new PositionData(mri, mci));
 					TextView tvTableTextCell = cell.findViewById(R.id.tvTableTextCell);
 					if (c.name != null) {
 						tvTableTextCell.setText(c.name);
@@ -395,8 +407,8 @@ public class TableView extends FrameLayout {
 						if(withRowNumbers()) {
 							final View number = inflater.inflate(R.layout.table_row_number_item, this, false);
 							CodePanLabel text = number.findViewById(R.id.tvTableRowNumber);
-							if (c.rowID != null) {
-								text.setText(c.rowID);
+							if (row.ID != null) {
+								text.setText(row.ID);
 							}
 							else {
 								String rowNo = String.valueOf(mri + 1);
@@ -461,21 +473,21 @@ public class TableView extends FrameLayout {
 		}
 	}
 
-	private void equalizeHeight(final ArrayList<ArrayList<CellData>> loadedList) {
-		if(mapList != null && loadedList != null && !loadedList.isEmpty()) {
+	private void equalizeHeight(final ArrayList<RowData> loadedList) {
+		if (rowList != null && loadedList != null && !loadedList.isEmpty()) {
 			final ViewTreeObserver vto = getViewTreeObserver();
 			vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 				@Override
 				public void onGlobalLayout() {
 					vto.removeOnGlobalLayoutListener(this);
-					for(ArrayList<CellData> map : loadedList) {
-						equalizeContentHeight(loadedList.indexOf(map));
+					for (RowData row : loadedList) {
+						equalizeContentHeight(loadedList.indexOf(row));
 					}
 					View xy = llParentTable.getChildAt(0);
 					int th = llTopTable.getHeight();
 					int ph = xy.getHeight();
-					if(ph != th) {
-						if(th > ph) {
+					if (ph != th) {
+						if (th > ph) {
 							xy.getLayoutParams().height = th;
 							xy.requestLayout();
 						}
@@ -522,39 +534,50 @@ public class TableView extends FrameLayout {
 	 * @param mci      Column index to be updated.
 	 */
 	public void updateCellsInColumn(ArrayList<CellData> dataList, int mci) {
-		final ArrayList<CellData> cellList = new ArrayList<>(dataList);
-		for (int ri = 0; ri < mapList.size(); ri++) {
-			final ArrayList<CellData> row = mapList.get(ri);
-			if (row != null && !row.isEmpty()) {
-				final String rowID = row.get(0).rowID;
-				final CellData cell = getCell(rowID, cellList);
-				if (cell != null) {
-					final int index = cellList.indexOf(cell);
-					row.set(mci, cell);
-					cellList.remove(index);
+		final int size = columnList.size();
+		if (mci < size) {
+			final ArrayList<CellData> cellList = new ArrayList<>(dataList);
+			for (int ri = 0; ri < rowList.size(); ri++) {
+				final RowData row = rowList.get(ri);
+				if (row != null && !row.isEmpty()) {
+					final CellData cell = getCell(row.ID, cellList);
+					if (cell != null) {
+						final int index = cellList.indexOf(cell);
+						row.set(mci, cell);
+						cellList.remove(index);
+					}
+				}
+			}
+			if (mci != 0 || !freezeFirstColumn) {
+				for (int ri = 0; ri < llContentTable.getChildCount(); ri++) {
+					LinearLayout llRow = (LinearLayout) llContentTable.getChildAt(ri);
+					int mri = (int) llRow.getTag();
+					for (int ci = 0; ci < llRow.getChildCount(); ci++) {
+						View child = llRow.getChildAt(ci);
+						PositionData position = (PositionData) child.getTag();
+						if (position != null && position.mci == mci) {
+							CellData cell = rowList.get(mri).get(mci);
+							TextView tvTableTextCell = child.findViewById(R.id.tvTableTextCell);
+							tvTableTextCell.setText(cell.name);
+							break;
+						}
+					}
+				}
+			}
+			else {
+				int count = llLeftTable.getChildCount();
+				for (int i = 0; i < count; i++) {
+					View child = llLeftTable.getChildAt(i);
+					int mri = (int) child.getTag();
+					CellData cell = rowList.get(mri).get(0);
+					TextView tvTableTextCell = child.findViewById(R.id.tvTableTextCell);
+					tvTableTextCell.setText(cell.name);
 				}
 			}
 		}
-
-		if (mci != 0 || !freezeFirstColumn) {
-			int count = llContentTable.getChildCount();
-			for (int i = 0; i < count; i++) {
-				View child = llContentTable.getChildAt(i);
-				int mri = (int) child.getTag();
-				CellData cell = mapList.get(mri).get(mci);
-				TextView tvTableTextCell = child.findViewById(R.id.tvTableTextCell);
-				tvTableTextCell.setText(cell.name);
-			}
-		}
 		else {
-			int count = llLeftTable.getChildCount();
-			for (int i = 0; i < count; i++) {
-				View child = llLeftTable.getChildAt(i);
-				int mri = (int) child.getTag();
-				CellData cell = mapList.get(mri).get(0);
-				TextView tvTableTextCell = child.findViewById(R.id.tvTableTextCell);
-				tvTableTextCell.setText(cell.name);
-			}
+			throw new IndexOutOfBoundsException("Trying to get index of " + mci + " in " +
+				"column list with the size of " + size + ".");
 		}
 	}
 
@@ -567,23 +590,23 @@ public class TableView extends FrameLayout {
 		return null;
 	}
 
-	public void setMapList(ArrayList<ArrayList<CellData>> mapList) {
-		this.mapList = mapList;
+	public void setRowList(ArrayList<RowData> rowList) {
+		this.rowList = rowList;
 	}
 
 	public void addRowItems(int count) {
-		if (mapList != null && !mapList.isEmpty()) {
-			int lastIndex = mapList.size() - 1;
-			CellData last = mapList.get(lastIndex).get(0);
+		if (rowList != null && !rowList.isEmpty()) {
+			int lastIndex = rowList.size() - 1;
+			CellData last = rowList.get(lastIndex).get(0);
 			int lastId = Integer.parseInt(last.rowID);
 			for (int ri = 0; ri < count; ri++) {
-				ArrayList<CellData> map = new ArrayList<>();
+				String rowID = String.valueOf(lastId + ri + 1);
+				ArrayList<CellData> cellList = new ArrayList<>();
 				for (ColumnData c : columnList) {
-					String rowID = String.valueOf(lastId + ri + 1);
 					final CellData cell = new CellData(rowID, null);
-					map.add(cell);
+					cellList.add(cell);
 				}
-				mapList.add(map);
+				rowList.add(new RowData(rowID, cellList));
 			}
 		}
 		updateAndRetainPage();
@@ -686,14 +709,14 @@ public class TableView extends FrameLayout {
 		return this.filterList;
 	}
 
-	public ArrayList<ArrayList<CellData>> getFilteredMapList() {
-		if(hasFilter()) {
-			ArrayList<ArrayList<CellData>> filteredList = new ArrayList<>();
+	public ArrayList<RowData> getFilteredRowList() {
+		if (hasFilter()) {
+			ArrayList<RowData> filteredList = new ArrayList<>();
 			int size = columnList.size();
-			for(ArrayList<CellData> row : mapList) {
+			for (RowData row : rowList) {
 				int count = 0;
-				for (CellData cell : row) {
-					int mci = row.indexOf(cell);
+				for (CellData cell : row.cellList) {
+					int mci = row.cellList.indexOf(cell);
 					ArrayList<String> filter = getFilterItemList(mci);
 					if (filter == null || filter.contains(cell.name)) {
 						count++;
@@ -705,7 +728,7 @@ public class TableView extends FrameLayout {
 			}
 			return filteredList;
 		}
-		return mapList;
+		return rowList;
 	}
 
 	public void freezeFirstColumn() {

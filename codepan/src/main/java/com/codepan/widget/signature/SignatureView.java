@@ -1,4 +1,4 @@
-package com.codepan.widget;
+package com.codepan.widget.signature;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -21,7 +21,7 @@ import java.util.List;
 
 public class SignatureView extends SurfaceView implements OnTouchListener, Callback {
 
-	private List<List<Dot>> dots = new ArrayList<>();
+	private final List<List<Dot>> dots = new ArrayList<>();
 	public Paint paint;
 
 	public SignatureView(Context context) {
@@ -80,9 +80,6 @@ public class SignatureView extends SurfaceView implements OnTouchListener, Callb
 				this.invalidate();
 				break;
 			case MotionEvent.ACTION_UP:
-				dots.get(dots.size() - 1).add(new Dot(event.getX(), event.getY()));
-				this.invalidate();
-				break;
 			case MotionEvent.ACTION_MOVE:
 				dots.get(dots.size() - 1).add(new Dot(event.getX(), event.getY()));
 				this.invalidate();

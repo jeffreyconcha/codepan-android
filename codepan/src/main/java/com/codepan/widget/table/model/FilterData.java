@@ -1,4 +1,4 @@
-package com.codepan.model;
+package com.codepan.widget.table.model;
 
 import java.util.ArrayList;
 public class FilterData {

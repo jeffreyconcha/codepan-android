@@ -1,18 +1,15 @@
-package com.codepan.model;
+package com.codepan.widget.table.model;
 
-import com.codepan.callback.Interface.OnTableCellClearCallback;
-import com.codepan.callback.Interface.OnUpdateCellDataCallback;
+
+import com.codepan.widget.table.Callback.OnTableCellClearCallback;
+import com.codepan.widget.table.Callback.OnUpdateCellDataCallback;
 
 public class CellData {
 
 	private OnTableCellClearCallback tableCellClearCallback;
 	private OnUpdateCellDataCallback updateCellDataCallback;
+	public String ID, rowID, name, value, webDetailID;
 	public ColumnData column;
-	public String rowID;
-	public String name;
-	public String value;
-	public String ID;
-	public String webDetailID;
 
 	private boolean withChanges;
 	private Object tag;

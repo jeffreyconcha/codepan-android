@@ -3,8 +3,8 @@ package com.codepan.database;
 import android.content.Context;
 import android.util.Log;
 
-import com.codepan.callback.Interface.OnCreateDatabaseCallback;
-import com.codepan.callback.Interface.OnUpgradeDatabaseCallback;
+import com.codepan.database.Callback.OnCreateDatabaseCallback;
+import com.codepan.database.Callback.OnUpgradeDatabaseCallback;
 
 import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;

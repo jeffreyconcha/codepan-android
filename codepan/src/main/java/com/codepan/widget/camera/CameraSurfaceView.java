@@ -9,7 +9,6 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.Area;
-import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
@@ -25,11 +24,11 @@ import android.widget.LinearLayout.LayoutParams;
 
 import com.codepan.R;
 import com.codepan.callback.Interface.OnCameraChangeCallback;
-import com.codepan.callback.Interface.OnCameraErrorCallback;
-import com.codepan.callback.Interface.OnCaptureCallback;
 import com.codepan.model.StampData;
 import com.codepan.utils.CodePanUtils;
 import com.codepan.widget.FocusIndicatorView;
+import com.codepan.widget.camera.Callback.OnCameraErrorCallback;
+import com.codepan.widget.camera.Callback.OnCaptureCallback;
 
 import java.io.File;
 import java.io.FileOutputStream;

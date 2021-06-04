@@ -1,4 +1,4 @@
-package com.codepan.model;
+package com.codepan.widget.table.model;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -21,17 +21,17 @@ public class ColumnData {
 		this.width = width;
 	}
 
-	public ColumnData(Context context, String ID, String value, int width) {
+	public ColumnData(Context context, String ID, String value, int widthResId) {
 		Resources res = context.getResources();
 		this.ID = ID;
 		this.value = value;
-		this.width = res.getDimensionPixelSize(width);
+		this.width = res.getDimensionPixelSize(widthResId);
 	}
 
-	public ColumnData(Context context, String value, int width) {
+	public ColumnData(Context context, String value, int widthResId) {
 		Resources res = context.getResources();
 		this.value = value;
-		this.width = res.getDimensionPixelSize(width);
+		this.width = res.getDimensionPixelSize(widthResId);
 	}
 
 	public ColumnData(Context context, String value, int width, int headerResId, boolean isFilterEnabled) {
@@ -42,19 +42,19 @@ public class ColumnData {
 		this.isFilterEnabled = isFilterEnabled;
 	}
 
-	public ColumnData(Context context, String ID, String value, int width, int cellResId) {
+	public ColumnData(Context context, String ID, String value, int widthResId, int cellResId) {
 		Resources res = context.getResources();
 		this.ID = ID;
 		this.value = value;
 		this.cellResId = cellResId;
-		this.width = res.getDimensionPixelSize(width);
+		this.width = res.getDimensionPixelSize(widthResId);
 	}
 
-	public ColumnData(Context context, String value, int width, int cellResId) {
+	public ColumnData(Context context, String value, int widthResId, int cellResId) {
 		Resources res = context.getResources();
 		this.value = value;
 		this.cellResId = cellResId;
-		this.width = res.getDimensionPixelSize(width);
+		this.width = res.getDimensionPixelSize(widthResId);
 	}
 
 	public ColumnData(String ID, String value, Object tag, int width) {
@@ -70,55 +70,55 @@ public class ColumnData {
 		this.tag = tag;
 	}
 
-	public ColumnData(Context context, String ID, String value, Object tag, int width) {
+	public ColumnData(Context context, String ID, String value, Object tag, int widthResId) {
 		Resources res = context.getResources();
 		this.ID = ID;
 		this.value = value;
-		this.width = res.getDimensionPixelSize(width);
+		this.width = res.getDimensionPixelSize(widthResId);
 		this.tag = tag;
 	}
 
-	public ColumnData(Context context, String ID, String value, Object tag, int width, boolean isFilterEnabled) {
+	public ColumnData(Context context, String ID, String value, Object tag, int widthResId, boolean isFilterEnabled) {
 		Resources res = context.getResources();
 		this.ID = ID;
 		this.value = value;
-		this.width = res.getDimensionPixelSize(width);
+		this.width = res.getDimensionPixelSize(widthResId);
 		this.tag = tag;
 		this.isFilterEnabled = isFilterEnabled;
 	}
 
-	public ColumnData(Context context, String value, Object tag, int width) {
+	public ColumnData(Context context, String value, Object tag, int widthResId) {
 		Resources res = context.getResources();
 		this.value = value;
-		this.width = res.getDimensionPixelSize(width);
+		this.width = res.getDimensionPixelSize(widthResId);
 		this.tag = tag;
 	}
 
-	public ColumnData(Context context, String ID, String value, Object tag, int width, int cellResId) {
+	public ColumnData(Context context, String ID, String value, Object tag, int widthResId, int cellResId) {
 		Resources res = context.getResources();
 		this.ID = ID;
 		this.value = value;
 		this.cellResId = cellResId;
-		this.width = res.getDimensionPixelSize(width);
+		this.width = res.getDimensionPixelSize(widthResId);
 		this.tag = tag;
 	}
 
 	public ColumnData(Context context, String ID, String value, Object tag,
-			int width, int cellResId, boolean isFilterEnabled) {
+			int widthResId, int cellResId, boolean isFilterEnabled) {
 		Resources res = context.getResources();
 		this.ID = ID;
 		this.value = value;
 		this.cellResId = cellResId;
-		this.width = res.getDimensionPixelSize(width);
+		this.width = res.getDimensionPixelSize(widthResId);
 		this.tag = tag;
 		this.isFilterEnabled = isFilterEnabled;
 	}
 
-	public ColumnData(Context context, String value, Object tag, int width, int cellResId) {
+	public ColumnData(Context context, String value, Object tag, int widthResId, int cellResId) {
 		Resources res = context.getResources();
 		this.value = value;
 		this.cellResId = cellResId;
-		this.width = res.getDimensionPixelSize(width);
+		this.width = res.getDimensionPixelSize(widthResId);
 		this.tag = tag;
 	}
 

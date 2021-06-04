@@ -1,4 +1,4 @@
-package com.codepan.widget;
+package com.codepan.widget.wheel;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -12,8 +12,9 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.codepan.R;
-import com.codepan.callback.Interface.OnWheelSpinningCallback;
-import com.codepan.callback.Interface.OnWheelStopCallback;
+import com.codepan.widget.wheel.Callback.OnWheelSpinningCallback;
+import com.codepan.widget.wheel.Callback.OnWheelStopCallback;
+
 
 public class WheelView extends View {
 

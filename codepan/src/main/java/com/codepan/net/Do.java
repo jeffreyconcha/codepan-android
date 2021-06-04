@@ -2,7 +2,7 @@ package com.codepan.net;
 
 import android.content.Context;
 
-import com.codepan.callback.Interface.OnDownloadFileCallback;
+import com.codepan.net.Callback.OnDownloadFileCallback;
 import com.codepan.utils.Console;
 
 import org.json.JSONException;

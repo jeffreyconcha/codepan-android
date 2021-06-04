@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.codepan.widget;
+package com.codepan.widget.listview;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -37,7 +36,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
-import com.codepan.callback.Interface.OnSwapElementCallback;
+import com.codepan.widget.listview.Callback.OnSwapElementCallback;
 
 import java.util.ArrayList;
 
