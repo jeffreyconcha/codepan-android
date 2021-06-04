@@ -27,7 +27,7 @@ public class TableFragment extends Fragment {
 		columnList = new ArrayList<>();
 		for (int cn = 1; cn <= 5; cn++) {
 			String name = "Column " + cn;
-			columnList.add(new ColumnData(getContext(), name, R.dimen.one_hundred));
+			columnList.add(new ColumnData(getContext(), name, R.dimen.one_hundred, true));
 		}
 		rowList = new ArrayList<>();
 		for (int rn = 1; rn <= 50; rn++) {
@@ -50,11 +50,6 @@ public class TableFragment extends Fragment {
 		tvTable.setRowList(rowList);
 		view.findViewById(R.id.btnTable).setOnClickListener(v -> {
 			ArrayList<CellData> dataList = new ArrayList<>();
-			dataList.add(new CellData("1", "Replaced 1"));
-			dataList.add(new CellData("2", "Replaced 2"));
-			dataList.add(new CellData("3", "Replaced 3"));
-			dataList.add(new CellData("4", "Replaced 4"));
-			dataList.add(new CellData("5", "Replaced 5"));
 			dataList.add(new CellData("6", "Replaced 6"));
 			tvTable.updateCellsInColumn(dataList, 3);
 		});

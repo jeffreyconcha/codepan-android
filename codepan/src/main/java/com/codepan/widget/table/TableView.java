@@ -350,7 +350,7 @@ public class TableView extends FrameLayout {
 				llRow.setOrientation(LinearLayout.HORIZONTAL);
 				llRow.setGravity(Gravity.CENTER_VERTICAL);
 				final int ri = rowIndex;
-				final int mri = rowList.indexOf(row);
+				final int mri = this.rowList.indexOf(row);
 				llRow.setTag(mri);
 				for (final CellData c : cellList) {
 					final int mci = cellList.indexOf(c);

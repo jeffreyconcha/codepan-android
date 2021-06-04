@@ -34,6 +34,13 @@ public class ColumnData {
 		this.width = res.getDimensionPixelSize(widthResId);
 	}
 
+	public ColumnData(Context context, String value, int widthResId, boolean isFilterEnabled) {
+		Resources res = context.getResources();
+		this.value = value;
+		this.width = res.getDimensionPixelSize(widthResId);
+		this.isFilterEnabled = isFilterEnabled;
+	}
+
 	public ColumnData(Context context, String value, int width, int headerResId, boolean isFilterEnabled) {
 		Resources res = context.getResources();
 		this.value = value;
