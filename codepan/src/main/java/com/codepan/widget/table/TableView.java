@@ -20,7 +20,6 @@ import android.widget.TextView;
 
 import com.codepan.R;
 import com.codepan.utils.CodePanUtils;
-import com.codepan.utils.Console;
 import com.codepan.widget.CodePanButton;
 import com.codepan.widget.CodePanLabel;
 import com.codepan.widget.TableScrollView;
@@ -98,77 +97,72 @@ public class TableView extends FrameLayout {
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		if (columnList != null && rowList != null) {
-			final View view = inflate(context, R.layout.table_layout, this);
-			llMainTable = view.findViewById(R.id.llMainTable);
-			llContentTable = view.findViewById(R.id.llContentTable);
-			llTopTable = view.findViewById(R.id.llTopTable);
-			llLeftTable = view.findViewById(R.id.llLeftTable);
-			llParentTable = view.findViewById(R.id.llParentTable);
-			svContentTable = view.findViewById(R.id.svContentTable);
-			svLeftTable = view.findViewById(R.id.svLeftTable);
-			spinLimitTable = view.findViewById(R.id.spinLimitTable);
-			spinPageTable = view.findViewById(R.id.spinPageTable);
-			tvTotalTable = view.findViewById(R.id.tvTotalTable);
-			btnNextTable = view.findViewById(R.id.btnNextTable);
-			btnPreviousTable = view.findViewById(R.id.btnPreviousTable);
-			btnAddTable = view.findViewById(R.id.btnAddTable);
-			vNextTable = view.findViewById(R.id.vNextTable);
-			vPreviousTable = view.findViewById(R.id.vPreviousTable);
-			svLeftTable.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
-			ArrayAdapter<String> limitAdapter = new ArrayAdapter<>(context, R.layout.table_spinner_selected_item);
-			limitAdapter.setDropDownViewResource(R.layout.table_spinner_selection_item);
-			limitAdapter.addAll(limits);
-			spinLimitTable.setAdapter(limitAdapter);
-			spinLimitTable.setSelection(1);
-			spinLimitTable.setOnItemSelectedListener(new OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-					if (isInitialized && rowList != null) {
-						String text = limits[position];
-						limit = Integer.parseInt(text);
-						populateContent(rowList, 0);
-						setPageList();
-					}
-				}
-
-				@Override
-				public void onNothingSelected(AdapterView<?> parent) {
-				}
-			});
-			svContentTable.setOnScrollChangeCallback((l, t, ol, ot) -> {
-				svLeftTable.scrollTo(0, t);
-			});
-			svLeftTable.setOnScrollChangeCallback((l, t, ol, ot) -> {
-				svContentTable.scrollTo(0, t);
-			});
-			btnNextTable.setOnClickListener(v -> {
-				int next = current + 1;
-				if (next < count) {
-					spinPageTable.setSelection(next);
-				}
-			});
-			btnPreviousTable.setOnClickListener(v -> {
-				int previous = current - 1;
-				if (previous >= 0) {
-					spinPageTable.setSelection(previous);
-				}
-			});
-			btnAddTable.setOnClickListener(v -> {
+		final View view = inflate(context, R.layout.table_layout, this);
+		llMainTable = view.findViewById(R.id.llMainTable);
+		llContentTable = view.findViewById(R.id.llContentTable);
+		llTopTable = view.findViewById(R.id.llTopTable);
+		llLeftTable = view.findViewById(R.id.llLeftTable);
+		llParentTable = view.findViewById(R.id.llParentTable);
+		svContentTable = view.findViewById(R.id.svContentTable);
+		svLeftTable = view.findViewById(R.id.svLeftTable);
+		spinLimitTable = view.findViewById(R.id.spinLimitTable);
+		spinPageTable = view.findViewById(R.id.spinPageTable);
+		tvTotalTable = view.findViewById(R.id.tvTotalTable);
+		btnNextTable = view.findViewById(R.id.btnNextTable);
+		btnPreviousTable = view.findViewById(R.id.btnPreviousTable);
+		btnAddTable = view.findViewById(R.id.btnAddTable);
+		vNextTable = view.findViewById(R.id.vNextTable);
+		vPreviousTable = view.findViewById(R.id.vPreviousTable);
+		svLeftTable.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
+		ArrayAdapter<String> limitAdapter = new ArrayAdapter<>(context, R.layout.table_spinner_selected_item);
+		limitAdapter.setDropDownViewResource(R.layout.table_spinner_selection_item);
+		limitAdapter.addAll(limits);
+		spinLimitTable.setAdapter(limitAdapter);
+		spinLimitTable.setSelection(1);
+		spinLimitTable.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if (isInitialized && rowList != null) {
-					if (tableAddRowCallback != null) {
-						tableAddRowCallback.onTableAddRow();
-					}
+					String text = limits[position];
+					limit = Integer.parseInt(text);
+					populateContent(rowList, 0);
+					setPageList();
 				}
-			});
-			if (isRowFlexible) {
-				btnAddTable.setParentVisibility(View.VISIBLE);
 			}
-			update();
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+			}
+		});
+		svContentTable.setOnScrollChangeCallback((l, t, ol, ot) -> {
+			svLeftTable.scrollTo(0, t);
+		});
+		svLeftTable.setOnScrollChangeCallback((l, t, ol, ot) -> {
+			svContentTable.scrollTo(0, t);
+		});
+		btnNextTable.setOnClickListener(v -> {
+			int next = current + 1;
+			if (next < count) {
+				spinPageTable.setSelection(next);
+			}
+		});
+		btnPreviousTable.setOnClickListener(v -> {
+			int previous = current - 1;
+			if (previous >= 0) {
+				spinPageTable.setSelection(previous);
+			}
+		});
+		btnAddTable.setOnClickListener(v -> {
+			if (isInitialized && rowList != null) {
+				if (tableAddRowCallback != null) {
+					tableAddRowCallback.onTableAddRow();
+				}
+			}
+		});
+		if (isRowFlexible) {
+			btnAddTable.setParentVisibility(View.VISIBLE);
 		}
-		else {
-			Console.error("Row list and column list are required.");
-		}
+		update();
 	}
 
 	public void update() {
