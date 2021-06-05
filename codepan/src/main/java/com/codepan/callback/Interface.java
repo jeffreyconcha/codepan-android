@@ -51,6 +51,10 @@ public class Interface {
 		void onRefresh();
 	}
 
+	public interface OnCancelCallback {
+		void onCancel();
+	}
+
 	public interface OnBackPressedCallback {
 		void onBackPressed();
 	}

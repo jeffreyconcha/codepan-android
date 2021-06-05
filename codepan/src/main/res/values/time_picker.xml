@@ -1,22 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="tp_title">Select Time</string>
-
     <string name="tp_title_font">@string/calibri_regular</string>
-    <string name="tp_font">@string/calibri_regular</string>
+    <string name="tp_button_font">@string/calibri_bold</string>
     <string name="tp_am">AM</string>
     <string name="tp_pm">PM</string>
     <string name="tp_cancel">CANCEL</string>
     <string name="tp_confirm">CONFIRM</string>
 
-    <color name="tp_text">#6D6E71</color>
-    <color name="tp_primary">#27AE60</color>
-    <color name="tp_minute">#1D1D1D</color>
-    <color name="tp_hour">@color/tp_primary</color>
-    <color name="tp_not_selected_1">#C7C7C7</color>
-    <color name="tp_not_selected_2">#808080</color>
-    <color name="tp_divider">@color/tp_primary</color>
-    <color name="tp_hour_background">#5027AE60</color>
-    <color name="tp_min_background">#50707070</color>
-    <color name="tp_am_pm_border">#C4C4C4</color>
+    <color name="tp_default_text_color">#6D6E71</color>
+    <color name="tp_accent_color">#27AE60</color>
+    <color name="tp_hour_text_color">@color/tp_accent_color</color>
+    <color name="tp_hour_background_color">#5027AE60</color>
+    <color name="tp_minute_text_color">#1D1D1D</color>
+    <color name="tp_minute_background_color">#50707070</color>
+    <color name="tp_content_unselected_text_color">#C7C7C7</color>
+    <color name="tp_period_border_color">#C4C4C4</color>
+    <color name="tp_period_unselected_color">#808080</color>
+
+    <dimen name="tp_title_text_size">@dimen/seventeen</dimen>
+    <dimen name="tp_title_padding">@dimen/ten</dimen>
+    <dimen name="tp_content_width">@dimen/seventy</dimen>
+    <dimen name="tp_content_height">@dimen/seventy</dimen>
+    <dimen name="tp_time_text_size">@dimen/forty</dimen>
+    <dimen name="tp_content_spacing">@dimen/twenty</dimen>
+    <dimen name="tp_period_width">@dimen/forty_five</dimen>
+    <dimen name="tp_period_height">@dimen/tp_content_height</dimen>
+    <dimen name="tp_period_text_size">@dimen/fourteen</dimen>
+    <dimen name="tp_button_width">@dimen/one_hundred</dimen>
+    <dimen name="tp_button_height">@dimen/thirty_four</dimen>
+    <dimen name="tp_button_text_size">@dimen/seventeen</dimen>
+    <dimen name="tp_button_padding">@dimen/seventeen</dimen>
+    <dimen name="tp_button_spacing">@dimen/five</dimen>
+    <dimen name="tp_colon_size">@dimen/five</dimen>
+    <dimen name="tp_colon_spacing">@dimen/fifteen</dimen>
+
 </resources>

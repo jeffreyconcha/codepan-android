@@ -70,7 +70,7 @@ public class CalendarDay extends FrameLayout {
 			int itemHeight = (getHeight() / numRows) - spacing;
 			adapter = new CalendarDayAdapter(getContext(), dayList, itemHeight);
 			adapter.setSelectedColor(parent.getSelectedColor());
-			adapter.setTextColor(parent.getContentTextColor());
+			adapter.setTextColor(parent.getDefaultTextColor());
 			adapter.setTextSize(parent.getContentTextSize());
 			adapter.setFont(parent.getContentFont());
 			gvCalendarDay.setAdapter(adapter);

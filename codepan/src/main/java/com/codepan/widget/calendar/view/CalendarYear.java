@@ -58,7 +58,7 @@ public class CalendarYear extends FrameLayout {
 		if (adapter == null) {
 			int itemHeight = (getHeight() / numRows) - spacing;
 			adapter = new CalendarYearAdapter(getContext(), yearList, itemHeight);
-			adapter.setTextColor(parent.getContentTextColor());
+			adapter.setTextColor(parent.getDefaultTextColor());
 			adapter.setTextSize(parent.getContentTextSize());
 			adapter.setFont(parent.getContentFont());
 			gvCalendarYear.setAdapter(adapter);

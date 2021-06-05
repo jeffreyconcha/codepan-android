@@ -3,6 +3,7 @@ package com.codepan.widget.camera;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -45,7 +46,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	private final int IMAGE_ROTATION_BACK = 90;
 
 	private boolean isFrontCamInverted, hasAutoFocus, isCaptured, hasFlash,
-			hasFrontCam, hasStopped, isScaled;
+		hasFrontCam, hasStopped, isScaled;
 	private int cameraSelection, maxWidth, maxHeight, picWidth, picHeight;
 	private OnCameraChangeCallback cameraChangeCallback;
 	private FocusIndicatorView focusIndicatorView;
@@ -53,6 +54,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	private ArrayList<StampData> stampList;
 	private SurfaceHolder surfaceHolder;
 	private String folder, prefix;
+	private boolean isLandscape;
 	private Parameters params;
 	private String flashMode;
 	private Context context;
@@ -60,14 +62,14 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
 	@SuppressWarnings("deprecation")
 	public CameraSurfaceView(Context context, OnCameraErrorCallback cameraErrorCallback,
-			int cameraSelection, String flashMode, String folder,
-			int maxWidth, int maxHeight) {
+							 int cameraSelection, String flashMode, String folder,
+							 int maxWidth, int maxHeight) {
 		super(context);
 		PackageManager pm = context.getPackageManager();
 		this.hasFrontCam = pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT);
 		this.hasAutoFocus = pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS);
 		this.camera = getAvailableCamera(cameraSelection);
-		if(camera != null) {
+		if (camera != null) {
 			this.cameraSelection = cameraSelection;
 			this.flashMode = flashMode;
 			this.maxHeight = maxHeight;
@@ -78,10 +80,12 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 			this.surfaceHolder = getHolder();
 			this.surfaceHolder.addCallback(this);
 			this.surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+			final int orientation = context.getResources().getConfiguration().orientation;
+			this.isLandscape = orientation == Configuration.ORIENTATION_LANDSCAPE;
 			List<String> flashModeList = params.getSupportedFlashModes();
-			if(flashModeList != null && !flashModeList.isEmpty()) {
-				for(String mode : flashModeList) {
-					if(mode.equals(Parameters.FLASH_MODE_ON)) {
+			if (flashModeList != null && !flashModeList.isEmpty()) {
+				for (String mode : flashModeList) {
+					if (mode.equals(Parameters.FLASH_MODE_ON)) {
 						this.hasFlash = true;
 						break;
 					}
@@ -110,15 +114,16 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 			camera.setPreviewDisplay(holder);
 			params = camera.getParameters();
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-				int result = 90;
-				if(hasFrontCam && cameraSelection == CameraInfo.CAMERA_FACING_FRONT) {
+				int orientation = 90;
+				if (hasFrontCam && cameraSelection == CameraInfo.CAMERA_FACING_FRONT) {
 					CameraInfo info = new CameraInfo();
 					Camera.getCameraInfo(CAMERA_ID, info);
-					result = (info.orientation) % 360;
-					result = (360 - result) % 360;
-					isFrontCamInverted = result == 270;
+					orientation = (info.orientation) % 360;
+					orientation = (360 - orientation) % 360;
+					isFrontCamInverted = orientation == 270;
 				}
-				camera.setDisplayOrientation(result);
+				orientation = isLandscape ? 0 : orientation;
+				camera.setDisplayOrientation(orientation);
 			}
 			else {
 				params.set("orientation", "portrait");
@@ -135,8 +140,10 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 			float maxOutputHeight = 0f;
 			for(Size s : previewSizes) {
 				float ratio = (float) s.width / (float) s.height;
-				float outputHeight = (float) maxWidth * ratio;
-				if(maxOutputHeight < outputHeight) {
+				float outputHeight = isLandscape ?
+					(float) maxWidth / ratio :
+					(float) maxWidth * ratio;
+				if (maxOutputHeight < outputHeight) {
 					maxOutputHeight = outputHeight;
 					previewHeight = s.height;
 					previewWidth = s.width;
@@ -379,8 +386,10 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 			List<Size> sizes = params.getSupportedPreviewSizes();
 			for(Size s : sizes) {
 				float ratio = (float) s.width / (float) s.height;
-				float outputHeight = (float) maxWidth * ratio;
-				if(maxOutputHeight < outputHeight) {
+				float outputHeight = isLandscape ?
+					(float) maxWidth / ratio :
+					(float) maxWidth * ratio;
+				if (maxOutputHeight < outputHeight) {
 					maxOutputHeight = outputHeight;
 					maxRatio = ratio;
 				}
@@ -417,14 +426,14 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 			}
 		}
 		else {
-			if(hasFrontCam) {
+			if (hasFrontCam) {
 				rotation = IMAGE_ROTATION_FRONT;
 			}
 			else {
 				rotation = IMAGE_ROTATION_BACK;
 			}
 		}
-		return rotation;
+		return isLandscape ? 0 : rotation;
 	}
 
 	@SuppressLint("NewApi")

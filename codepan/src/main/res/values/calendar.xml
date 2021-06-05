@@ -1,39 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="cal_header_color">@color/white</color>
-    <color name="cal_accent_color">#27AE60</color>
 
-    <dimen name="cal_title_text_size">@dimen/seventeen</dimen>
-    <dimen name="cal_title_padding">@dimen/ten</dimen>
-    <string name="cal_title_font">@string/calibri_bold</string>
-
-    <dimen name="cal_content_text_size">@dimen/seventeen</dimen>
-    <color name="cal_content_text_color">#6D6E71</color>
-    <dimen name="cal_content_padding">@dimen/five</dimen>
-    <string name="cal_content_font">@string/calibri_regular</string>
-
-    <dimen name="cal_button_text_size">@dimen/seventeen</dimen>
-    <dimen name="cal_button_padding">@dimen/eight</dimen>
-    <dimen name="cal_button_width">@dimen/one_hundred</dimen>
-    <string name="cal_button_font">@string/calibri_bold</string>
-
-    <dimen name="cal_arrow_size">@dimen/thirty_five</dimen>
-    <dimen name="cal_arrow_icon_width">@dimen/eight</dimen>
-    <dimen name="cal_arrow_icon_height">@dimen/twelve</dimen>
-
-    <dimen name="cal_year_text_size">@dimen/eighteen</dimen>
-    <dimen name="cal_date_text_size">@dimen/twenty_five</dimen>
-    <dimen name="cal_month_text_size">@dimen/eighteen</dimen>
-
-    <color name="cal_inactive_text_color">#B2B3B5</color>
-    <color name="cal_selected_color">#3396D8</color>
-    <color name="cal_day_active">@color/cal_content_text_color</color>
-    <color name="cal_day_selected">@color/white</color>
-    <color name="cal_background">@color/white</color>
-    <color name="cal_date_background">#F1F2F2</color>
-    <color name="cal_cancel">@color/cal_content_text_color</color>
-    <color name="cal_save">@color/cal_accent_color</color>
-    <color name="cal_grid">#D2D3D5</color>
     <string name="cal_title">Calendar</string>
     <string name="cal_cancel">cancel</string>
     <string name="cal_select">select</string>
@@ -44,11 +11,45 @@
     <string name="cal_thursday">T</string>
     <string name="cal_friday">F</string>
     <string name="cal_saturday">S</string>
+
+    <string name="cal_title_font">@string/calibri_bold</string>
+    <string name="cal_content_font">@string/calibri_regular</string>
+    <string name="cal_button_font">@string/calibri_bold</string>
+
+    <color name="cal_header_color">@color/white</color>
+    <color name="cal_accent_color">#27AE60</color>
+    <color name="cal_default_text_color">#6D6E71</color>
+    <color name="cal_inactive_text_color">#B2B3B5</color>
+    <color name="cal_selected_color">#3396D8</color>
+    <color name="cal_day_active_color">@color/cal_default_text_color</color>
+    <color name="cal_day_selected_color">@color/white</color>
+    <color name="cal_background">@color/white</color>
+    <color name="cal_date_background">#F1F2F2</color>
+    <color name="cal_cancel">@color/cal_default_text_color</color>
+    <color name="cal_save">@color/cal_accent_color</color>
+    <color name="cal_grid">#D2D3D5</color>
+
+    <dimen name="cal_title_text_size">@dimen/seventeen</dimen>
+    <dimen name="cal_title_padding">@dimen/ten</dimen>
+    <dimen name="cal_content_text_size">@dimen/seventeen</dimen>
+    <dimen name="cal_content_padding">@dimen/five</dimen>
+    <dimen name="cal_button_text_size">@dimen/seventeen</dimen>
+    <dimen name="cal_button_width">@dimen/one_hundred</dimen>
+    <dimen name="cal_button_height">@dimen/thirty_four</dimen>
+    <dimen name="cal_button_padding">@dimen/ten</dimen>
+    <dimen name="cal_button_spacing">@dimen/five</dimen>
+    <dimen name="cal_arrow_size">@dimen/thirty_five</dimen>
+    <dimen name="cal_arrow_icon_width">@dimen/eight</dimen>
+    <dimen name="cal_arrow_icon_height">@dimen/twelve</dimen>
+    <dimen name="cal_year_text_size">@dimen/eighteen</dimen>
+    <dimen name="cal_date_text_size">@dimen/twenty_five</dimen>
+    <dimen name="cal_month_text_size">@dimen/eighteen</dimen>
+    <dimen name="cal_spacing">@dimen/one</dimen>
+
     <integer name="day_col">7</integer>
     <integer name="day_row">6</integer>
     <integer name="month_col">4</integer>
     <integer name="month_row">3</integer>
     <integer name="year_col">4</integer>
     <integer name="year_row">3</integer>
-    <dimen name="cal_spacing">@dimen/one</dimen>
 </resources>

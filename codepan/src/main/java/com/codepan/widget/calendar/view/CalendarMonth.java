@@ -58,7 +58,7 @@ public class CalendarMonth extends FrameLayout {
 		if (adapter == null) {
 			int itemHeight = (getHeight() / numRows) - spacing;
 			adapter = new CalendarMonthAdapter(getContext(), monthList, itemHeight);
-			adapter.setTextColor(parent.getContentTextColor());
+			adapter.setTextColor(parent.getDefaultTextColor());
 			adapter.setTextSize(parent.getContentTextSize());
 			adapter.setFont(parent.getContentFont());
 			gvCalendarMonth.setAdapter(adapter);

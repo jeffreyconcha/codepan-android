@@ -27,8 +27,8 @@ public class CalendarDayAdapter extends ArrayAdapter<DayData> {
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		final Resources res = context.getResources();
 		this.inActive = res.getColor(R.color.cal_inactive_text_color);
-		this.active = res.getColor(R.color.cal_day_active);
-		this.selected = res.getColor(R.color.cal_day_selected);
+		this.active = res.getColor(R.color.cal_day_active_color);
+		this.selected = res.getColor(R.color.cal_day_selected_color);
 		this.items = items;
 		this.itemHeight = itemHeight;
 	}

@@ -82,7 +82,7 @@
         <attr name="titlePadding" format="dimension"/>
         <attr name="accentColor" format="color"/>
         <attr name="selectedColor" format="color"/>
-        <attr name="contentTexColor" format="color"/>
+        <attr name="defaultTexColor" format="color"/>
         <attr name="contentFont" format="string"/>
         <attr name="contentPadding" format="dimension"/>
         <attr name="contentTextSize" format="dimension"/>
@@ -93,9 +93,36 @@
         <attr name="arrowIconWidth" format="dimension"/>
         <attr name="arrowIconHeight" format="dimension"/>
         <attr name="buttonFont" format="string"/>
-        <attr name="buttonPadding" format="dimension"/>
         <attr name="buttonWidth" format="dimension"/>
+        <attr name="buttonHeight" format="dimension"/>
         <attr name="buttonTextSize" format="dimension"/>
+        <attr name="buttonSpacing" format="dimension"/>
+        <attr name="buttonPadding" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="TimePickerView">
+        <attr name="title" format="string"/>
+        <attr name="titleFont" format="string"/>
+        <attr name="titleTextSize" format="dimension"/>
+        <attr name="titlePadding" format="dimension"/>
+        <attr name="accentColor" format="color"/>
+        <attr name="defaultTexColor" format="color"/>
+        <attr name="hourTextColor" format="color"/>
+        <attr name="hourBackgroundColor" format="color"/>
+        <attr name="minuteTextColor" format="color"/>
+        <attr name="minuteBackgroundColor" format="color"/>
+        <attr name="timeTextSize" format="dimension"/>
+        <attr name="periodWidth" format="dimension"/>
+        <attr name="periodHeight" format="dimension"/>
+        <attr name="periodTextSize" format="dimension"/>
+        <attr name="buttonFont" format="string"/>
+        <attr name="buttonWidth" format="dimension"/>
+        <attr name="buttonHeight" format="dimension"/>
+        <attr name="buttonTextSize" format="dimension"/>
+        <attr name="buttonSpacing" format="dimension"/>
+        <attr name="buttonPadding" format="dimension"/>
+        <attr name="colonSize" format="dimension"/>
+        <attr name="colonSpacing" format="dimension"/>
     </declare-styleable>
 
     <!--sample

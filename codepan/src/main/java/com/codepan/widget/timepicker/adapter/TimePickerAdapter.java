@@ -8,34 +8,30 @@ import android.view.ViewGroup;
 
 import com.codepan.R;
 import com.codepan.callback.Interface.OnItemClickCallback;
-import com.codepan.widget.timepicker.constant.TimeElementType;
-import com.codepan.widget.timepicker.model.TimePickerData;
 import com.codepan.widget.CodePanLabel;
+import com.codepan.widget.timepicker.model.TimePickerData;
 
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 public class TimePickerAdapter extends RecyclerView.Adapter<TimePickerAdapter.ViewHolder> {
 
+	private final int selectedColor, defaultColor;
 	private OnItemClickCallback itemClickCallback;
-	private ArrayList<TimePickerData> items;
-	private int defaultColor, selectedColor;
-	private LayoutInflater inflater;
+	private final ArrayList<TimePickerData> items;
+	private final LayoutInflater inflater;
+	private final int textSize;
 
-	public TimePickerAdapter(Context context, ArrayList<TimePickerData> items, TimeElementType type) {
+	public TimePickerAdapter(Context context, ArrayList<TimePickerData> items,
+							 int selectedColor, int textSize) {
 		this.inflater = LayoutInflater.from(context);
 		this.items = items;
+		this.selectedColor = selectedColor;
+		this.textSize = textSize;
 		Resources res = context.getResources();
-		switch(type) {
-			case HOUR:
-				this.selectedColor = res.getColor(R.color.tp_hour);
-				break;
-			case MINUTE:
-				this.selectedColor = res.getColor(R.color.tp_minute);
-				break;
-		}
-		this.defaultColor = res.getColor(R.color.tp_not_selected_1);
+		this.defaultColor = res.getColor(R.color.tp_content_unselected_text_color);
 	}
 
 	@NonNull
@@ -50,6 +46,7 @@ public class TimePickerAdapter extends RecyclerView.Adapter<TimePickerAdapter.Vi
 		int index = getIndex(position);
 		TimePickerData data = items.get(index);
 		if(data != null) {
+			holder.tvValue.setTextSize(textSize);
 			holder.tvValue.setText(data.display);
 			if(data.isSelected) {
 				holder.tvValue.setTextColor(selectedColor);
@@ -77,6 +74,12 @@ public class TimePickerAdapter extends RecyclerView.Adapter<TimePickerAdapter.Vi
 
 	public void setOnItemClickCallback(OnItemClickCallback itemClickCallback) {
 		this.itemClickCallback = itemClickCallback;
+	}
+
+	public void setHourTextColor(int hourTextColor) {
+	}
+
+	public void setMinuteTextColor(int minuteTextColor) {
 	}
 
 	static class ViewHolder extends RecyclerView.ViewHolder {

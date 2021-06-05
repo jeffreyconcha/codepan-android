@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:codePan="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/tp_background"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <com.codepan.widget.CodePanLabel
+        android:id="@+id/tvTitleTimePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/tp_title_padding"
+        android:text="@string/tp_title"
+        android:textColor="@color/tp_default_text_color"
+        android:textSize="@dimen/tp_title_text_size"
+        codePan:typeface="@string/tp_title_font"/>
+
+    <View
+        android:id="@+id/vDividerTimePicker"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/two"
+        android:background="@color/tp_accent_color"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/flContentTimePicker"
+            android:layout_width="@dimen/one_hundred_sixty"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvHourTimePicker"
+                    android:layout_width="@dimen/tp_content_width"
+                    android:layout_height="match_parent"/>
+
+                <LinearLayout
+                    android:id="@+id/llColonTimePicker"
+                    android:layout_width="@dimen/tp_content_spacing"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="@dimen/tp_colon_size"
+                        android:layout_height="@dimen/tp_colon_size"
+                        android:background="@drawable/tp_separator"/>
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/tp_colon_spacing"/>
+
+                    <View
+                        android:layout_width="@dimen/tp_colon_size"
+                        android:layout_height="@dimen/tp_colon_size"
+                        android:background="@drawable/tp_separator"/>
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvMinutesTimePicker"
+                    android:layout_width="@dimen/tp_content_width"
+                    android:layout_height="match_parent"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/tp_content_height"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/vHourTimePicker"
+                    android:layout_width="@dimen/seventy"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="@dimen/ten"
+                    android:layout_marginRight="@dimen/ten"
+                    android:background="@drawable/tp_hour_background"/>
+
+                <View
+                    android:id="@+id/vMinuteTimePicker"
+                    android:layout_width="@dimen/seventy"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/ten"
+                    android:layout_marginLeft="@dimen/ten"
+                    android:background="@drawable/tp_min_background"/>
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/llPeriodTimePicker"
+            android:layout_width="@dimen/tp_period_width"
+            android:layout_height="@dimen/tp_period_height"
+            android:layout_marginStart="@dimen/ten"
+            android:layout_marginLeft="@dimen/ten"
+            android:background="@drawable/tp_am_pm_background"
+            android:orientation="vertical"
+            android:weightSum="2">
+
+            <com.codepan.widget.CodePanLabel
+                android:id="@+id/tvAMTimePicker"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/tp_am_active_background"
+                android:gravity="center"
+                android:text="@string/tp_am"
+                android:textColor="@color/tp_accent_color"
+                android:textSize="@dimen/tp_period_text_size"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/one"
+                android:background="@color/tp_period_border_color"/>
+
+            <com.codepan.widget.CodePanLabel
+                android:id="@+id/tvPMTimePicker"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/tp_pm_inactive_background"
+                android:gravity="center"
+                android:text="@string/tp_pm"
+                android:textColor="@color/tp_period_unselected_color"
+                android:textSize="@dimen/tp_period_text_size"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/tp_button_padding">
+
+        <com.codepan.widget.CodePanButton
+            android:id="@+id/btnCancelTimePicker"
+            style="?android:borderlessButtonStyle"
+            android:layout_width="@dimen/tp_button_width"
+            android:layout_height="@dimen/tp_button_height"
+            android:background="@drawable/state_rect_white_rad_three"
+            android:gravity="center"
+            android:text="@string/tp_cancel"
+            android:textColor="@color/tp_default_text_color"
+            android:textSize="@dimen/tp_button_text_size"
+            codePan:typeface="@string/tp_button_font"/>
+
+        <View
+            android:id="@+id/vButtonTimePicker"
+            android:layout_width="@dimen/tp_button_spacing"
+            android:layout_height="0dp"/>
+
+        <com.codepan.widget.CodePanButton
+            android:id="@+id/btnConfirmTimePicker"
+            style="?android:borderlessButtonStyle"
+            android:layout_width="@dimen/tp_button_width"
+            android:layout_height="@dimen/tp_button_height"
+            android:background="@drawable/state_rect_white_rad_three"
+            android:text="@string/tp_confirm"
+            android:textColor="@color/tp_accent_color"
+            android:textSize="@dimen/tp_button_text_size"
+            codePan:typeface="@string/tp_button_font"/>
+
+    </LinearLayout>
+
+</LinearLayout>

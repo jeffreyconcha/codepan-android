@@ -19,7 +19,7 @@
             android:background="@drawable/state_oval_trans_dark"
             android:gravity="center"
             android:maxLines="1"
-            android:textColor="@color/cal_day_active"
+            android:textColor="@color/cal_day_active_color"
             android:textSize="@dimen/cal_content_text_size"
             codePan:typeface="@string/cal_content_font"/>
 
