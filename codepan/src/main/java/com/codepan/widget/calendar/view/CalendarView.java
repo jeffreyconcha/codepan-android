@@ -139,6 +139,7 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 		tvTitleCalendar.setTextSize(titleTextSize);
 		tvTitleCalendar.setPadding(titlePadding);
 		tvTitleCalendar.setTextColor(defaultTextColor);
+		tvTitleCalendar.setFont(titleFont);
 		btnConfirmCalendar.setTextColor(accentColor);
 		btnMonthYearCalendar.setFont(titleFont);
 		btnMonthYearCalendar.setTextColorPressed(accentColor);

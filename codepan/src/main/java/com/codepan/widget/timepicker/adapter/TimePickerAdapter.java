@@ -1,7 +1,6 @@
 package com.codepan.widget.timepicker.adapter;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,26 +18,31 @@ import androidx.recyclerview.widget.RecyclerView;
 public class TimePickerAdapter extends RecyclerView.Adapter<TimePickerAdapter.ViewHolder> {
 
 	private final int selectedTextColor, unselectedTextColor;
+	private final int textSize, itemWidth, itemHeight;
 	private OnItemClickCallback itemClickCallback;
 	private final ArrayList<TimePickerData> items;
 	private final LayoutInflater inflater;
-	private final int textSize;
 
 	public TimePickerAdapter(Context context, ArrayList<TimePickerData> items,
-							 int selectedTextColor, int unselectedTextColor,
-							 int textSize) {
+							 int itemWidth, int itemHeight, int textSize,
+							 int selectedTextColor, int unselectedTextColor) {
 		this.inflater = LayoutInflater.from(context);
 		this.items = items;
+		this.itemWidth = itemWidth;
+		this.itemHeight = itemHeight;
+		this.textSize = textSize;
 		this.selectedTextColor = selectedTextColor;
 		this.unselectedTextColor = unselectedTextColor;
-		this.textSize = textSize;
-		Resources res = context.getResources();
 	}
 
 	@NonNull
 	@Override
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		View view = inflater.inflate(R.layout.time_picker_item, parent, false);
+		CodePanLabel tvValue = (CodePanLabel) view;
+		tvValue.setTextSize(textSize);
+		tvValue.getLayoutParams().width = itemWidth;
+		tvValue.getLayoutParams().height = itemHeight;
 		return new ViewHolder(view);
 	}
 
@@ -47,7 +51,6 @@ public class TimePickerAdapter extends RecyclerView.Adapter<TimePickerAdapter.Vi
 		int index = getIndex(position);
 		TimePickerData data = items.get(index);
 		if(data != null) {
-			holder.tvValue.setTextSize(textSize);
 			holder.tvValue.setText(data.display);
 			if(data.isSelected) {
 				holder.tvValue.setTextColor(selectedTextColor);

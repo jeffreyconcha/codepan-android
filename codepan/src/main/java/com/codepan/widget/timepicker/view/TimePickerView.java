@@ -149,6 +149,7 @@ public class TimePickerView extends FrameLayout {
 		tvTitleTimePicker.setTextSize(titleTextSize);
 		tvTitleTimePicker.setPadding(titlePadding);
 		tvTitleTimePicker.setTextColor(defaultTextColor);
+		tvTitleTimePicker.setFont(titleFont);
 		btnCancelTimePicker.setTextColor(defaultTextColor);
 		btnConfirmTimePicker.setTextColor(accentColor);
 		btnCancelTimePicker.setFont(buttonFont);
@@ -167,9 +168,11 @@ public class TimePickerView extends FrameLayout {
 		vHourTimePicker.getLayoutParams().height = timeItemHeight;
 		vMinuteTimePicker.getLayoutParams().width = timeItemWidth;
 		vMinuteTimePicker.getLayoutParams().height = timeItemHeight;
+
 		vTimeSpacingTimePicker.getLayoutParams().width = timeSpacing;
 		flContentTimePicker.getLayoutParams().width = (timeItemWidth * 2) + timeSpacing;
 		flContentTimePicker.getLayoutParams().height = timeItemHeight * 3;
+
 		llPeriodTimePicker.getLayoutParams().width = periodWidth;
 		llPeriodTimePicker.getLayoutParams().height = Math.min(periodHeight, timeItemHeight);
 		GradientDrawable p = (GradientDrawable) llPeriodTimePicker.getBackground();
@@ -324,8 +327,9 @@ public class TimePickerView extends FrameLayout {
 		view.setLayoutManager(manager);
 		int selectedColor = type == TimeElementType.HOUR ?
 			hourSelectedTextColor : minuteSelectedTextColor;
-		final TimePickerAdapter adapter = new TimePickerAdapter(context,
-			itemList, selectedColor, timeUnselectedTextColor, timeTextSize);
+		final TimePickerAdapter adapter = new TimePickerAdapter(context, itemList,
+			timeItemWidth, timeItemHeight, timeTextSize,
+			selectedColor, timeUnselectedTextColor);
 		adapter.setOnItemClickCallback((position, v, parent) -> {
 			switch (type) {
 				case HOUR:
