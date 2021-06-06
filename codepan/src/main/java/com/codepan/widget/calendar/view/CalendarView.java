@@ -228,32 +228,32 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 
 	private void setProperties(AttributeSet attrs) {
 		TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.CalendarView);
-		String _title = ta.getString(R.styleable.CalendarView_title);
-		String _titleFont = ta.getString(R.styleable.CalendarView_titleFont);
-		String _contentFont = ta.getString(R.styleable.CalendarView_contentFont);
-		String _buttonFont = ta.getString(R.styleable.CalendarView_buttonFont);
+		String _title = ta.getString(R.styleable.CalendarView_cal_title);
+		String _titleFont = ta.getString(R.styleable.CalendarView_cal_titleFont);
+		String _contentFont = ta.getString(R.styleable.CalendarView_cal_contentFont);
+		String _buttonFont = ta.getString(R.styleable.CalendarView_cal_buttonFont);
 		title = _title != null ? _title : title;
 		titleFont = _titleFont != null ? _titleFont : titleFont;
-		titlePadding = ta.getDimensionPixelSize(R.styleable.CalendarView_titlePadding, titlePadding);
-		titleTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_titleTextSize, titleTextSize);
-		defaultTextColor = ta.getColor(R.styleable.CalendarView_defaultTexColor, defaultTextColor);
+		titlePadding = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_titlePadding, titlePadding);
+		titleTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_titleTextSize, titleTextSize);
+		defaultTextColor = ta.getColor(R.styleable.CalendarView_cal_defaultTexColor, defaultTextColor);
 		contentFont = _contentFont != null ? _contentFont : contentFont;
-		contentTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_contentTextSize, contentTextSize);
-		contentPadding = ta.getDimensionPixelSize(R.styleable.CalendarView_contentPadding, contentPadding);
-		accentColor = ta.getColor(R.styleable.CalendarView_accentColor, accentColor);
-		selectedColor = ta.getColor(R.styleable.CalendarView_selectedColor, selectedColor);
-		dateTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_dateTextSize, dateTextSize);
-		yearTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_yearTextSize, yearTextSize);
-		monthTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_monthTextSize, monthTextSize);
-		arrowSize = ta.getDimensionPixelSize(R.styleable.CalendarView_arrowSize, arrowSize);
-		arrowIconWidth = ta.getDimensionPixelSize(R.styleable.CalendarView_arrowIconWidth, arrowIconWidth);
-		arrowIconHeight = ta.getDimensionPixelSize(R.styleable.CalendarView_arrowIconHeight, arrowIconHeight);
+		contentTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_contentTextSize, contentTextSize);
+		contentPadding = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_contentPadding, contentPadding);
+		accentColor = ta.getColor(R.styleable.CalendarView_cal_accentColor, accentColor);
+		selectedColor = ta.getColor(R.styleable.CalendarView_cal_selectedColor, selectedColor);
+		dateTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_dateTextSize, dateTextSize);
+		yearTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_yearTextSize, yearTextSize);
+		monthTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_monthTextSize, monthTextSize);
+		arrowSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_arrowSize, arrowSize);
+		arrowIconWidth = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_arrowIconWidth, arrowIconWidth);
+		arrowIconHeight = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_arrowIconHeight, arrowIconHeight);
 		buttonFont = _buttonFont != null ? _buttonFont : buttonFont;
-		buttonWidth = ta.getDimensionPixelSize(R.styleable.CalendarView_buttonWidth, buttonWidth);
-		buttonHeight = ta.getDimensionPixelSize(R.styleable.CalendarView_buttonHeight, buttonHeight);
-		buttonTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_buttonTextSize, buttonTextSize);
-		buttonSpacing = ta.getDimensionPixelSize(R.styleable.CalendarView_buttonSpacing, buttonSpacing);
-		buttonPadding = ta.getDimensionPixelSize(R.styleable.CalendarView_buttonPadding, buttonPadding);
+		buttonWidth = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_buttonWidth, buttonWidth);
+		buttonHeight = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_buttonHeight, buttonHeight);
+		buttonTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_buttonTextSize, buttonTextSize);
+		buttonSpacing = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_buttonSpacing, buttonSpacing);
+		buttonPadding = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_buttonPadding, buttonPadding);
 		ta.recycle();
 	}
 
