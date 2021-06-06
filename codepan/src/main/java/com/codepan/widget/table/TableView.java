@@ -97,7 +97,7 @@ public class TableView extends FrameLayout {
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		final View view = inflate(context, R.layout.table_layout, this);
+		final View view = inflate(context, R.layout.table_view_layout, this);
 		llMainTable = view.findViewById(R.id.llMainTable);
 		llContentTable = view.findViewById(R.id.llContentTable);
 		llTopTable = view.findViewById(R.id.llTopTable);

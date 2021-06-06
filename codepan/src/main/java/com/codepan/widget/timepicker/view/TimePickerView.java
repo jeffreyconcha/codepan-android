@@ -204,7 +204,7 @@ public class TimePickerView extends FrameLayout {
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		View view = inflate(context, R.layout.time_picker_layout, this);
+		View view = inflate(context, R.layout.time_picker_view_layout, this);
 		flContentTimePicker = view.findViewById(R.id.flContentTimePicker);
 		llPeriodTimePicker = view.findViewById(R.id.llPeriodTimePicker);
 		llColonTimePicker = view.findViewById(R.id.llColonTimePicker);

@@ -181,7 +181,7 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		View view = inflate(context, R.layout.calendar_layout, this);
+		View view = inflate(context, R.layout.calendar_view_layout, this);
 		tvTitleCalendar = view.findViewById(R.id.tvTitleCalendar);
 		tvYearCalendar = view.findViewById(R.id.tvYearCalendar);
 		tvDateCalendar = view.findViewById(R.id.tvDateCalendar);
