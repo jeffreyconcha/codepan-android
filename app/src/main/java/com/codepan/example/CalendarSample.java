@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-public class CalendarFragment extends Fragment {
+public class CalendarSample extends Fragment {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -19,6 +19,6 @@ public class CalendarFragment extends Fragment {
 	@Nullable
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.calendar_layout, container, false);
+		return inflater.inflate(R.layout.calendar_sample_layout, container, false);
 	}
 }

@@ -14,17 +14,27 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_layout);
 		findViewById(R.id.btnCalendar).setOnClickListener(view -> {
-			CalendarFragment calendar = new CalendarFragment();
+			CalendarSample dialog = new CalendarSample();
 			FragmentManager manager = getSupportFragmentManager();
 			FragmentTransaction transaction = manager.beginTransaction();
 			transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out,
 				R.anim.fade_in, R.anim.fade_out);
-			transaction.add(R.id.rlMain, calendar);
+			transaction.add(R.id.rlMain, dialog);
+			transaction.addToBackStack(null);
+			transaction.commit();
+		});
+		findViewById(R.id.btnTimePicker).setOnClickListener(view -> {
+			TimePickerSample dialog = new TimePickerSample();
+			FragmentManager manager = getSupportFragmentManager();
+			FragmentTransaction transaction = manager.beginTransaction();
+			transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out,
+				R.anim.fade_in, R.anim.fade_out);
+			transaction.add(R.id.rlMain, dialog);
 			transaction.addToBackStack(null);
 			transaction.commit();
 		});
 		findViewById(R.id.btnTable).setOnClickListener(view -> {
-			TableFragment table = new TableFragment();
+			TableSample table = new TableSample();
 			FragmentManager manager = getSupportFragmentManager();
 			FragmentTransaction transaction = manager.beginTransaction();
 			transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out,

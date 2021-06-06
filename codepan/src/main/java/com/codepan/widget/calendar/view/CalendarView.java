@@ -103,6 +103,79 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 		setProperties(attrs);
 	}
 
+	private void setProperties(AttributeSet attrs) {
+		TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.CalendarView);
+		String _title = ta.getString(R.styleable.CalendarView_cal_title);
+		String _titleFont = ta.getString(R.styleable.CalendarView_cal_titleFont);
+		String _contentFont = ta.getString(R.styleable.CalendarView_cal_contentFont);
+		String _buttonFont = ta.getString(R.styleable.CalendarView_cal_buttonFont);
+		title = _title != null ? _title : title;
+		titleFont = _titleFont != null ? _titleFont : titleFont;
+		titlePadding = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_titlePadding, titlePadding);
+		titleTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_titleTextSize, titleTextSize);
+		defaultTextColor = ta.getColor(R.styleable.CalendarView_cal_defaultTexColor, defaultTextColor);
+		contentFont = _contentFont != null ? _contentFont : contentFont;
+		contentTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_contentTextSize, contentTextSize);
+		contentPadding = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_contentPadding, contentPadding);
+		accentColor = ta.getColor(R.styleable.CalendarView_cal_accentColor, accentColor);
+		selectedColor = ta.getColor(R.styleable.CalendarView_cal_selectedColor, selectedColor);
+		dateTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_dateTextSize, dateTextSize);
+		yearTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_yearTextSize, yearTextSize);
+		monthTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_monthTextSize, monthTextSize);
+		arrowSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_arrowSize, arrowSize);
+		arrowIconWidth = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_arrowIconWidth, arrowIconWidth);
+		arrowIconHeight = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_arrowIconHeight, arrowIconHeight);
+		buttonFont = _buttonFont != null ? _buttonFont : buttonFont;
+		buttonWidth = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_buttonWidth, buttonWidth);
+		buttonHeight = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_buttonHeight, buttonHeight);
+		buttonTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_buttonTextSize, buttonTextSize);
+		buttonSpacing = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_buttonSpacing, buttonSpacing);
+		buttonPadding = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_buttonPadding, buttonPadding);
+		ta.recycle();
+	}
+
+	private void applyProperties() {
+		tvTitleCalendar.setText(title);
+		tvTitleCalendar.setTextSize(titleTextSize);
+		tvTitleCalendar.setPadding(titlePadding);
+		tvTitleCalendar.setTextColor(defaultTextColor);
+		btnConfirmCalendar.setTextColor(accentColor);
+		btnMonthYearCalendar.setFont(titleFont);
+		btnMonthYearCalendar.setTextColorPressed(accentColor);
+		btnMonthYearCalendar.setTextSize(monthTextSize);
+		llDayCalendar.setPadding(contentPadding, 0, contentPadding, 0);
+		tvDateCalendar.setFont(contentFont);
+		tvDateCalendar.setTextSize(dateTextSize);
+		tvYearCalendar.setFont(contentFont);
+		tvYearCalendar.setTextSize(yearTextSize);
+		flNextCalendar.getLayoutParams().width = arrowSize;
+		flNextCalendar.getLayoutParams().height = arrowSize;
+		flPreviousCalendar.getLayoutParams().width = arrowSize;
+		flPreviousCalendar.getLayoutParams().height = arrowSize;
+		vNextCalendar.getLayoutParams().width = arrowIconWidth;
+		vNextCalendar.getLayoutParams().height = arrowIconHeight;
+		vPreviousCalendar.getLayoutParams().width = arrowIconWidth;
+		vPreviousCalendar.getLayoutParams().height = arrowIconHeight;
+		btnCancelCalendar.setFont(buttonFont);
+		btnCancelCalendar.getLayoutParams().width = buttonWidth;
+		btnCancelCalendar.getLayoutParams().height = buttonHeight;
+		btnCancelCalendar.setPadding(buttonPadding);
+		btnCancelCalendar.setTextSize(buttonTextSize);
+		btnConfirmCalendar.setFont(buttonFont);
+		btnConfirmCalendar.getLayoutParams().width = buttonWidth;
+		btnConfirmCalendar.getLayoutParams().height = buttonHeight;
+		btnConfirmCalendar.setPadding(buttonPadding);
+		btnConfirmCalendar.setTextSize(buttonTextSize);
+		findViewById(R.id.vDividerCalendar).setBackgroundColor(accentColor);
+		findViewById(R.id.vButtonCalendar).getLayoutParams().width = buttonSpacing;
+		int count = llDayCalendar.getChildCount();
+		for (int i = 0; i < count; i++) {
+			CodePanLabel label = (CodePanLabel) llDayCalendar.getChildAt(i);
+			label.setFont(contentFont);
+			label.setTextSize(contentTextSize);
+		}
+	}
+
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
@@ -224,79 +297,6 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 		});
 		displayDate(selectedDate);
 		applyProperties();
-	}
-
-	private void setProperties(AttributeSet attrs) {
-		TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.CalendarView);
-		String _title = ta.getString(R.styleable.CalendarView_cal_title);
-		String _titleFont = ta.getString(R.styleable.CalendarView_cal_titleFont);
-		String _contentFont = ta.getString(R.styleable.CalendarView_cal_contentFont);
-		String _buttonFont = ta.getString(R.styleable.CalendarView_cal_buttonFont);
-		title = _title != null ? _title : title;
-		titleFont = _titleFont != null ? _titleFont : titleFont;
-		titlePadding = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_titlePadding, titlePadding);
-		titleTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_titleTextSize, titleTextSize);
-		defaultTextColor = ta.getColor(R.styleable.CalendarView_cal_defaultTexColor, defaultTextColor);
-		contentFont = _contentFont != null ? _contentFont : contentFont;
-		contentTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_contentTextSize, contentTextSize);
-		contentPadding = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_contentPadding, contentPadding);
-		accentColor = ta.getColor(R.styleable.CalendarView_cal_accentColor, accentColor);
-		selectedColor = ta.getColor(R.styleable.CalendarView_cal_selectedColor, selectedColor);
-		dateTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_dateTextSize, dateTextSize);
-		yearTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_yearTextSize, yearTextSize);
-		monthTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_monthTextSize, monthTextSize);
-		arrowSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_arrowSize, arrowSize);
-		arrowIconWidth = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_arrowIconWidth, arrowIconWidth);
-		arrowIconHeight = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_arrowIconHeight, arrowIconHeight);
-		buttonFont = _buttonFont != null ? _buttonFont : buttonFont;
-		buttonWidth = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_buttonWidth, buttonWidth);
-		buttonHeight = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_buttonHeight, buttonHeight);
-		buttonTextSize = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_buttonTextSize, buttonTextSize);
-		buttonSpacing = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_buttonSpacing, buttonSpacing);
-		buttonPadding = ta.getDimensionPixelSize(R.styleable.CalendarView_cal_buttonPadding, buttonPadding);
-		ta.recycle();
-	}
-
-	private void applyProperties() {
-		tvTitleCalendar.setText(title);
-		tvTitleCalendar.setTextSize(titleTextSize);
-		tvTitleCalendar.setPadding(titlePadding);
-		tvTitleCalendar.setTextColor(defaultTextColor);
-		btnConfirmCalendar.setTextColor(accentColor);
-		btnMonthYearCalendar.setFont(titleFont);
-		btnMonthYearCalendar.setTextColorPressed(accentColor);
-		btnMonthYearCalendar.setTextSize(monthTextSize);
-		llDayCalendar.setPadding(contentPadding, 0, contentPadding, 0);
-		tvDateCalendar.setFont(contentFont);
-		tvDateCalendar.setTextSize(dateTextSize);
-		tvYearCalendar.setFont(contentFont);
-		tvYearCalendar.setTextSize(yearTextSize);
-		flNextCalendar.getLayoutParams().width = arrowSize;
-		flNextCalendar.getLayoutParams().height = arrowSize;
-		flPreviousCalendar.getLayoutParams().width = arrowSize;
-		flPreviousCalendar.getLayoutParams().height = arrowSize;
-		vNextCalendar.getLayoutParams().width = arrowIconWidth;
-		vNextCalendar.getLayoutParams().height = arrowIconHeight;
-		vPreviousCalendar.getLayoutParams().width = arrowIconWidth;
-		vPreviousCalendar.getLayoutParams().height = arrowIconHeight;
-		btnCancelCalendar.setFont(buttonFont);
-		btnCancelCalendar.getLayoutParams().width = buttonWidth;
-		btnCancelCalendar.getLayoutParams().height = buttonHeight;
-		btnCancelCalendar.setPadding(buttonPadding);
-		btnCancelCalendar.setTextSize(buttonTextSize);
-		btnConfirmCalendar.setFont(buttonFont);
-		btnConfirmCalendar.getLayoutParams().width = buttonWidth;
-		btnConfirmCalendar.getLayoutParams().height = buttonHeight;
-		btnConfirmCalendar.setPadding(buttonPadding);
-		btnConfirmCalendar.setTextSize(buttonTextSize);
-		findViewById(R.id.vDividerCalendar).setBackgroundColor(accentColor);
-		findViewById(R.id.vButtonCalendar).getLayoutParams().width = buttonSpacing;
-		int count = llDayCalendar.getChildCount();
-		for (int i = 0; i < count; i++) {
-			CodePanLabel label = (CodePanLabel) llDayCalendar.getChildAt(i);
-			label.setFont(contentFont);
-			label.setTextSize(contentTextSize);
-		}
 	}
 
 	private void switchItem(final int position) {

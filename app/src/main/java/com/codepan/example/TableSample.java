@@ -16,7 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-public class TableFragment extends Fragment {
+public class TableSample extends Fragment {
 
 	private ArrayList<ColumnData> columnList;
 	private ArrayList<RowData> rowList;
@@ -43,7 +43,7 @@ public class TableFragment extends Fragment {
 	@Nullable
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.table_view_layout, container, false);
+		View view = inflater.inflate(R.layout.table_sample_layout, container, false);
 		TableView tvTable = view.findViewById(R.id.tvTable);
 		tvTable.setColumnList(columnList, false);
 		tvTable.setFreezeFirstColumn(true);

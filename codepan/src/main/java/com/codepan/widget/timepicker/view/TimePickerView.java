@@ -11,6 +11,8 @@ import android.widget.LinearLayout;
 
 import com.codepan.R;
 import com.codepan.callback.Interface.OnCancelCallback;
+import com.codepan.utils.CodePanUtils;
+import com.codepan.utils.Console;
 import com.codepan.widget.CodePanButton;
 import com.codepan.widget.CodePanLabel;
 import com.codepan.widget.timepicker.adapter.TimePickerAdapter;
@@ -65,23 +67,22 @@ public class TimePickerView extends FrameLayout {
 		this.context = context;
 		Resources res = getResources();
 		period = context.getString(R.string.tp_am);
-		if (defaultTime != null) {
-			SimpleDateFormat sdf = new SimpleDateFormat(PATTERN_24HR, Locale.ENGLISH);
-			try {
-				Date date = sdf.parse(defaultTime);
-				if (date != null) {
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(date);
-					initialHour = cal.get(Calendar.HOUR_OF_DAY);
-					initialMinute = cal.get(Calendar.MINUTE);
-					if (initialHour >= 12) {
-						period = res.getString(R.string.tp_pm);
-					}
+		String time = defaultTime != null ? defaultTime : CodePanUtils.getTime();
+		SimpleDateFormat sdf = new SimpleDateFormat(PATTERN_24HR, Locale.ENGLISH);
+		try {
+			Date date = sdf.parse(time);
+			if (date != null) {
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(date);
+				initialHour = cal.get(Calendar.HOUR_OF_DAY);
+				initialMinute = cal.get(Calendar.MINUTE);
+				if (initialHour >= 12) {
+					period = res.getString(R.string.tp_pm);
 				}
 			}
-			catch (ParseException e) {
-				e.printStackTrace();
-			}
+		}
+		catch (ParseException e) {
+			e.printStackTrace();
 		}
 		title = res.getString(R.string.tp_title);
 		titleFont = res.getString(R.string.tp_title_font);
@@ -153,6 +154,58 @@ public class TimePickerView extends FrameLayout {
 		ta.recycle();
 	}
 
+	private void applyProperties() {
+		tvTitleTimePicker.setText(title);
+		tvTitleTimePicker.setTextSize(titleTextSize);
+		tvTitleTimePicker.setPadding(titlePadding);
+		tvTitleTimePicker.setTextColor(defaultTextColor);
+		btnCancelTimePicker.setTextColor(defaultTextColor);
+		btnConfirmTimePicker.setTextColor(accentColor);
+		btnCancelTimePicker.setFont(buttonFont);
+		btnCancelTimePicker.getLayoutParams().width = buttonWidth;
+		btnCancelTimePicker.getLayoutParams().height = buttonHeight;
+		btnCancelTimePicker.setPadding(buttonPadding);
+		btnCancelTimePicker.setTextSize(buttonTextSize);
+		btnConfirmTimePicker.setFont(buttonFont);
+		btnConfirmTimePicker.getLayoutParams().width = buttonWidth;
+		btnConfirmTimePicker.getLayoutParams().height = buttonHeight;
+		btnConfirmTimePicker.setPadding(buttonPadding);
+		btnConfirmTimePicker.setTextSize(buttonTextSize);
+		vHourTimePicker.getLayoutParams().width = timeItemWidth;
+		vHourTimePicker.getLayoutParams().height = timeItemHeight;
+		vMinuteTimePicker.getLayoutParams().width = timeItemWidth;
+		vMinuteTimePicker.getLayoutParams().height = timeItemHeight;
+		flContentTimePicker.getLayoutParams().width = (timeItemWidth * 2) + timeSpacing;
+		flContentTimePicker.getLayoutParams().height = timeItemHeight * 3;
+		llPeriodTimePicker.getLayoutParams().width = periodWidth;
+		llPeriodTimePicker.getLayoutParams().height = Math.min(periodHeight, timeItemHeight);
+		GradientDrawable p = (GradientDrawable) llPeriodTimePicker.getBackground();
+		p.setStroke(periodBorderWidth, periodBorderColor);
+		if (llPeriodTimePicker.getChildCount() == 3) {
+			View ps = llPeriodTimePicker.getChildAt(1);
+			ps.getLayoutParams().height = periodBorderWidth;
+			ps.setBackgroundColor(periodBorderColor);
+		}
+		llColonTimePicker.getLayoutParams().width = timeSpacing;
+		if (llColonTimePicker.getChildCount() == 3) {
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(colonSize, colonSize);
+			View dot1 = llColonTimePicker.getChildAt(0);
+			View dot2 = llColonTimePicker.getChildAt(2);
+			dot1.setLayoutParams(params);
+			dot2.setLayoutParams(params);
+			View cs = llColonTimePicker.getChildAt(1);
+			cs.getLayoutParams().height = colonSpacing;
+		}
+		findViewById(R.id.vDividerTimePicker).setBackgroundColor(accentColor);
+		findViewById(R.id.vButtonTimePicker).getLayoutParams().width = buttonSpacing;
+		GradientDrawable h = (GradientDrawable) vHourTimePicker.getBackground();
+		h.setColor(hourSelectedBackgroundColor);
+//		h.setAlpha(80);
+		GradientDrawable m = (GradientDrawable) vMinuteTimePicker.getBackground();
+		m.setColor(minuteSelectedBackgroundColor);
+//		m.setAlpha(80);
+	}
+
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
@@ -174,10 +227,12 @@ public class TimePickerView extends FrameLayout {
 		tvAMTimePicker.setOnClickListener(v -> {
 			period = context.getString(R.string.tp_am);
 			setDayPeriod(period);
+			Console.log("AM");
 		});
 		tvPMTimePicker.setOnClickListener(v -> {
 			period = context.getString(R.string.tp_pm);
 			setDayPeriod(period);
+			Console.log("PM");
 		});
 		btnCancelTimePicker.setOnClickListener(v -> {
 			if (cancelCallback != null) {
@@ -202,69 +257,7 @@ public class TimePickerView extends FrameLayout {
 			}
 		});
 		setDayPeriod(period);
-		applyProperties();
-	}
-
-	private void applyProperties() {
-		tvTitleTimePicker.setText(title);
-		tvTitleTimePicker.setTextSize(titleTextSize);
-		tvTitleTimePicker.setPadding(titlePadding);
-		tvTitleTimePicker.setTextColor(defaultTextColor);
-		btnCancelTimePicker.setTextColor(defaultTextColor);
-		btnConfirmTimePicker.setTextColor(accentColor);
-
-
-		btnCancelTimePicker.setFont(buttonFont);
-		btnCancelTimePicker.getLayoutParams().width = buttonWidth;
-		btnCancelTimePicker.getLayoutParams().height = buttonHeight;
-		btnCancelTimePicker.setPadding(buttonPadding);
-		btnCancelTimePicker.setTextSize(buttonTextSize);
-		btnConfirmTimePicker.setFont(buttonFont);
-		btnConfirmTimePicker.getLayoutParams().width = buttonWidth;
-		btnConfirmTimePicker.getLayoutParams().height = buttonHeight;
-		btnConfirmTimePicker.setPadding(buttonPadding);
-		btnConfirmTimePicker.setTextSize(buttonTextSize);
-
-
-		vHourTimePicker.getLayoutParams().width = timeItemWidth;
-		vHourTimePicker.getLayoutParams().height = timeItemHeight;
-		vMinuteTimePicker.getLayoutParams().width = timeItemWidth;
-		vMinuteTimePicker.getLayoutParams().height = timeItemHeight;
-		flContentTimePicker.getLayoutParams().width = (timeItemWidth * 2) + timeSpacing;
-		flContentTimePicker.getLayoutParams().height = timeItemHeight * 3;
-
-		llPeriodTimePicker.getLayoutParams().width = periodWidth;
-		llPeriodTimePicker.getLayoutParams().height = Math.min(periodHeight, timeItemHeight);
-
-		GradientDrawable p = (GradientDrawable) llPeriodTimePicker.getBackground();
-		p.setStroke(periodBorderWidth, periodBorderColor);
-		if (llPeriodTimePicker.getChildCount() == 3) {
-			View ps = llPeriodTimePicker.getChildAt(1);
-			ps.getLayoutParams().height = periodBorderWidth;
-			ps.setBackgroundColor(periodBorderColor);
-		}
-
-
-		llColonTimePicker.getLayoutParams().width = timeSpacing;
-		if (llColonTimePicker.getChildCount() == 3) {
-			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(colonSize, colonSize);
-			View dot1 = llColonTimePicker.getChildAt(0);
-			View dot2 = llColonTimePicker.getChildAt(2);
-			dot1.setLayoutParams(params);
-			dot2.setLayoutParams(params);
-			View cs = llColonTimePicker.getChildAt(1);
-			cs.getLayoutParams().height = colonSpacing;
-		}
-
-
-		findViewById(R.id.vDividerTimePicker).setBackgroundColor(accentColor);
-		findViewById(R.id.vButtonTimePicker).getLayoutParams().width = buttonSpacing;
-		GradientDrawable h = (GradientDrawable) vHourTimePicker.getBackground();
-		h.setColor(hourSelectedBackgroundColor);
-//		h.setAlpha(80);
-		GradientDrawable m = (GradientDrawable) vMinuteTimePicker.getBackground();
-		h.setColor(minuteSelectedBackgroundColor);
-//		h.setAlpha(80);
+//		applyProperties();
 	}
 
 	private void setDayPeriod(String period) {

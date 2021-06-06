@@ -20,6 +20,14 @@
             android:text="Show Calendar"
             tools:ignore="HardcodedText"/>
 
+        <com.codepan.widget.CodePanButton
+            android:id="@+id/btnTimePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/ten"
+            android:text="Show Time Picker"
+            tools:ignore="HardcodedText"/>
+
 
         <com.codepan.widget.CodePanButton
             android:id="@+id/btnTable"
