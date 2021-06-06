@@ -43,5 +43,15 @@ public class MainActivity extends FragmentActivity {
 			transaction.addToBackStack(null);
 			transaction.commit();
 		});
+		findViewById(R.id.btnCamera).setOnClickListener(view -> {
+			CameraFragment camera = new CameraFragment();
+			FragmentManager manager = getSupportFragmentManager();
+			FragmentTransaction transaction = manager.beginTransaction();
+			transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out,
+				R.anim.fade_in, R.anim.fade_out);
+			transaction.add(R.id.rlMain, camera);
+			transaction.addToBackStack(null);
+			transaction.commit();
+		});
 	}
 }
