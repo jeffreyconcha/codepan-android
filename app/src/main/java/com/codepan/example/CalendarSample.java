@@ -25,6 +25,7 @@ public class CalendarSample extends Fragment {
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.calendar_sample_layout, container, false);
 		CalendarView cvCalendar = view.findViewById(R.id.cvCalendar);
+		cvCalendar.setCurrentDate("2021-06-01");
 		cvCalendar.setOnCancelCallback(() -> {
 			FragmentManager manager = getFragmentManager();
 			if (manager != null) {
