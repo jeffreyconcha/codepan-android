@@ -150,9 +150,9 @@
     <LinearLayout
         android:id="@+id/llButtonsTimePicker"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="@dimen/tp_button_padding">
 
@@ -163,7 +163,9 @@
             android:layout_height="@dimen/tp_button_height"
             android:background="@drawable/state_rect_white_rad_three"
             android:gravity="center"
+            android:minHeight="0dp"
             android:text="@string/tp_cancel"
+            android:textAllCaps="true"
             android:textColor="@color/tp_default_text_color"
             android:textSize="@dimen/tp_button_text_size"
             codePan:typeface="@string/tp_button_font"/>
@@ -176,10 +178,13 @@
         <com.codepan.widget.CodePanButton
             android:id="@+id/btnConfirmTimePicker"
             style="?android:borderlessButtonStyle"
-            android:layout_width="99dp"
-            android:layout_height="34dp"
+            android:layout_width="@dimen/tp_button_width"
+            android:layout_height="@dimen/tp_button_height"
             android:background="@drawable/state_rect_white_rad_three"
+            android:gravity="center"
+            android:minHeight="0dp"
             android:text="@string/tp_confirm"
+            android:textAllCaps="true"
             android:textColor="@color/tp_accent_color"
             android:textSize="@dimen/tp_button_text_size"
             codePan:typeface="@string/tp_button_font"/>

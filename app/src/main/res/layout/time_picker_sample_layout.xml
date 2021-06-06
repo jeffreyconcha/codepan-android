@@ -14,8 +14,6 @@
         android:layout_height="@dimen/five_hundred"
         TimePickerView:tp_colonSize="@dimen/seven"
         TimePickerView:tp_accentColor="#FD602F"
-        TimePickerView:tp_buttonHeight="@dimen/thirty"
-        TimePickerView:tp_buttonWidth="@dimen/one_hundred"
         TimePickerView:tp_hourSelectedBackgroundColor="#50FD602F"
         TimePickerView:tp_hourSelectedTextColor="#FD602F"
         TimePickerView:tp_colonSpacing="@dimen/twenty"

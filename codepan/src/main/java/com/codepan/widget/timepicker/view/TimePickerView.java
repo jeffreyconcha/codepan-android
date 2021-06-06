@@ -155,12 +155,10 @@ public class TimePickerView extends FrameLayout {
 		btnCancelTimePicker.setFont(buttonFont);
 		btnCancelTimePicker.getLayoutParams().width = buttonWidth;
 		btnCancelTimePicker.getLayoutParams().height = buttonHeight;
-		btnCancelTimePicker.setPadding(buttonPadding);
 		btnCancelTimePicker.setTextSize(buttonTextSize);
 		btnConfirmTimePicker.setFont(buttonFont);
 		btnConfirmTimePicker.getLayoutParams().width = buttonWidth;
 		btnConfirmTimePicker.getLayoutParams().height = buttonHeight;
-		btnConfirmTimePicker.setPadding(buttonPadding);
 		btnConfirmTimePicker.setTextSize(buttonTextSize);
 		rvHourTimePicker.getLayoutParams().width = timeItemWidth;
 		rvMinutesTimePicker.getLayoutParams().width = timeItemWidth;
@@ -168,11 +166,9 @@ public class TimePickerView extends FrameLayout {
 		vHourTimePicker.getLayoutParams().height = timeItemHeight;
 		vMinuteTimePicker.getLayoutParams().width = timeItemWidth;
 		vMinuteTimePicker.getLayoutParams().height = timeItemHeight;
-
 		vTimeSpacingTimePicker.getLayoutParams().width = timeSpacing;
 		flContentTimePicker.getLayoutParams().width = (timeItemWidth * 2) + timeSpacing;
 		flContentTimePicker.getLayoutParams().height = timeItemHeight * 3;
-
 		llPeriodTimePicker.getLayoutParams().width = periodWidth;
 		llPeriodTimePicker.getLayoutParams().height = Math.min(periodHeight, timeItemHeight);
 		GradientDrawable p = (GradientDrawable) llPeriodTimePicker.getBackground();
@@ -195,6 +191,8 @@ public class TimePickerView extends FrameLayout {
 		}
 		findViewById(R.id.vDividerTimePicker).setBackgroundColor(accentColor);
 		findViewById(R.id.vButtonTimePicker).getLayoutParams().width = buttonSpacing;
+		findViewById(R.id.llButtonsTimePicker).setPadding(buttonPadding,
+			buttonPadding, buttonPadding, buttonPadding);
 		GradientDrawable h = (GradientDrawable) vHourTimePicker.getBackground();
 		h.setColor(hourSelectedBackgroundColor);
 		h.setCornerRadius(timeBoxRadius);

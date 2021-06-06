@@ -140,6 +140,7 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 		tvTitleCalendar.setPadding(titlePadding);
 		tvTitleCalendar.setTextColor(defaultTextColor);
 		tvTitleCalendar.setFont(titleFont);
+		btnCancelCalendar.setTextColor(defaultTextColor);
 		btnConfirmCalendar.setTextColor(accentColor);
 		btnMonthYearCalendar.setFont(titleFont);
 		btnMonthYearCalendar.setTextColorPressed(accentColor);
@@ -160,15 +161,15 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 		btnCancelCalendar.setFont(buttonFont);
 		btnCancelCalendar.getLayoutParams().width = buttonWidth;
 		btnCancelCalendar.getLayoutParams().height = buttonHeight;
-		btnCancelCalendar.setPadding(buttonPadding);
 		btnCancelCalendar.setTextSize(buttonTextSize);
 		btnConfirmCalendar.setFont(buttonFont);
 		btnConfirmCalendar.getLayoutParams().width = buttonWidth;
 		btnConfirmCalendar.getLayoutParams().height = buttonHeight;
-		btnConfirmCalendar.setPadding(buttonPadding);
 		btnConfirmCalendar.setTextSize(buttonTextSize);
 		findViewById(R.id.vDividerCalendar).setBackgroundColor(accentColor);
 		findViewById(R.id.vButtonCalendar).getLayoutParams().width = buttonSpacing;
+		findViewById(R.id.llButtonsCalendar).setPadding(buttonPadding,
+			buttonPadding, buttonPadding, buttonPadding);
 		int count = llDayCalendar.getChildCount();
 		for (int i = 0; i < count; i++) {
 			CodePanLabel label = (CodePanLabel) llDayCalendar.getChildAt(i);

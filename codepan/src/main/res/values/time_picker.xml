@@ -5,8 +5,8 @@
     <string name="tp_button_font">@string/calibri_bold</string>
     <string name="tp_am">AM</string>
     <string name="tp_pm">PM</string>
-    <string name="tp_cancel">CANCEL</string>
-    <string name="tp_confirm">CONFIRM</string>
+    <string name="tp_cancel">cancel</string>
+    <string name="tp_confirm">confirm</string>
 
     <color name="tp_default_text_color">#6D6E71</color>
     <color name="tp_accent_color">#27AE60</color>
@@ -31,7 +31,7 @@
     <dimen name="tp_period_text_size">@dimen/fourteen</dimen>
     <dimen name="tp_period_border_width">@dimen/one</dimen>
     <dimen name="tp_button_width">@dimen/one_hundred</dimen>
-    <dimen name="tp_button_height">@dimen/thirty_four</dimen>
+    <dimen name="tp_button_height">@dimen/forty</dimen>
     <dimen name="tp_button_text_size">@dimen/seventeen</dimen>
     <dimen name="tp_button_padding">@dimen/seventeen</dimen>
     <dimen name="tp_button_spacing">@dimen/five</dimen>

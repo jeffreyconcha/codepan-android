@@ -253,7 +253,7 @@
             android:minHeight="0dp"
             android:text="@string/cal_cancel"
             android:textAllCaps="true"
-            android:textColor="@color/cal_cancel"
+            android:textColor="@color/cal_default_text_color"
             android:textSize="@dimen/cal_button_text_size"
             codePan:typeface="@string/cal_button_font"/>
 
@@ -272,7 +272,7 @@
             android:minHeight="0dp"
             android:text="@string/cal_select"
             android:textAllCaps="true"
-            android:textColor="@color/cal_save"
+            android:textColor="@color/cal_accent_color"
             android:textSize="@dimen/cal_button_text_size"
             codePan:typeface="@string/cal_button_font"/>
 
