@@ -115,13 +115,17 @@
         <attr name="tp_timeItemWidth" format="dimension"/>
         <attr name="tp_timeItemHeight" format="dimension"/>
         <attr name="tp_timeSpacing" format="dimension"/>
+        <attr name="tp_timeBoxRadius" format="dimension"/>
         <attr name="tp_timeUnselectedTextColor" format="color"/>
+        <attr name="tp_periodSelectedTextColor" format="color"/>
+        <attr name="tp_periodUnselectedTextColor" format="color"/>
+        <attr name="tp_periodSelectedBackgroundColor" format="color"/>
+        <attr name="tp_periodBorderColor" format="color"/>
+        <attr name="tp_periodBorderWidth" format="dimension"/>
         <attr name="tp_periodWidth" format="dimension"/>
         <attr name="tp_periodHeight" format="dimension"/>
         <attr name="tp_periodTextSize" format="dimension"/>
-        <attr name="tp_periodBorderWidth" format="dimension"/>
-        <attr name="tp_periodBorderColor" format="color"/>
-        <attr name="tp_periodUnselectedTextColor" format="color"/>
+        <attr name="tp_periodBoxRadius" format="dimension"/>
         <attr name="tp_buttonFont" format="string"/>
         <attr name="tp_buttonWidth" format="dimension"/>
         <attr name="tp_buttonHeight" format="dimension"/>

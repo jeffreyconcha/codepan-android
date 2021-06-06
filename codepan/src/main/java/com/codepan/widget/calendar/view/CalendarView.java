@@ -229,12 +229,12 @@ public class CalendarView extends FrameLayout implements OnPickDateCallback, OnS
 				cancelCallback.onCancel();
 			}
 		});
-		cal = Calendar.getInstance();
 		if (date != null) {
 			cal = CodePanUtils.getCalendar(date);
 			selectedDate = date;
 		}
 		else {
+			cal = Calendar.getInstance();
 			selectedDate = CodePanUtils.getDate();
 		}
 		dayCalList = getDayCalList(lastPosition);

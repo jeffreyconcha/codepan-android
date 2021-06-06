@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import com.codepan.R;
 import com.codepan.callback.Interface.OnCancelCallback;
 import com.codepan.utils.CodePanUtils;
-import com.codepan.utils.Console;
 import com.codepan.widget.CodePanButton;
 import com.codepan.widget.CodePanLabel;
 import com.codepan.widget.timepicker.adapter.TimePickerAdapter;
@@ -46,15 +45,16 @@ public class TimePickerView extends FrameLayout {
 		colonSize, colonSpacing, timeTextSize;
 	private int defaultTextColor, accentColor, hourSelectedTextColor, hourSelectedBackgroundColor,
 		minuteSelectedTextColor, minuteSelectedBackgroundColor, timeUnselectedTextColor,
-		periodBorderColor, periodUnselectedTextColor;
+		periodBorderColor, periodSelectedTextColor, periodSelectedBackgroundColor,
+		periodUnselectedTextColor, timeBoxRadius, periodBoxRadius;
 	private String title, titleFont, buttonFont;
 
 	private int initialHour, initialMinute;
 	private CodePanLabel tvTitleTimePicker, tvAMTimePicker, tvPMTimePicker;
+	private View vHourTimePicker, vMinuteTimePicker, vTimeSpacingTimePicker;
 	private CodePanButton btnCancelTimePicker, btnConfirmTimePicker;
 	private RecyclerView rvHourTimePicker, rvMinutesTimePicker;
 	private LinearLayout llPeriodTimePicker, llColonTimePicker;
-	private View vHourTimePicker, vMinuteTimePicker;
 	private OnPickTimeCallback pickTimeCallback;
 	private FrameLayout flContentTimePicker;
 	private OnCancelCallback cancelCallback;
@@ -66,24 +66,6 @@ public class TimePickerView extends FrameLayout {
 		super(context, attrs);
 		this.context = context;
 		Resources res = getResources();
-		period = context.getString(R.string.tp_am);
-		String time = defaultTime != null ? defaultTime : CodePanUtils.getTime();
-		SimpleDateFormat sdf = new SimpleDateFormat(PATTERN_24HR, Locale.ENGLISH);
-		try {
-			Date date = sdf.parse(time);
-			if (date != null) {
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(date);
-				initialHour = cal.get(Calendar.HOUR_OF_DAY);
-				initialMinute = cal.get(Calendar.MINUTE);
-				if (initialHour >= 12) {
-					period = res.getString(R.string.tp_pm);
-				}
-			}
-		}
-		catch (ParseException e) {
-			e.printStackTrace();
-		}
 		title = res.getString(R.string.tp_title);
 		titleFont = res.getString(R.string.tp_title_font);
 		titleTextSize = res.getDimensionPixelSize(R.dimen.tp_title_text_size);
@@ -98,11 +80,15 @@ public class TimePickerView extends FrameLayout {
 		timeItemWidth = res.getDimensionPixelSize(R.dimen.tp_time_item_width);
 		timeItemHeight = res.getDimensionPixelSize(R.dimen.tp_time_item_height);
 		timeSpacing = res.getDimensionPixelSize(R.dimen.tp_time_spacing);
+		timeBoxRadius = res.getDimensionPixelSize(R.dimen.tp_time_box_radius);
 		timeUnselectedTextColor = res.getColor(R.color.tp_time_unselected_text_color);
 		periodWidth = res.getDimensionPixelSize(R.dimen.tp_period_width);
 		periodHeight = res.getDimensionPixelSize(R.dimen.tp_period_height);
 		periodTextSize = res.getDimensionPixelSize(R.dimen.tp_period_text_size);
 		periodBorderWidth = res.getDimensionPixelSize(R.dimen.tp_period_border_width);
+		periodBoxRadius = res.getDimensionPixelSize(R.dimen.tp_period_box_radius);
+		periodSelectedTextColor = res.getColor(R.color.tp_period_selected_text_color);
+		periodSelectedBackgroundColor = res.getColor(R.color.tp_period_selected_background_color);
 		periodUnselectedTextColor = res.getColor(R.color.tp_period_unselected_text_color);
 		periodBorderColor = res.getColor(R.color.tp_period_border_color);
 		buttonFont = res.getString(R.string.tp_button_font);
@@ -129,20 +115,24 @@ public class TimePickerView extends FrameLayout {
 		accentColor = ta.getColor(R.styleable.TimePickerView_tp_accentColor, accentColor);
 		defaultTextColor = ta.getColor(R.styleable.TimePickerView_tp_defaultTexColor, defaultTextColor);
 		hourSelectedTextColor = ta.getColor(R.styleable.TimePickerView_tp_hourSelectedTextColor, hourSelectedTextColor);
-		hourSelectedBackgroundColor = ta.getColor(R.styleable.TimePickerView_tp_hourSelectedTextColor, hourSelectedBackgroundColor);
+		hourSelectedBackgroundColor = ta.getColor(R.styleable.TimePickerView_tp_hourSelectedBackgroundColor, hourSelectedBackgroundColor);
 		minuteSelectedTextColor = ta.getColor(R.styleable.TimePickerView_tp_minuteSelectedTextColor, minuteSelectedTextColor);
-		minuteSelectedBackgroundColor = ta.getColor(R.styleable.TimePickerView_tp_minuteSelectedTextColor, minuteSelectedBackgroundColor);
+		minuteSelectedBackgroundColor = ta.getColor(R.styleable.TimePickerView_tp_minuteSelectedBackgroundColor, minuteSelectedBackgroundColor);
 		timeTextSize = ta.getDimensionPixelSize(R.styleable.TimePickerView_tp_timeTextSize, timeTextSize);
 		timeItemWidth = ta.getDimensionPixelSize(R.styleable.TimePickerView_tp_timeItemWidth, timeItemWidth);
 		timeItemHeight = ta.getDimensionPixelSize(R.styleable.TimePickerView_tp_timeItemHeight, timeItemHeight);
 		timeSpacing = ta.getDimensionPixelSize(R.styleable.TimePickerView_tp_timeSpacing, timeSpacing);
+		timeBoxRadius = ta.getDimensionPixelSize(R.styleable.TimePickerView_tp_timeBoxRadius, timeBoxRadius);
 		timeUnselectedTextColor = ta.getColor(R.styleable.TimePickerView_tp_timeUnselectedTextColor, timeUnselectedTextColor);
 		periodWidth = ta.getDimensionPixelSize(R.styleable.TimePickerView_tp_periodWidth, periodWidth);
 		periodHeight = ta.getDimensionPixelSize(R.styleable.TimePickerView_tp_periodHeight, periodHeight);
 		periodTextSize = ta.getDimensionPixelSize(R.styleable.TimePickerView_tp_periodTextSize, periodTextSize);
 		periodBorderWidth = ta.getDimensionPixelSize(R.styleable.TimePickerView_tp_periodBorderWidth, periodBorderWidth);
-		periodUnselectedTextColor = ta.getDimensionPixelSize(R.styleable.TimePickerView_tp_periodUnselectedTextColor, periodUnselectedTextColor);
-		periodBorderColor = ta.getDimensionPixelSize(R.styleable.TimePickerView_tp_periodBorderColor, periodBorderColor);
+		periodSelectedTextColor = ta.getColor(R.styleable.TimePickerView_tp_periodSelectedTextColor, periodSelectedTextColor);
+		periodSelectedBackgroundColor = ta.getColor(R.styleable.TimePickerView_tp_periodSelectedBackgroundColor, periodSelectedBackgroundColor);
+		periodUnselectedTextColor = ta.getColor(R.styleable.TimePickerView_tp_periodUnselectedTextColor, periodUnselectedTextColor);
+		periodBorderColor = ta.getColor(R.styleable.TimePickerView_tp_periodBorderColor, periodBorderColor);
+		periodBoxRadius = ta.getDimensionPixelSize(R.styleable.TimePickerView_tp_periodBoxRadius, periodBoxRadius);
 		buttonFont = _buttonFont != null ? _buttonFont : buttonFont;
 		buttonTextSize = ta.getDimensionPixelSize(R.styleable.TimePickerView_tp_buttonTextSize, buttonTextSize);
 		buttonWidth = ta.getDimensionPixelSize(R.styleable.TimePickerView_tp_buttonWidth, buttonWidth);
@@ -171,16 +161,20 @@ public class TimePickerView extends FrameLayout {
 		btnConfirmTimePicker.getLayoutParams().height = buttonHeight;
 		btnConfirmTimePicker.setPadding(buttonPadding);
 		btnConfirmTimePicker.setTextSize(buttonTextSize);
+		rvHourTimePicker.getLayoutParams().width = timeItemWidth;
+		rvMinutesTimePicker.getLayoutParams().width = timeItemWidth;
 		vHourTimePicker.getLayoutParams().width = timeItemWidth;
 		vHourTimePicker.getLayoutParams().height = timeItemHeight;
 		vMinuteTimePicker.getLayoutParams().width = timeItemWidth;
 		vMinuteTimePicker.getLayoutParams().height = timeItemHeight;
+		vTimeSpacingTimePicker.getLayoutParams().width = timeSpacing;
 		flContentTimePicker.getLayoutParams().width = (timeItemWidth * 2) + timeSpacing;
 		flContentTimePicker.getLayoutParams().height = timeItemHeight * 3;
 		llPeriodTimePicker.getLayoutParams().width = periodWidth;
 		llPeriodTimePicker.getLayoutParams().height = Math.min(periodHeight, timeItemHeight);
 		GradientDrawable p = (GradientDrawable) llPeriodTimePicker.getBackground();
 		p.setStroke(periodBorderWidth, periodBorderColor);
+		p.setCornerRadius(periodBoxRadius);
 		if (llPeriodTimePicker.getChildCount() == 3) {
 			View ps = llPeriodTimePicker.getChildAt(1);
 			ps.getLayoutParams().height = periodBorderWidth;
@@ -200,10 +194,10 @@ public class TimePickerView extends FrameLayout {
 		findViewById(R.id.vButtonTimePicker).getLayoutParams().width = buttonSpacing;
 		GradientDrawable h = (GradientDrawable) vHourTimePicker.getBackground();
 		h.setColor(hourSelectedBackgroundColor);
-//		h.setAlpha(80);
+		h.setCornerRadius(timeBoxRadius);
 		GradientDrawable m = (GradientDrawable) vMinuteTimePicker.getBackground();
 		m.setColor(minuteSelectedBackgroundColor);
-//		m.setAlpha(80);
+		m.setCornerRadius(timeBoxRadius);
 	}
 
 	@Override
@@ -222,17 +216,34 @@ public class TimePickerView extends FrameLayout {
 		btnConfirmTimePicker = view.findViewById(R.id.btnConfirmTimePicker);
 		vHourTimePicker = view.findViewById(R.id.vHourTimePicker);
 		vMinuteTimePicker = view.findViewById(R.id.vMinuteTimePicker);
+		vTimeSpacingTimePicker = view.findViewById(R.id.vTimeSpacingTimePicker);
 		loadItems(TimeElementType.HOUR, rvHourTimePicker);
 		loadItems(TimeElementType.MINUTE, rvMinutesTimePicker);
+		period = context.getString(R.string.tp_am);
+		defaultTime = defaultTime != null ? defaultTime : CodePanUtils.getTime();
+		SimpleDateFormat sdf = new SimpleDateFormat(PATTERN_24HR, Locale.ENGLISH);
+		try {
+			Date date = sdf.parse(defaultTime);
+			if (date != null) {
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(date);
+				initialHour = cal.get(Calendar.HOUR_OF_DAY);
+				initialMinute = cal.get(Calendar.MINUTE);
+				if (initialHour >= 12) {
+					period = context.getString(R.string.tp_pm);
+				}
+			}
+		}
+		catch (ParseException e) {
+			e.printStackTrace();
+		}
 		tvAMTimePicker.setOnClickListener(v -> {
 			period = context.getString(R.string.tp_am);
 			setDayPeriod(period);
-			Console.log("AM");
 		});
 		tvPMTimePicker.setOnClickListener(v -> {
 			period = context.getString(R.string.tp_pm);
 			setDayPeriod(period);
-			Console.log("PM");
 		});
 		btnCancelTimePicker.setOnClickListener(v -> {
 			if (cancelCallback != null) {
@@ -257,22 +268,40 @@ public class TimePickerView extends FrameLayout {
 			}
 		});
 		setDayPeriod(period);
-//		applyProperties();
+		applyProperties();
 	}
 
 	private void setDayPeriod(String period) {
 		if (period != null) {
 			if (period.equals(context.getString(R.string.tp_am))) {
-				tvAMTimePicker.setTextColor(accentColor);
+				tvAMTimePicker.setTextColor(periodSelectedTextColor);
 				tvPMTimePicker.setTextColor(periodUnselectedTextColor);
-				tvAMTimePicker.setBackgroundResource(R.drawable.tp_am_active_background);
-				tvPMTimePicker.setBackgroundResource(R.drawable.tp_pm_inactive_background);
+				tvAMTimePicker.setBackgroundResource(R.drawable.tp_period_active_background);
+				tvPMTimePicker.setBackgroundResource(R.drawable.tp_period_inactive_background);
+				GradientDrawable drawable = (GradientDrawable) tvAMTimePicker.getBackground();
+				drawable.setColor(periodSelectedBackgroundColor);
+				final float[] radius = {
+					periodBoxRadius, periodBoxRadius,
+					periodBoxRadius, periodBoxRadius,
+					0F, 0F,
+					0F, 0F
+				};
+				drawable.setCornerRadii(radius);
 			}
 			else {
 				tvAMTimePicker.setTextColor(periodUnselectedTextColor);
-				tvPMTimePicker.setTextColor(accentColor);
+				tvPMTimePicker.setTextColor(periodSelectedTextColor);
 				tvAMTimePicker.setBackgroundResource(R.drawable.tp_am_inactive_background);
 				tvPMTimePicker.setBackgroundResource(R.drawable.tp_pm_active_background);
+				GradientDrawable drawable = (GradientDrawable) tvPMTimePicker.getBackground();
+				drawable.setColor(periodSelectedBackgroundColor);
+				final float[] radius = {
+					0F, 0F,
+					0F, 0F,
+					periodBoxRadius, periodBoxRadius,
+					periodBoxRadius, periodBoxRadius
+				};
+				drawable.setCornerRadii(radius);
 			}
 		}
 	}

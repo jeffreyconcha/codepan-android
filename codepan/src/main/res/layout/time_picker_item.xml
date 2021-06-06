@@ -3,4 +3,5 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/tp_time_item_height"
     android:gravity="center"
+    android:background="@color/transparent"
     android:textSize="@dimen/tp_time_text_size"/>

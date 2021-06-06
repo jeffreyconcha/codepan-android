@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:TimePickerView="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black_trans_forty"
+    android:padding="@dimen/twenty"
     android:clickable="true"
     android:focusable="true">
 
     <com.codepan.widget.timepicker.view.TimePickerView
-        android:layout_width="@dimen/three_hundred"
-        android:layout_height="@dimen/three_hundred"
+        android:id="@+id/tpvTimePicker"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/five_hundred"
+        TimePickerView:tp_accentColor="#FD602F"
+        TimePickerView:tp_buttonHeight="@dimen/thirty"
+        TimePickerView:tp_buttonWidth="@dimen/one_hundred"
+        TimePickerView:tp_hourSelectedBackgroundColor="#50FD602F"
+        TimePickerView:tp_hourSelectedTextColor="#FD602F"
+        TimePickerView:tp_periodBorderColor="#FD602F"
+        TimePickerView:tp_periodBorderWidth="@dimen/two"
+        TimePickerView:tp_periodBoxRadius="@dimen/five"
+        TimePickerView:tp_timeBoxRadius="@dimen/ten"
+        TimePickerView:tp_timeItemHeight="@dimen/eighty"
+        TimePickerView:tp_timeItemWidth="@dimen/eighty"
         android:layout_centerInParent="true"/>
 
 </RelativeLayout>

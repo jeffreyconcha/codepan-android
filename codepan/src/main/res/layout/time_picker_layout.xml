@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:codePan="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/tp_background"
-    android:gravity="center_horizontal"
-    android:orientation="vertical">
+    android:background="@drawable/tp_background">
 
     <com.codepan.widget.CodePanLabel
         android:id="@+id/tvTitleTimePicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:padding="@dimen/tp_title_padding"
         android:text="@string/tp_title"
         android:textColor="@color/tp_default_text_color"
@@ -21,9 +20,12 @@
         android:id="@+id/vDividerTimePicker"
         android:layout_width="match_parent"
         android:layout_height="@dimen/two"
+        android:layout_below="@+id/tvTitleTimePicker"
         android:background="@color/tp_accent_color"/>
 
     <LinearLayout
+        android:layout_above="@+id/llButtonsTimePicker"
+        android:layout_below="@+id/vDividerTimePicker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -36,12 +38,38 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
+                android:layout_height="@dimen/tp_time_item_height"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/vHourTimePicker"
+                    android:layout_width="@dimen/seventy"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/tp_hour_background"/>
+
+                <View
+                    android:id="@+id/vTimeSpacingTimePicker"
+                    android:layout_width="@dimen/tp_time_spacing"
+                    android:layout_height="0dp"/>
+
+                <View
+                    android:id="@+id/vMinuteTimePicker"
+                    android:layout_width="@dimen/seventy"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/tp_min_background"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvHourTimePicker"
                     android:layout_width="@dimen/tp_time_item_width"
+                    android:background="@color/transparent"
                     android:layout_height="match_parent"/>
 
                 <LinearLayout
@@ -70,31 +98,8 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvMinutesTimePicker"
                     android:layout_width="@dimen/tp_time_item_width"
+                    android:background="@color/transparent"
                     android:layout_height="match_parent"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/tp_time_item_height"
-                android:layout_gravity="center"
-                android:orientation="horizontal">
-
-                <View
-                    android:id="@+id/vHourTimePicker"
-                    android:layout_width="@dimen/seventy"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="@dimen/ten"
-                    android:layout_marginRight="@dimen/ten"
-                    android:background="@drawable/tp_hour_background"/>
-
-                <View
-                    android:id="@+id/vMinuteTimePicker"
-                    android:layout_width="@dimen/seventy"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="@dimen/ten"
-                    android:layout_marginLeft="@dimen/ten"
-                    android:background="@drawable/tp_min_background"/>
 
             </LinearLayout>
 
@@ -106,7 +111,7 @@
             android:layout_height="@dimen/tp_period_height"
             android:layout_marginStart="@dimen/ten"
             android:layout_marginLeft="@dimen/ten"
-            android:background="@drawable/tp_am_pm_background"
+            android:background="@drawable/tp_period_background"
             android:orientation="vertical"
             android:weightSum="2">
 
@@ -115,10 +120,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:background="@drawable/tp_am_active_background"
+                android:background="@drawable/tp_period_active_background"
                 android:gravity="center"
                 android:text="@string/tp_am"
-                android:textColor="@color/tp_accent_color"
+                android:textColor="@color/tp_period_selected_text_color"
                 android:textSize="@dimen/tp_period_text_size"/>
 
             <View
@@ -131,7 +136,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:background="@drawable/tp_pm_inactive_background"
+                android:background="@drawable/tp_period_inactive_background"
                 android:gravity="center"
                 android:text="@string/tp_pm"
                 android:textColor="@color/tp_period_unselected_text_color"
@@ -142,7 +147,10 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/llButtonsTimePicker"
         android:layout_width="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="@dimen/tp_button_padding">
@@ -177,4 +185,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
