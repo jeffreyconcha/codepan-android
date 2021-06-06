@@ -38,24 +38,24 @@ public class TimePickerView extends FrameLayout {
 	private final String PATTERN_24HR = "HH:mm:ss";
 	private int hourLastPosition, minuteLastPosition;
 
-	private int titleTextSize, titlePadding, contentWidth, contentHeight,
-		contentSize, contentSpacing, periodWidth, periodHeight, periodTextSize,
-		buttonWidth, buttonHeight, buttonTextSize, buttonPadding, buttonSpacing,
-		colorSize, colonSpacing, timeTextSize;
+	private int titleTextSize, titlePadding, timeItemWidth, timeItemHeight,
+		timeSpacing, periodWidth, periodHeight, periodTextSize, buttonWidth,
+		buttonHeight, buttonTextSize, buttonPadding, buttonSpacing,
+		colonSize, colonSpacing, timeTextSize;
 	private int defaultTextColor, accentColor, hourTextColor, hourBackgroundColor,
-		minuteTextColor, minuteBackgroundColor, contentUnselectedColor,
-		periodBorderColor;
+		minuteTextColor, minuteBackgroundColor, timeUnselectedTextColor,
+		periodBorderColor, periodUnselectedTextColor;
 	private String title, titleFont, buttonFont;
 
-	private int periodUnselectedColor, initialHour, initialMinute;
+	private int initialHour, initialMinute;
 	private CodePanLabel tvTitleTimePicker, tvAMTimePicker, tvPMTimePicker;
 	private CodePanButton btnCancelTimePicker, btnConfirmTimePicker;
 	private RecyclerView rvHourTimePicker, rvMinutesTimePicker;
+	private LinearLayout llPeriodTimePicker, llColonTimePicker;
 	private View vHourTimePicker, vMinuteTimePicker;
 	private OnPickTimeCallback pickTimeCallback;
 	private FrameLayout flContentTimePicker;
 	private OnCancelCallback cancelCallback;
-	private LinearLayout llPeriodTimePicker;
 	private TimePickerData hour, minute;
 	private String period, defaultTime;
 	private final Context context;
@@ -64,7 +64,6 @@ public class TimePickerView extends FrameLayout {
 		super(context, attrs);
 		this.context = context;
 		Resources res = getResources();
-		periodUnselectedColor = res.getColor(R.color.tp_period_unselected_color);
 		period = context.getString(R.string.tp_am);
 		if (defaultTime != null) {
 			SimpleDateFormat sdf = new SimpleDateFormat(PATTERN_24HR, Locale.ENGLISH);
@@ -95,15 +94,21 @@ public class TimePickerView extends FrameLayout {
 		minuteTextColor = res.getColor(R.color.tp_minute_text_color);
 		minuteBackgroundColor = res.getColor(R.color.tp_minute_background_color);
 		timeTextSize = res.getDimensionPixelSize(R.dimen.tp_time_text_size);
+		timeItemWidth = res.getDimensionPixelSize(R.dimen.tp_time_item_width);
+		timeItemHeight = res.getDimensionPixelSize(R.dimen.tp_time_item_height);
+		timeSpacing = res.getDimensionPixelSize(R.dimen.tp_time_spacing);
 		periodWidth = res.getDimensionPixelSize(R.dimen.tp_period_width);
 		periodHeight = res.getDimensionPixelSize(R.dimen.tp_period_height);
 		periodTextSize = res.getDimensionPixelSize(R.dimen.tp_period_text_size);
+		periodUnselectedTextColor = res.getColor(R.color.tp_period_unselected_text_color);
 		buttonFont = res.getString(R.string.tp_button_font);
 		buttonTextSize = res.getDimensionPixelSize(R.dimen.tp_button_text_size);
 		buttonWidth = res.getDimensionPixelSize(R.dimen.tp_button_width);
 		buttonHeight = res.getDimensionPixelSize(R.dimen.tp_button_height);
 		buttonSpacing = res.getDimensionPixelSize(R.dimen.tp_button_spacing);
 		buttonPadding = res.getDimensionPixelSize(R.dimen.tp_button_padding);
+		colonSize = res.getDimensionPixelSize(R.dimen.tp_colon_size);
+		colonSpacing = res.getDimensionPixelSize(R.dimen.tp_colon_spacing);
 		setProperties(attrs);
 	}
 
@@ -124,15 +129,21 @@ public class TimePickerView extends FrameLayout {
 		minuteTextColor = ta.getColor(R.styleable.TimePickerView_minuteTextColor, minuteTextColor);
 		minuteBackgroundColor = ta.getColor(R.styleable.TimePickerView_minuteTextColor, minuteBackgroundColor);
 		timeTextSize = ta.getDimensionPixelSize(R.styleable.TimePickerView_timeTextSize, timeTextSize);
+		timeItemWidth = ta.getDimensionPixelSize(R.styleable.TimePickerView_timeItemWidth, timeItemWidth);
+		timeItemHeight = ta.getDimensionPixelSize(R.styleable.TimePickerView_timeItemHeight, timeItemHeight);
+		timeSpacing = ta.getDimensionPixelSize(R.styleable.TimePickerView_timeSpacing, timeSpacing);
 		periodWidth = ta.getDimensionPixelSize(R.styleable.TimePickerView_periodWidth, periodWidth);
 		periodHeight = ta.getDimensionPixelSize(R.styleable.TimePickerView_periodHeight, periodHeight);
 		periodTextSize = ta.getDimensionPixelSize(R.styleable.TimePickerView_periodTextSize, periodTextSize);
+		periodUnselectedTextColor = ta.getDimensionPixelSize(R.styleable.TimePickerView_periodUnselectedTextColor, periodUnselectedTextColor);
 		buttonFont = _buttonFont != null ? _buttonFont : buttonFont;
 		buttonTextSize = ta.getDimensionPixelSize(R.styleable.TimePickerView_buttonTextSize, buttonTextSize);
 		buttonWidth = ta.getDimensionPixelSize(R.styleable.TimePickerView_buttonWidth, buttonWidth);
 		buttonHeight = ta.getDimensionPixelSize(R.styleable.TimePickerView_buttonHeight, buttonHeight);
 		buttonSpacing = ta.getDimensionPixelSize(R.styleable.TimePickerView_buttonSpacing, buttonSpacing);
 		buttonPadding = ta.getDimensionPixelSize(R.styleable.TimePickerView_buttonPadding, buttonPadding);
+		colonSize = ta.getDimensionPixelSize(R.styleable.TimePickerView_colonSize, colonSize);
+		colonSpacing = ta.getDimensionPixelSize(R.styleable.TimePickerView_colonSpacing, colonSpacing);
 		ta.recycle();
 	}
 
@@ -142,6 +153,7 @@ public class TimePickerView extends FrameLayout {
 		View view = inflate(context, R.layout.time_picker_layout, this);
 		flContentTimePicker = view.findViewById(R.id.flContentTimePicker);
 		llPeriodTimePicker = view.findViewById(R.id.llPeriodTimePicker);
+		llColonTimePicker = view.findViewById(R.id.llColonTimePicker);
 		rvHourTimePicker = view.findViewById(R.id.rvHourTimePicker);
 		rvMinutesTimePicker = view.findViewById(R.id.rvMinutesTimePicker);
 		tvTitleTimePicker = view.findViewById(R.id.tvTitleTimePicker);
@@ -208,14 +220,25 @@ public class TimePickerView extends FrameLayout {
 		btnConfirmTimePicker.setTextSize(buttonTextSize);
 
 
-		vHourTimePicker.getLayoutParams().width = contentWidth;
-		vHourTimePicker.getLayoutParams().height = contentHeight;
-		vMinuteTimePicker.getLayoutParams().width = contentWidth;
-		vMinuteTimePicker.getLayoutParams().height = contentHeight;
+		vHourTimePicker.getLayoutParams().width = timeItemWidth;
+		vHourTimePicker.getLayoutParams().height = timeItemHeight;
+		vMinuteTimePicker.getLayoutParams().width = timeItemWidth;
+		vMinuteTimePicker.getLayoutParams().height = timeItemHeight;
 		llPeriodTimePicker.getLayoutParams().width = periodWidth;
-		llPeriodTimePicker.getLayoutParams().height = Math.min(periodHeight, contentHeight);
-		flContentTimePicker.getLayoutParams().width = (contentWidth * 2) + contentSpacing;
-		flContentTimePicker.getLayoutParams().height = contentHeight * 3;
+		llPeriodTimePicker.getLayoutParams().height = Math.min(periodHeight, timeItemHeight);
+		flContentTimePicker.getLayoutParams().width = (timeItemWidth * 2) + timeSpacing;
+		flContentTimePicker.getLayoutParams().height = timeItemHeight * 3;
+
+		llColonTimePicker.getLayoutParams().width = timeSpacing;
+		if (llColonTimePicker.getChildCount() == 3) {
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(colonSize, colonSize);
+			View dot1 = llColonTimePicker.getChildAt(0);
+			View dot2 = llColonTimePicker.getChildAt(2);
+			dot1.setLayoutParams(params);
+			dot2.setLayoutParams(params);
+			View space = llColonTimePicker.getChildAt(1);
+			space.getLayoutParams().height = colonSpacing;
+		}
 
 
 		findViewById(R.id.vDividerTimePicker).setBackgroundColor(accentColor);
@@ -232,12 +255,12 @@ public class TimePickerView extends FrameLayout {
 		if (period != null) {
 			if (period.equals(context.getString(R.string.tp_am))) {
 				tvAMTimePicker.setTextColor(accentColor);
-				tvPMTimePicker.setTextColor(periodUnselectedColor);
+				tvPMTimePicker.setTextColor(periodUnselectedTextColor);
 				tvAMTimePicker.setBackgroundResource(R.drawable.tp_am_active_background);
 				tvPMTimePicker.setBackgroundResource(R.drawable.tp_pm_inactive_background);
 			}
 			else {
-				tvAMTimePicker.setTextColor(periodUnselectedColor);
+				tvAMTimePicker.setTextColor(periodUnselectedTextColor);
 				tvPMTimePicker.setTextColor(accentColor);
 				tvAMTimePicker.setBackgroundResource(R.drawable.tp_am_inactive_background);
 				tvPMTimePicker.setBackgroundResource(R.drawable.tp_pm_active_background);

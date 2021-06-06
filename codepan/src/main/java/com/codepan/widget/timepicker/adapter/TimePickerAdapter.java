@@ -31,7 +31,7 @@ public class TimePickerAdapter extends RecyclerView.Adapter<TimePickerAdapter.Vi
 		this.selectedColor = selectedColor;
 		this.textSize = textSize;
 		Resources res = context.getResources();
-		this.defaultColor = res.getColor(R.color.tp_content_unselected_text_color);
+		this.defaultColor = res.getColor(R.color.tp_time_unselected_text_color);
 	}
 
 	@NonNull

@@ -41,12 +41,12 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvHourTimePicker"
-                    android:layout_width="@dimen/tp_content_width"
+                    android:layout_width="@dimen/tp_time_item_width"
                     android:layout_height="match_parent"/>
 
                 <LinearLayout
                     android:id="@+id/llColonTimePicker"
-                    android:layout_width="@dimen/tp_content_spacing"
+                    android:layout_width="@dimen/tp_time_spacing"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:orientation="vertical">
@@ -69,14 +69,14 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvMinutesTimePicker"
-                    android:layout_width="@dimen/tp_content_width"
+                    android:layout_width="@dimen/tp_time_item_width"
                     android:layout_height="match_parent"/>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/tp_content_height"
+                android:layout_height="@dimen/tp_time_item_height"
                 android:layout_gravity="center"
                 android:orientation="horizontal">
 
@@ -134,7 +134,7 @@
                 android:background="@drawable/tp_pm_inactive_background"
                 android:gravity="center"
                 android:text="@string/tp_pm"
-                android:textColor="@color/tp_period_unselected_color"
+                android:textColor="@color/tp_period_unselected_text_color"
                 android:textSize="@dimen/tp_period_text_size"/>
 
         </LinearLayout>

@@ -112,9 +112,15 @@
         <attr name="minuteTextColor" format="color"/>
         <attr name="minuteBackgroundColor" format="color"/>
         <attr name="timeTextSize" format="dimension"/>
+        <attr name="timeItemWidth" format="dimension"/>
+        <attr name="timeItemHeight" format="dimension"/>
+        <attr name="timeSpacing" format="dimension"/>
         <attr name="periodWidth" format="dimension"/>
         <attr name="periodHeight" format="dimension"/>
         <attr name="periodTextSize" format="dimension"/>
+        <attr name="periodBorderWidth" format="dimension"/>
+        <attr name="periodBorderColor" format="color"/>
+        <attr name="periodUnselectedTextColor" format="color"/>
         <attr name="buttonFont" format="string"/>
         <attr name="buttonWidth" format="dimension"/>
         <attr name="buttonHeight" format="dimension"/>
