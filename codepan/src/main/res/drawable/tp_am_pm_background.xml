@@ -3,6 +3,6 @@
     <solid android:color="@color/white"/>
     <corners android:radius="@dimen/three"/>
     <stroke
-        android:width="@dimen/one"
+        android:width="@dimen/tp_period_border_width"
         android:color="@color/tp_period_border_color"/>
 </shape>

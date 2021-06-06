@@ -10,10 +10,10 @@
 
     <color name="tp_default_text_color">#6D6E71</color>
     <color name="tp_accent_color">#27AE60</color>
-    <color name="tp_hour_text_color">@color/tp_accent_color</color>
-    <color name="tp_hour_background_color">#5027AE60</color>
-    <color name="tp_minute_text_color">#1D1D1D</color>
-    <color name="tp_minute_background_color">#50707070</color>
+    <color name="tp_hour_selected_text_color">@color/tp_accent_color</color>
+    <color name="tp_hour_selected_background_color">#5027AE60</color>
+    <color name="tp_minute_selected_text_color">#1D1D1D</color>
+    <color name="tp_minute_selected_background_color">#50707070</color>
     <color name="tp_time_unselected_text_color">#C7C7C7</color>
     <color name="tp_period_border_color">#C4C4C4</color>
     <color name="tp_period_unselected_text_color">#808080</color>
@@ -27,6 +27,7 @@
     <dimen name="tp_period_width">@dimen/forty_five</dimen>
     <dimen name="tp_period_height">@dimen/tp_time_item_height</dimen>
     <dimen name="tp_period_text_size">@dimen/fourteen</dimen>
+    <dimen name="tp_period_border_width">@dimen/one</dimen>
     <dimen name="tp_button_width">@dimen/one_hundred</dimen>
     <dimen name="tp_button_height">@dimen/thirty_four</dimen>
     <dimen name="tp_button_text_size">@dimen/seventeen</dimen>

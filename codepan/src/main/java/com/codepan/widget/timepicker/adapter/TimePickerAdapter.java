@@ -18,20 +18,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class TimePickerAdapter extends RecyclerView.Adapter<TimePickerAdapter.ViewHolder> {
 
-	private final int selectedColor, defaultColor;
+	private final int selectedTextColor, unselectedTextColor;
 	private OnItemClickCallback itemClickCallback;
 	private final ArrayList<TimePickerData> items;
 	private final LayoutInflater inflater;
 	private final int textSize;
 
 	public TimePickerAdapter(Context context, ArrayList<TimePickerData> items,
-							 int selectedColor, int textSize) {
+							 int selectedTextColor, int unselectedTextColor,
+							 int textSize) {
 		this.inflater = LayoutInflater.from(context);
 		this.items = items;
-		this.selectedColor = selectedColor;
+		this.selectedTextColor = selectedTextColor;
+		this.unselectedTextColor = unselectedTextColor;
 		this.textSize = textSize;
 		Resources res = context.getResources();
-		this.defaultColor = res.getColor(R.color.tp_time_unselected_text_color);
 	}
 
 	@NonNull
@@ -49,10 +50,10 @@ public class TimePickerAdapter extends RecyclerView.Adapter<TimePickerAdapter.Vi
 			holder.tvValue.setTextSize(textSize);
 			holder.tvValue.setText(data.display);
 			if(data.isSelected) {
-				holder.tvValue.setTextColor(selectedColor);
+				holder.tvValue.setTextColor(selectedTextColor);
 			}
 			else {
-				holder.tvValue.setTextColor(defaultColor);
+				holder.tvValue.setTextColor(unselectedTextColor);
 			}
 			holder.tvValue.setOnClickListener(v -> {
 				if(itemClickCallback != null) {

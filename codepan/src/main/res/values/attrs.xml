@@ -107,14 +107,15 @@
         <attr name="titlePadding" format="dimension"/>
         <attr name="accentColor" format="color"/>
         <attr name="defaultTexColor" format="color"/>
-        <attr name="hourTextColor" format="color"/>
-        <attr name="hourBackgroundColor" format="color"/>
-        <attr name="minuteTextColor" format="color"/>
-        <attr name="minuteBackgroundColor" format="color"/>
+        <attr name="hourSelectedTextColor" format="color"/>
+        <attr name="hourSelectedBackgroundColor" format="color"/>
+        <attr name="minuteSelectedTextColor" format="color"/>
+        <attr name="minuteSelectedBackgroundColor" format="color"/>
         <attr name="timeTextSize" format="dimension"/>
         <attr name="timeItemWidth" format="dimension"/>
         <attr name="timeItemHeight" format="dimension"/>
         <attr name="timeSpacing" format="dimension"/>
+        <attr name="timeUnselectedTextColor" format="color"/>
         <attr name="periodWidth" format="dimension"/>
         <attr name="periodHeight" format="dimension"/>
         <attr name="periodTextSize" format="dimension"/>

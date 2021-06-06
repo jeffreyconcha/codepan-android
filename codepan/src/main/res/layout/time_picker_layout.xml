@@ -123,7 +123,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/one"
+                android:layout_height="@dimen/tp_period_border_width"
                 android:background="@color/tp_period_border_color"/>
 
             <com.codepan.widget.CodePanLabel
