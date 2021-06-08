@@ -1,14 +1,12 @@
-package com.codepan.utils
+package com.codepan.time
 
-import org.intellij.lang.annotations.Pattern
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatterBuilder
 import java.util.*
 
 class DateTime(
     val date: String = "0000-00-00",
-    val time: String = "00:00:00"
+    val time: String = "00:00:00",
+    val timeZone: TimeZone = TimeZone.getDefault(),
 ) {
 
     private val pattern = "yyyy-MM-dd HH:mm:ss";
@@ -20,13 +18,21 @@ class DateTime(
                 val formatter = SimpleDateFormat(pattern, locale)
                 val date = formatter.parse("$date $time");
                 if (date != null) {
-                    return date.time
+                    return date.time + timeZoneOffset
                 }
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
             return 0L
+        }
+
+    val timeZoneOffset: Int
+        get() {
+            val local = TimeZone.getDefault();
+            if (local != timeZone) {
+                return local.rawOffset - timeZone.rawOffset;
+            }
+            return 0
         }
 
     fun getReadableDate(
@@ -58,6 +64,9 @@ class DateTime(
     }
 
     companion object {
+        fun now(): DateTime {
+            return fromCalendar(Calendar.getInstance())
+        }
 
         fun fromDate(date: String): DateTime {
             return DateTime(
@@ -71,12 +80,17 @@ class DateTime(
             );
         }
 
-        fun now(): DateTime {
-            val cal = Calendar.getInstance();
+        fun fromCalendar(cal: Calendar): DateTime {
             return DateTime(
                 date = String.format(Locale.ENGLISH, "%tF", cal),
                 time = String.format(Locale.ENGLISH, "%tT", cal),
             );
+        }
+
+        fun fromTimestamp(timestamp: Long): DateTime {
+            val cal = Calendar.getInstance();
+            cal.timeInMillis = timestamp;
+            return fromCalendar(cal)
         }
     }
 }

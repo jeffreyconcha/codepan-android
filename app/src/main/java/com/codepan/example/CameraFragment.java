@@ -18,7 +18,7 @@ import android.widget.ImageView;
 
 import com.codepan.model.StampData;
 import com.codepan.utils.CodePanUtils;
-import com.codepan.utils.DateTime;
+import com.codepan.time.DateTime;
 import com.codepan.widget.CodePanButton;
 import com.codepan.widget.FocusIndicatorView;
 import com.codepan.widget.camera.Callback.OnCameraErrorCallback;
