@@ -2,6 +2,8 @@ package com.codepan.example;
 
 import android.os.Bundle;
 
+import com.codepan.test.Test;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -13,6 +15,7 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_layout);
+		Test.run(this);
 		findViewById(R.id.btnCalendar).setOnClickListener(view -> {
 			CalendarSample dialog = new CalendarSample();
 			FragmentManager manager = getSupportFragmentManager();

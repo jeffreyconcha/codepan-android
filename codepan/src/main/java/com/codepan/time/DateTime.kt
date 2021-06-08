@@ -2,6 +2,7 @@ package com.codepan.time
 
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.abs
 
 class DateTime(
     val date: String = "0000-00-00",
@@ -9,12 +10,18 @@ class DateTime(
     val timeZone: TimeZone = TimeZone.getDefault(),
 ) {
 
-    private val pattern = "yyyy-MM-dd HH:mm:ss";
+    private val pattern = "yyyy-MM-dd HH:mm:ss"
     private val locale = Locale.ENGLISH
 
+    /**
+     * @return the date in the current timezone.
+     */
     val readableDate: String
         get() = getReadableDate()
 
+    /**
+     * @return the time in the current timezone.
+     */
     val readableTime: String
         get() = getReadableTime()
 
@@ -22,7 +29,7 @@ class DateTime(
         get() {
             try {
                 val formatter = SimpleDateFormat(pattern, locale)
-                val date = formatter.parse("$date $time");
+                val date = formatter.parse("$date $time")
                 if (date != null) {
                     return date.time + timeZoneOffset
                 }
@@ -34,9 +41,9 @@ class DateTime(
 
     val timeZoneOffset: Int
         get() {
-            val local = TimeZone.getDefault();
+            val local = TimeZone.getDefault()
             if (local != timeZone) {
-                return local.rawOffset - timeZone.rawOffset;
+                return local.rawOffset - timeZone.rawOffset
             }
             return 0
         }
@@ -46,7 +53,7 @@ class DateTime(
         withYear: Boolean = true,
         withDay: Boolean = false,
     ): String {
-        var pattern = "EEE, MMMM d, yyyy";
+        var pattern = "EEE, MMMM d, yyyy"
         if (isShort) {
             pattern = pattern.replace("MMMM", "MMM")
         }
@@ -69,16 +76,26 @@ class DateTime(
         return formatter.format(Date(timestamp))
     }
 
+    override fun toString(): String {
+        val offset = timeZone.rawOffset / 3600000;
+        val sign = if (offset >= 0) "+" else "-";
+        val timeZone = "${timeZone.id} $sign${abs(offset)}:00";
+        return "DateTime(date = $date, time = $time, timeZone = $timeZone)";
+    }
+
     companion object {
 
         fun now(): DateTime {
-            return fromCalendar(Calendar.getInstance());
+            val cal = Calendar.getInstance()
+            return fromCalendar(cal)
         }
 
         fun nowIn(
             timeZone: TimeZone
         ): DateTime {
-            return fromCalendar(Calendar.getInstance(), timeZone)
+            val cal = Calendar.getInstance()
+            cal.timeZone = timeZone
+            return fromCalendar(cal)
         }
 
         fun fromDate(
@@ -86,7 +103,7 @@ class DateTime(
         ): DateTime {
             return DateTime(
                 date = date,
-            );
+            )
         }
 
         fun fromTime(
@@ -94,27 +111,27 @@ class DateTime(
         ): DateTime {
             return DateTime(
                 time = time,
-            );
+            )
         }
 
         fun fromCalendar(
             cal: Calendar,
-            timeZone: TimeZone = TimeZone.getDefault()
         ): DateTime {
             return DateTime(
                 date = String.format(Locale.ENGLISH, "%tF", cal),
                 time = String.format(Locale.ENGLISH, "%tT", cal),
-                timeZone = timeZone
-            );
+                timeZone = cal.timeZone,
+            )
         }
 
         fun fromTimestamp(
             timestamp: Long,
             timeZone: TimeZone = TimeZone.getDefault()
         ): DateTime {
-            val cal = Calendar.getInstance();
-            cal.timeInMillis = timestamp;
-            return fromCalendar(cal, timeZone)
+            val cal = Calendar.getInstance()
+            cal.timeZone = timeZone
+            cal.timeInMillis = timestamp
+            return fromCalendar(cal)
         }
     }
 }
