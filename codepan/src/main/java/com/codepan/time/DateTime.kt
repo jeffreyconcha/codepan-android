@@ -12,6 +12,12 @@ class DateTime(
     private val pattern = "yyyy-MM-dd HH:mm:ss";
     private val locale = Locale.ENGLISH
 
+    val readableDate: String
+        get() = getReadableDate()
+
+    val readableTime: String
+        get() = getReadableTime()
+
     val timestamp: Long
         get() {
             try {
@@ -37,7 +43,7 @@ class DateTime(
 
     fun getReadableDate(
         isShort: Boolean = false,
-        withYear: Boolean = false,
+        withYear: Boolean = true,
         withDay: Boolean = false,
     ): String {
         var pattern = "EEE, MMMM d, yyyy";
@@ -64,33 +70,51 @@ class DateTime(
     }
 
     companion object {
+
         fun now(): DateTime {
-            return fromCalendar(Calendar.getInstance())
+            return fromCalendar(Calendar.getInstance());
         }
 
-        fun fromDate(date: String): DateTime {
+        fun nowIn(
+            timeZone: TimeZone
+        ): DateTime {
+            return fromCalendar(Calendar.getInstance(), timeZone)
+        }
+
+        fun fromDate(
+            date: String
+        ): DateTime {
             return DateTime(
                 date = date,
             );
         }
 
-        fun fromTime(time: String): DateTime {
+        fun fromTime(
+            time: String
+        ): DateTime {
             return DateTime(
                 time = time,
             );
         }
 
-        fun fromCalendar(cal: Calendar): DateTime {
+        fun fromCalendar(
+            cal: Calendar,
+            timeZone: TimeZone = TimeZone.getDefault()
+        ): DateTime {
             return DateTime(
                 date = String.format(Locale.ENGLISH, "%tF", cal),
                 time = String.format(Locale.ENGLISH, "%tT", cal),
+                timeZone = timeZone
             );
         }
 
-        fun fromTimestamp(timestamp: Long): DateTime {
+        fun fromTimestamp(
+            timestamp: Long,
+            timeZone: TimeZone = TimeZone.getDefault()
+        ): DateTime {
             val cal = Calendar.getInstance();
             cal.timeInMillis = timestamp;
-            return fromCalendar(cal)
+            return fromCalendar(cal, timeZone)
         }
     }
 }
