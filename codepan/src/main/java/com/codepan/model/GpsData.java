@@ -1,14 +1,16 @@
 package com.codepan.model;
 
 import android.location.Location;
-public class GpsData {
 
+import com.codepan.time.DateTime;
+import com.codepan.time.DateTimeFields;
+
+import org.jetbrains.annotations.NotNull;
+
+public class GpsData implements DateTimeFields {
 	public String ID;
-	public String date;
-	public String time;
 	public float speed;
 	public float bearing;
-	public long millis;
 	public float accuracy;
 	public double longitude;
 	public double latitude;
@@ -18,22 +20,31 @@ public class GpsData {
 	public boolean isEnabled;
 	public boolean withHistory;
 	public Location location;
+	public DateTime dt;
 
-	public void optDate(String date) {
-		if(date != null) {
-			this.date = date;
-		}
-		else {
-			this.date = "0000-00-00";
-		}
+	@NotNull
+	@Override
+	public String getDate() {
+		return getDateTime().getDate();
 	}
 
-	public void optTime(String time) {
-		if(time != null) {
-			this.time = time;
+	@NotNull
+	@Override
+	public String getTime() {
+		return getDateTime().getTime();
+	}
+
+	@Override
+	public long getTimestamp() {
+		return getDateTime().getTimestamp();
+	}
+
+	@NotNull
+	@Override
+	public DateTime getDateTime() {
+		if (dt == null) {
+			dt = new DateTime();
 		}
-		else {
-			this.time = "00:00:00";
-		}
+		return dt;
 	}
 }

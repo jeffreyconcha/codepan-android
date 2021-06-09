@@ -17,7 +17,6 @@ import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -100,6 +99,7 @@ import com.codepan.model.MockData;
 import com.codepan.model.PhoneInfoData;
 import com.codepan.model.StampData;
 import com.codepan.model.SystemMediaData;
+import com.codepan.time.DateTime;
 import com.codepan.widget.CodePanLabel;
 import com.codepan.widget.CustomTypefaceSpan;
 import com.google.android.gms.common.ConnectionResult;
@@ -2318,11 +2318,10 @@ public class CodePanUtils {
 			long lastLocationUpdate, long interval, float requiredAccuracy) {
 		GpsData gps = new GpsData();
 		gps.isEnabled = isGpsEnabled(context);
-		gps.date = "0000-00-00";
-		gps.time = "00:00:00";
-		if(location != null) {
+		gps.dt = new DateTime();
+		if (location != null) {
 			String provider = location.getProvider();
-			gps.millis = location.getTime();
+			long timestamp = location.getTime();
 			gps.latitude = location.getLatitude();
 			gps.longitude = location.getLongitude();
 			gps.altitude = location.getAltitude();
@@ -2332,9 +2331,9 @@ public class CodePanUtils {
 			gps.isIndoor = !provider.equals(LocationManager.GPS_PROVIDER);
 			final long timeElapsed = SystemClock.elapsedRealtime() - lastLocationUpdate;
 			final long allowance = 15000L + interval;
-			if(timeElapsed <= allowance && (gps.accuracy <= requiredAccuracy || !gps.isIndoor)) {
-				if(gps.longitude != 0 && gps.latitude != 0) {
-					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+			if (timeElapsed <= allowance && (gps.accuracy <= requiredAccuracy || !gps.isIndoor)) {
+				if (gps.longitude != 0 && gps.latitude != 0) {
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
 						gps.isValid = !location.isFromMockProvider();
 					}
 					else {
@@ -2342,8 +2341,8 @@ public class CodePanUtils {
 					}
 				}
 			}
-			gps.date = getDate(gps.millis);
-			gps.time = getTime(gps.millis);
+			TimeZone utc = TimeZone.getTimeZone("UTC");
+			gps.dt = DateTime.Companion.fromTimestamp(timestamp, utc);
 			gps.location = location;
 			gps.withHistory = true;
 		}

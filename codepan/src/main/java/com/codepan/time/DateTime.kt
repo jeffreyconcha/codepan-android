@@ -4,6 +4,22 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.abs
 
+const val MINUTE = 60000L
+const val HOUR = 3600000L
+const val DAY = 86400000L
+const val WEEK = 604800000L
+const val MONTH = 2592000000L
+
+interface DateTimeFields {
+    val dateTime: DateTime
+    val date: String
+        get() = dateTime.date
+    val time: String
+        get() = dateTime.time
+    val timestamp: Long
+        get() = dateTime.timestamp
+}
+
 class DateTime(
     val date: String = "0000-00-00",
     val time: String = "00:00:00",
@@ -46,6 +62,42 @@ class DateTime(
                 return local.rawOffset - timeZone.rawOffset
             }
             return 0
+        }
+
+    val history: String
+        get() {
+            val current = System.currentTimeMillis()
+            val timestamp = this.timestamp
+            if (current > timestamp) {
+                val difference = current - timestamp
+                when {
+                    difference > MONTH -> {
+                        return "$readableDate at $readableTime"
+                    }
+                    difference >= WEEK -> {
+                        val w = (difference / WEEK).toInt()
+                        val type = if (w > 1) "weeks" else "week"
+                        return "$w $type ago";
+                    }
+                    difference >= DAY -> {
+                        val d = (difference / DAY).toInt()
+                        val type = if (d > 1) "days" else "day"
+                        return "$d $type ago";
+
+                    }
+                    difference >= HOUR -> {
+                        val h = (difference / HOUR).toInt()
+                        val type = if (h > 1) "hours" else "hours"
+                        return "$h $type ago";
+                    }
+                    difference >= MINUTE -> {
+                        val m = (difference / MINUTE).toInt()
+                        val type = if (m > 1) "mins" else "min"
+                        return "$m $type ago";
+                    }
+                }
+            }
+            return "Just now"
         }
 
     fun getReadableDate(
