@@ -101,7 +101,7 @@ class DateTime(
         }
 
     fun getReadableDate(
-        isShort: Boolean = false,
+        isShort: Boolean = true,
         withYear: Boolean = true,
         withDay: Boolean = false,
     ): String {
