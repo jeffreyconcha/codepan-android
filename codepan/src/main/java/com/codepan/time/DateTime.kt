@@ -24,7 +24,7 @@ class DateTime(
     val date: String = "0000-00-00",
     val time: String = "00:00:00",
     val timeZone: TimeZone = TimeZone.getDefault(),
-) {
+) : Comparable<DateTime> {
 
     private val pattern = "yyyy-MM-dd HH:mm:ss"
     private val locale = Locale.ENGLISH
@@ -47,21 +47,12 @@ class DateTime(
                 val formatter = SimpleDateFormat(pattern, locale)
                 val date = formatter.parse("$date $time")
                 if (date != null) {
-                    return date.time + timeZoneOffset
+                    return date.time + getOffset()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
             return 0L
-        }
-
-    val timeZoneOffset: Int
-        get() {
-            val local = TimeZone.getDefault()
-            if (local != timeZone) {
-                return local.rawOffset - timeZone.rawOffset
-            }
-            return 0
         }
 
     val history: String
@@ -128,11 +119,44 @@ class DateTime(
         return formatter.format(Date(timestamp))
     }
 
+    fun getOffset(
+        input: TimeZone = TimeZone.getDefault()
+    ): Int {
+        if (input != timeZone) {
+            return input.rawOffset - timeZone.rawOffset
+        }
+        return 0
+    }
+
+    fun to(input: TimeZone): DateTime {
+        return fromTimestamp(timestamp, input)
+    }
+
+    fun isAfter(other: DateTime): Boolean {
+        return timestamp > other.timestamp;
+    }
+
+    fun isBefore(other: DateTime): Boolean {
+        return timestamp < other.timestamp;
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other is DateTime) {
+            return timestamp == other.timestamp
+        }
+        return false
+    }
+
     override fun toString(): String {
         val offset = timeZone.rawOffset / 3600000;
         val sign = if (offset >= 0) "+" else "-";
         val timeZone = "${timeZone.id} $sign${abs(offset)}:00";
         return "DateTime(date = $date, time = $time, timeZone = $timeZone)";
+    }
+
+    override fun compareTo(other: DateTime): Int {
+        val difference = timestamp - other.timestamp;
+        return (difference / 1000L).toInt();
     }
 
     companion object {
