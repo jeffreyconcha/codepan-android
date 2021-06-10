@@ -2314,8 +2314,11 @@ public class CodePanUtils {
 		return imageLoader.loadImageSync(uri);
 	}
 
-	public static GpsData getGps(Context context, Location location,
-			long lastLocationUpdate, long interval, float requiredAccuracy) {
+	public static GpsData getGps(
+		Context context, Location location, TimeZone timeZone,
+		long lastLocationUpdate, long interval,
+		float requiredAccuracy
+	) {
 		GpsData gps = new GpsData();
 		gps.isEnabled = isGpsEnabled(context);
 		gps.dt = new DateTime();
@@ -2342,7 +2345,8 @@ public class CodePanUtils {
 				}
 			}
 			TimeZone utc = TimeZone.getTimeZone("UTC");
-			gps.dt = DateTime.Companion.fromTimestamp(timestamp, utc);
+			DateTime dt = DateTime.Companion.fromTimestamp(timestamp, utc);
+			gps.dt = dt.to(timeZone);
 			gps.location = location;
 			gps.withHistory = true;
 		}
