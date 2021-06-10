@@ -1,14 +1,9 @@
 package com.codepan.time
 
+import com.codepan.time.TimeUnit.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.abs
-
-const val MINUTE = 60000L
-const val HOUR = 3600000L
-const val DAY = 86400000L
-const val WEEK = 604800000L
-const val MONTH = 2592000000L
 
 interface DateTimeFields {
     val dateTime: DateTime
@@ -62,29 +57,29 @@ class DateTime(
             if (current > timestamp) {
                 val difference = current - timestamp
                 when {
-                    difference > MONTH -> {
+                    difference > MONTH.milliseconds -> {
                         return "$readableDate at $readableTime"
                     }
-                    difference >= WEEK -> {
-                        val w = (difference / WEEK).toInt()
+                    difference >= WEEK.milliseconds -> {
+                        val w = (difference / WEEK.milliseconds).toInt()
                         val type = if (w > 1) "weeks" else "week"
-                        return "$w $type ago";
+                        return "$w $type ago"
                     }
-                    difference >= DAY -> {
-                        val d = (difference / DAY).toInt()
+                    difference >= DAY.milliseconds -> {
+                        val d = (difference / DAY.milliseconds).toInt()
                         val type = if (d > 1) "days" else "day"
-                        return "$d $type ago";
+                        return "$d $type ago"
 
                     }
-                    difference >= HOUR -> {
-                        val h = (difference / HOUR).toInt()
+                    difference >= HOUR.milliseconds -> {
+                        val h = (difference / HOUR.milliseconds).toInt()
                         val type = if (h > 1) "hours" else "hours"
-                        return "$h $type ago";
+                        return "$h $type ago"
                     }
-                    difference >= MINUTE -> {
-                        val m = (difference / MINUTE).toInt()
+                    difference >= MINUTE.milliseconds -> {
+                        val m = (difference / MINUTE.milliseconds).toInt()
                         val type = if (m > 1) "mins" else "min"
-                        return "$m $type ago";
+                        return "$m $type ago"
                     }
                 }
             }
@@ -128,39 +123,58 @@ class DateTime(
         return 0
     }
 
+    fun isAfter(other: DateTime): Boolean {
+        return timestamp > other.timestamp
+    }
+
+    fun isBefore(other: DateTime): Boolean {
+        return timestamp < other.timestamp
+    }
+
+    fun isBetween(
+        other1: DateTime,
+        other2: DateTime
+    ): Boolean {
+        return if (other1.isBefore(other2)) {
+            this.isAfter(other1) && this.isBefore(other2)
+        } else {
+            this.isAfter(other2) && this.isBefore(other1)
+        }
+    }
+
+    fun difference(other: DateTime): Long {
+        return timestamp - other.timestamp
+    }
+
     fun to(input: TimeZone): DateTime {
         return fromTimestamp(timestamp, input)
     }
 
-    fun isAfter(other: DateTime): Boolean {
-        return timestamp > other.timestamp;
+    fun roll(
+        unit: TimeUnit,
+        amount: Int
+    ): DateTime {
+        val total = timestamp + (unit.milliseconds * amount)
+        return fromTimestamp(total, timeZone)
     }
 
-    fun isBefore(other: DateTime): Boolean {
-        return timestamp < other.timestamp;
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other is DateTime) {
-            return timestamp == other.timestamp
-        }
-        return false
+    fun isEqual(other: DateTime): Boolean {
+        return timestamp == other.timestamp
     }
 
     override fun toString(): String {
-        val offset = timeZone.rawOffset / 3600000;
-        val sign = if (offset >= 0) "+" else "-";
-        val timeZone = "${timeZone.id} $sign${abs(offset)}:00";
-        return "DateTime(date = $date, time = $time, timeZone = $timeZone)";
+        val offset = timeZone.rawOffset / HOUR.milliseconds
+        val sign = if (offset >= 0) "+" else "-"
+        val timeZone = "${timeZone.id} $sign${abs(offset)}:00"
+        return "DateTime(date = $date, time = $time, timeZone = $timeZone)"
     }
 
     override fun compareTo(other: DateTime): Int {
-        val difference = timestamp - other.timestamp;
-        return (difference / 1000L).toInt();
+        val difference = timestamp - other.timestamp
+        return (difference / 1000L).toInt()
     }
 
     companion object {
-
         fun now(): DateTime {
             val cal = Calendar.getInstance()
             return fromCalendar(cal)
