@@ -131,6 +131,14 @@ class DateTime(
         return timestamp < other.timestamp
     }
 
+    fun isAfterOrEqual(other: DateTime): Boolean {
+        return isAfter(other) || isEqual(other);
+    }
+
+    fun isBeforeOrEqual(other: DateTime): Boolean {
+        return isBefore(other) || isEqual(other);
+    }
+
     fun isBetween(
         other1: DateTime,
         other2: DateTime
@@ -168,6 +176,10 @@ class DateTime(
 
     fun isEqual(other: DateTime): Boolean {
         return timestamp == other.timestamp
+    }
+
+    fun isNotEqual(other: DateTime): Boolean {
+        return timestamp != other.timestamp
     }
 
     override fun toString(): String {
