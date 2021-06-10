@@ -150,6 +150,14 @@ class DateTime(
         return fromTimestamp(timestamp, input)
     }
 
+    fun trimTime(): DateTime {
+        return fromDate(date);
+    }
+
+    fun trimDate(): DateTime {
+        return fromTime(time);
+    }
+
     fun roll(
         unit: TimeUnit,
         amount: Int
