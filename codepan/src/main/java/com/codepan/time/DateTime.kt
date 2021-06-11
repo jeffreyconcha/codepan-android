@@ -200,6 +200,11 @@ class DateTime(
             return fromCalendar(cal)
         }
 
+        fun today(): DateTime {
+            val cal = Calendar.getInstance()
+            return fromCalendar(cal).trimTime()
+        }
+
         fun nowIn(
             timeZone: TimeZone
         ): DateTime {
