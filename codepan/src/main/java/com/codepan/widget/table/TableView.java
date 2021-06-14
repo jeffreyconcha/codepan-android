@@ -22,7 +22,7 @@ import com.codepan.R;
 import com.codepan.utils.CodePanUtils;
 import com.codepan.widget.CodePanButton;
 import com.codepan.widget.CodePanLabel;
-import com.codepan.widget.TableScrollView;
+import com.codepan.widget.ScrollListenerView;
 import com.codepan.widget.table.Callback.OnTableAddRowCallback;
 import com.codepan.widget.table.Callback.OnTableCellClickCallback;
 import com.codepan.widget.table.Callback.OnTableCellCreatedCallback;
@@ -52,7 +52,7 @@ public class TableView extends FrameLayout {
 	private OnTableColumnClickCallback tableColumnClickCallback;
 	private OnTableCellClickCallback tableCellClickCallback;
 	private OnTableRowClickCallback tableRowClickCallback;
-	private TableScrollView svLeftTable, svContentTable;
+	private ScrollListenerView svLeftTable, svContentTable;
 	private OnTableAddRowCallback tableAddRowCallback;
 	private final ArrayList<FilterData> filterList;
 	private Spinner spinLimitTable, spinPageTable;

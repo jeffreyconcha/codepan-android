@@ -8,11 +8,11 @@ import android.widget.ScrollView;
 import com.codepan.callback.Interface.OnScrollChangeCallback;
 
 
-public class TableScrollView extends ScrollView {
+public class ScrollListenerView extends ScrollView {
 
 	private OnScrollChangeCallback scrollChangeCallback;
 
-	public TableScrollView(Context context, AttributeSet attrs) {
+	public ScrollListenerView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
