@@ -2505,7 +2505,7 @@ public class CodePanUtils {
 			}
 			else {
 				File su = new File("/system/xbin/su");
-				return !isEmulator() && su.exists();
+				return su.exists();
 			}
 		}
 		catch(Throwable t) {
