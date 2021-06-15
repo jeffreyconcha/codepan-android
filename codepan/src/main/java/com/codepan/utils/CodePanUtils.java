@@ -2484,17 +2484,22 @@ public class CodePanUtils {
 
 	public static boolean isEmulator() {
 		return Build.FINGERPRINT.startsWith("generic")
-				|| Build.FINGERPRINT.startsWith("unknown")
-				|| Build.FINGERPRINT.contains("userdebug/test-keys")
-				|| Build.MODEL.contains("google_sdk")
-				|| Build.MODEL.contains("Emulator")
-				|| Build.MODEL.contains("Android SDK built for x86")
-				|| Build.BOARD.equals("QC_Reference_Phone")
-				|| Build.MANUFACTURER.contains("Genymotion")
-				|| Build.MANUFACTURER.contains("Genymobile")
-				|| Build.HOST.startsWith("Build")
-				|| (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
-				|| "google_sdk".equals(Build.PRODUCT);
+			|| Build.FINGERPRINT.startsWith("unknown")
+			|| Build.FINGERPRINT.contains("userdebug/test-keys")
+			|| Build.MODEL.contains("google_sdk")
+			|| Build.MODEL.contains("Emulator")
+			|| Build.MODEL.contains("Android SDK built for x86")
+			|| Build.BOARD.equals("QC_Reference_Phone")
+			|| Build.MANUFACTURER.contains("Genymotion")
+			|| Build.MANUFACTURER.contains("Genymobile")
+			|| Build.HOST.startsWith("Build")
+			|| (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
+			|| Build.PRODUCT.contains("sdk")
+			|| Build.PRODUCT.contains("vbox86p")
+			|| Build.PRODUCT.contains("emulator")
+			|| Build.PRODUCT.contains("simulator")
+			|| Build.HARDWARE.contains("goldfish")
+			|| Build.HARDWARE.contains("ranchu");
 	}
 
 	public static boolean isPhoneRooted() {
