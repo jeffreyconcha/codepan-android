@@ -628,15 +628,23 @@ public class TableView extends FrameLayout {
 
 	public View getView(int x, int y) {
 		if (x < llContentTable.getChildCount()) {
-			if (y != 0) {
-				int index = y - 1;
-				LinearLayout row = (LinearLayout) llContentTable.getChildAt(x);
-				if (index < row.getChildCount()) {
-					return row.getChildAt(index);
+			if (freezeFirstColumn) {
+				if (y != 0) {
+					int index = y - 1;
+					LinearLayout row = (LinearLayout) llContentTable.getChildAt(x);
+					if (index < row.getChildCount()) {
+						return row.getChildAt(index);
+					}
+				}
+				else {
+					return llLeftTable.getChildAt(x);
 				}
 			}
 			else {
-				return llLeftTable.getChildAt(x);
+				LinearLayout row = (LinearLayout) llContentTable.getChildAt(x);
+				if (y < row.getChildCount()) {
+					return row.getChildAt(y);
+				}
 			}
 		}
 		return null;
