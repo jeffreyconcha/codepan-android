@@ -50,7 +50,7 @@ class DateTime(
             return 0L
         }
 
-    val offset: String
+    val offsetHours: String
         get() {
             val offset = timeZone.rawOffset / HOUR.milliseconds
             val sign = if (offset >= 0) "+" else "-"
@@ -190,7 +190,7 @@ class DateTime(
     }
 
     override fun toString(): String {
-        val timeZone = "${timeZone.id} $offset"
+        val timeZone = "${timeZone.id} $offsetHours"
         return "DateTime(date = $date, time = $time, timeZone = $timeZone)"
     }
 
