@@ -27,7 +27,7 @@ public class TableSample extends Fragment {
 		columnList = new ArrayList<>();
 		for (int cn = 1; cn <= 5; cn++) {
 			String name = "Column " + cn;
-			columnList.add(new ColumnData(getContext(), name, R.dimen.one_hundred, true));
+			columnList.add(new ColumnData(getContext(), name, R.dimen.one_hundred, R.layout.table_edittext_item));
 		}
 		rowList = new ArrayList<>();
 		for (int rn = 1; rn <= 50; rn++) {
