@@ -352,6 +352,8 @@ public class TableView extends FrameLayout {
 				final int ri = rowIndex;
 				final int mri = this.rowList.indexOf(row);
 				llRow.setTag(mri);
+				View lastCell = null;
+				View endCell = null;
 				for (final CellData c : cellList) {
 					final int mci = cellList.indexOf(c);
 					ColumnData column = columnList.get(mci);
@@ -427,6 +429,20 @@ public class TableView extends FrameLayout {
 							llLeftTable.addView(cell);
 						}
 					}
+					if (mci == 0) {
+						if (endCell != null) {
+							endCell.setNextFocusDownId(cell.getId());
+						}
+					}
+					else {
+						if (lastCell != null) {
+							lastCell.setNextFocusRightId(cell.getId());
+							if (mci == columnList.size() - 1) {
+								endCell = cell;
+							}
+						}
+					}
+					lastCell = cell;
 				}
 				if(tableRowClickCallback != null) {
 					llRow.setOnTouchListener((v, event) -> {
