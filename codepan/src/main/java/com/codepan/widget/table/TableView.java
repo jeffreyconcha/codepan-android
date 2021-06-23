@@ -401,13 +401,8 @@ public class TableView extends FrameLayout {
 						if(withRowNumbers()) {
 							final View number = inflater.inflate(R.layout.table_row_number_item, this, false);
 							CodePanLabel text = number.findViewById(R.id.tvTableRowNumber);
-							if (row.ID != null) {
-								text.setText(row.ID);
-							}
-							else {
-								String rowNo = String.valueOf(mri + 1);
-								text.setText(rowNo);
-							}
+							String rowNo = String.valueOf(mri + 1);
+							text.setText(rowNo);
 							number.getLayoutParams().width = numWidth;
 							if (freezeFirstColumn) {
 								final int totalWidth = numWidth + column.width;
