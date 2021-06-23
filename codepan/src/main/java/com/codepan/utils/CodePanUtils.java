@@ -217,16 +217,16 @@ public class CodePanUtils {
 
 	public static long dateToMillis(String date) {
 		long millis = 0;
-		if(date != null && !date.isEmpty()) {
+		if (date != null && !date.isEmpty()) {
 			try {
 				final String PATTERN = "yyyy-MM-dd";
 				SimpleDateFormat format = new SimpleDateFormat(PATTERN, Locale.ENGLISH);
 				java.util.Date d = format.parse(date);
-				if(d != null) {
+				if (d != null) {
 					millis = d.getTime();
 				}
 			}
-			catch(ParseException e) {
+			catch (ParseException e) {
 				e.printStackTrace();
 			}
 		}
@@ -235,16 +235,16 @@ public class CodePanUtils {
 
 	public static long timeToMillis(String time) {
 		long millis = 0;
-		if(time != null && !time.isEmpty()) {
+		if (time != null && !time.isEmpty()) {
 			try {
 				final String PATTERN = "HH:mm:ss";
 				SimpleDateFormat format = new SimpleDateFormat(PATTERN, Locale.ENGLISH);
 				java.util.Date d = format.parse(time);
-				if(d != null) {
+				if (d != null) {
 					millis = d.getTime();
 				}
 			}
-			catch(ParseException e) {
+			catch (ParseException e) {
 				e.printStackTrace();
 			}
 		}
@@ -253,16 +253,16 @@ public class CodePanUtils {
 
 	public static long dateTimeToMillis(String date, String time) {
 		long millis = 0;
-		if(date != null && time != null && !date.isEmpty() && !time.isEmpty()) {
+		if (date != null && time != null && !date.isEmpty() && !time.isEmpty()) {
 			try {
 				final String PATTERN = "yyyy-MM-dd HH:mm:ss";
 				SimpleDateFormat format = new SimpleDateFormat(PATTERN, Locale.ENGLISH);
 				java.util.Date d = format.parse(date + " " + time);
-				if(d != null) {
+				if (d != null) {
 					millis = d.getTime();
 				}
 			}
-			catch(ParseException e) {
+			catch (ParseException e) {
 				e.printStackTrace();
 			}
 		}
@@ -270,7 +270,7 @@ public class CodePanUtils {
 	}
 
 	public static String formatDate(String date) {
-		if(date != null && !date.isEmpty()) {
+		if (date != null && !date.isEmpty()) {
 			String[] array = date.split("-");
 			int m = Integer.parseInt(array[1]);
 			int d = Integer.parseInt(array[2]);
@@ -284,7 +284,7 @@ public class CodePanUtils {
 	}
 
 	public static String formatTime(String time) {
-		if(time != null && !time.isEmpty()) {
+		if (time != null && !time.isEmpty()) {
 			String[] array = time.split(":");
 			int h = Integer.parseInt(array[0]);
 			int m = Integer.parseInt(array[1]);
@@ -304,9 +304,9 @@ public class CodePanUtils {
 	}
 
 	public static String getReadableDate(String date, boolean isShort,
-			boolean withYear, boolean withDay) {
+										 boolean withYear, boolean withDay) {
 		String readable = "N/A";
-		if(date != null && !date.isEmpty() && !date.equals("0000-00-00")) {
+		if (date != null && !date.isEmpty() && !date.equals("0000-00-00")) {
 			long timestamp = dateToMillis(date);
 			return getReadableDate(timestamp, isShort, withYear, withDay);
 		}
@@ -314,15 +314,15 @@ public class CodePanUtils {
 	}
 
 	public static String getReadableDate(long timestamp, boolean isShort,
-			boolean withYear, boolean withDay) {
+										 boolean withYear, boolean withDay) {
 		String pattern = "EEE, MMMM d, yyyy";
-		if(isShort) {
+		if (isShort) {
 			pattern = pattern.replace("MMMM", "MMM");
 		}
-		if(!withYear) {
+		if (!withYear) {
 			pattern = pattern.replace(", yyyy", "");
 		}
-		if(!withDay) {
+		if (!withDay) {
 			pattern = pattern.replace("EEE, ", "");
 		}
 		final SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.ENGLISH);
@@ -332,7 +332,7 @@ public class CodePanUtils {
 
 	public static String getReadableTime(String time, boolean withSeconds) {
 		String readable = "N/A";
-		if(time != null && !time.isEmpty()) {
+		if (time != null && !time.isEmpty()) {
 			long timestamp = timeToMillis(time);
 			return getReadableTime(timestamp, withSeconds);
 		}
@@ -341,7 +341,7 @@ public class CodePanUtils {
 
 	public static String getReadableTime(long timestamp, boolean withSeconds) {
 		String pattern = "h:mm:ss a";
-		if(!withSeconds) {
+		if (!withSeconds) {
 			pattern = pattern.replace(":ss", "");
 		}
 		final SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.ENGLISH);
@@ -350,7 +350,7 @@ public class CodePanUtils {
 
 	public static String dateTimeToHistory(String date, String time) {
 		String history = null;
-		if(date != null && time != null) {
+		if (date != null && time != null) {
 			final long MIN = 60000L;
 			final long HOUR = 3600000L;
 			final long DAY = 86400000L;
@@ -358,26 +358,26 @@ public class CodePanUtils {
 			final long MONTH = 2592000000L;
 			long millis = dateTimeToMillis(date, time);
 			long current = System.currentTimeMillis();
-			if(current > millis) {
+			if (current > millis) {
 				long difference = current - millis;
-				if(difference > MONTH) {
+				if (difference > MONTH) {
 					String d = getReadableDate(date, true, true);
 					String t = getReadableTime(time, false);
 					history = d + " at " + t;
 				}
-				else if(difference >= WEEK) {
+				else if (difference >= WEEK) {
 					int w = (int) (difference / WEEK);
 					history = w > 1 ? (w + " weeks ago") : (w + " week ago");
 				}
-				else if(difference >= DAY) {
+				else if (difference >= DAY) {
 					int d = (int) (difference / DAY);
 					history = d > 1 ? (d + " days ago") : (d + " day ago");
 				}
-				else if(difference >= HOUR) {
+				else if (difference >= HOUR) {
 					int h = (int) (difference / HOUR);
 					history = h > 1 ? (h + " hours ago") : (h + " hour ago");
 				}
-				else if(difference >= MIN) {
+				else if (difference >= MIN) {
 					int m = (int) (difference / MIN);
 					history = m > 1 ? (m + " mins ago") : (m + " min ago");
 				}
@@ -407,7 +407,7 @@ public class CodePanUtils {
 		int h = Integer.parseInt(timeArray[0]);
 		int m = Integer.parseInt(timeArray[1]);
 		int s = Integer.parseInt(timeArray[2]);
-		if(!isWord) {
+		if (!isWord) {
 			String year = y > 0 ? (y + "y ") : "";
 			String month = M > 0 ? (M + "mo ") : "";
 			String day = d > 0 ? (d + "d ") : "";
@@ -415,7 +415,7 @@ public class CodePanUtils {
 			String min = m > 0 ? (m + "m ") : "";
 			String sec = s > 0 ? (s + "s") : "0s";
 			result = year + month + day + hour + min;
-			if(hasSecond || result.isEmpty()) {
+			if (hasSecond || result.isEmpty()) {
 				result += sec;
 			}
 		}
@@ -427,7 +427,7 @@ public class CodePanUtils {
 			String min = m > 0 ? (m + (m > 1 ? " mins " : " min ")) : "";
 			String sec = s > 0 ? (s + (s > 1 ? " secs" : " sec")) : "";
 			result = year + month + day + hour + min;
-			if(hasSecond || result.isEmpty()) {
+			if (hasSecond || result.isEmpty()) {
 				result += sec;
 			}
 		}
@@ -435,14 +435,14 @@ public class CodePanUtils {
 	}
 
 	public static String getDisplayYear(String date) {
-		if(date != null) {
+		if (date != null) {
 			return date.split("-")[0];
 		}
 		return null;
 	}
 
 	public static String rollDate(String date, int noOfDays) {
-		if(date != null) {
+		if (date != null) {
 			long millis = dateTimeToMillis(date, "00:00:00");
 			long days = noOfDays * 86400000L;
 			long output = millis + days;
@@ -457,7 +457,7 @@ public class CodePanUtils {
 
 	public static Calendar getCalendar(String date) {
 		Calendar cal = Calendar.getInstance();
-		if(date != null) {
+		if (date != null) {
 			long timestamp = dateToMillis(date);
 			cal.setTimeInMillis(timestamp);
 		}
@@ -490,13 +490,13 @@ public class CodePanUtils {
 
 	public static String unicodeToString(String input) {
 		String utf8 = "";
-		if(input != null && !input.isEmpty()) {
+		if (input != null && !input.isEmpty()) {
 			try {
 				String text = cleanUnicodeString(input);
 				byte[] bytes = text.getBytes("UTF-8");
 				utf8 = new String(bytes, Charset.forName("UTF-8"));
 			}
-			catch(Exception e) {
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -509,13 +509,13 @@ public class CodePanUtils {
 		Pattern pattern = Pattern.compile("[u][0-9a-fA-F]{4}");
 		Matcher matcher = pattern.matcher(input);
 		int index = 0;
-		while(matcher.find()) {
+		while (matcher.find()) {
 			String point = matcher.group().substring(1);
 			int parsed = Integer.parseInt(point, 16);
 			Character symbol = (char) parsed;
 			String text = input.substring(index, matcher.start());
 			builder.append(text);
-			if(parsed >= SPACE) {
+			if (parsed >= SPACE) {
 				builder.append(symbol);
 			}
 			else {
@@ -534,7 +534,7 @@ public class CodePanUtils {
 		try {
 			in.transferTo(0, in.size(), out);
 		}
-		catch(FileNotFoundException e) {
+		catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		finally {
@@ -546,8 +546,8 @@ public class CodePanUtils {
 	public static String createParsableString(ArrayList<String> list, String delimeter) {
 		String parsableString = "";
 		int position = 0;
-		for(String s : list) {
-			if(position == list.size() - 1) {
+		for (String s : list) {
+			if (position == list.size() - 1) {
 				parsableString = parsableString + s;
 			}
 			else {
@@ -562,12 +562,12 @@ public class CodePanUtils {
 		boolean result = false;
 		String path = context.getDir(folder, Context.MODE_PRIVATE).getPath();
 		File dir = new File(path);
-		if(dir.exists() && dir.isDirectory()) {
+		if (dir.exists() && dir.isDirectory()) {
 			String[] child = dir.list();
-			if(child.length > 0) {
-				for(String file : child) {
+			if (child.length > 0) {
+				for (String file : child) {
 					result = file.contains(".") || decryptFile(context,
-							folder, file, password, ".txt");
+						folder, file, password, ".txt");
 				}
 			}
 			else {
@@ -583,7 +583,7 @@ public class CodePanUtils {
 	public static boolean decryptFile(Context context, String folderName, String fileName, String password, String extFile) {
 		boolean result = false;
 		String path = context.getDir(folderName, Context.MODE_PRIVATE).getPath() + "/" + fileName;
-		if(fileName.contains(extFile)) {
+		if (fileName.contains(extFile)) {
 			return true;
 		}
 		try {
@@ -597,7 +597,7 @@ public class CodePanUtils {
 			CipherInputStream cis = new CipherInputStream(fis, cipher);
 			int b = 0;
 			byte[] d = new byte[8];
-			while((b = cis.read(d)) != -1) {
+			while ((b = cis.read(d)) != -1) {
 				fos.write(d, 0, b);
 			}
 			fos.flush();
@@ -605,7 +605,7 @@ public class CodePanUtils {
 			cis.close();
 			result = file.delete();
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
@@ -623,13 +623,13 @@ public class CodePanUtils {
 
 	public static void deleteFiles(String path) {
 		File file = new File(path);
-		if(file.exists()) {
+		if (file.exists()) {
 			String deleteCmd = "rm -r " + path;
 			Runtime runtime = Runtime.getRuntime();
 			try {
 				runtime.exec(deleteCmd);
 			}
-			catch(IOException e) {
+			catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -638,10 +638,10 @@ public class CodePanUtils {
 	public static boolean deleteFilesInDir(Context context, String folder) {
 		boolean result = false;
 		File dir = context.getDir(folder, Context.MODE_PRIVATE);
-		if(dir.exists() && dir.isDirectory()) {
+		if (dir.exists() && dir.isDirectory()) {
 			String[] child = dir.list();
-			if(child != null && child.length > 0) {
-				for(String file : child) {
+			if (child != null && child.length > 0) {
+				for (String file : child) {
 					result = new File(dir, file).delete();
 				}
 			}
@@ -656,10 +656,10 @@ public class CodePanUtils {
 	}
 
 	public static boolean downloadFile(Context context, String urlLink, String folder,
-			String fileName) {
+									   String fileName) {
 		boolean result = false;
 		File dir = context.getDir(folder, Context.MODE_PRIVATE);
-		if(!dir.exists()) {
+		if (!dir.exists()) {
 			dir.mkdir();
 		}
 		try {
@@ -672,7 +672,7 @@ public class CodePanUtils {
 			byte data[] = new byte[1024];
 			long total = 0;
 			int count;
-			while((count = input.read(data)) != -1) {
+			while ((count = input.read(data)) != -1) {
 				total += count;
 				output.write(data, 0, count);
 			}
@@ -681,7 +681,7 @@ public class CodePanUtils {
 			input.close();
 			result = true;
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
@@ -701,7 +701,7 @@ public class CodePanUtils {
 			cipher.init(Cipher.ENCRYPT_MODE, sks, iv);
 			encrypted = new String(Base64.encode(cipher.doFinal(inputByte), Base64.DEFAULT));
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return encrypted;
@@ -722,7 +722,7 @@ public class CodePanUtils {
 			CipherOutputStream cos = new CipherOutputStream(fos, cipher);
 			int b;
 			byte[] d = new byte[8];
-			while((b = fis.read(d)) != -1) {
+			while ((b = fis.read(d)) != -1) {
 				cos.write(d, 0, b);
 			}
 			cos.flush();
@@ -730,7 +730,7 @@ public class CodePanUtils {
 			fis.close();
 			result = file.delete();
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
@@ -745,7 +745,7 @@ public class CodePanUtils {
 		animator.addUpdateListener(valueAnimator -> {
 			int value1 = (Integer) valueAnimator.getAnimatedValue();
 			LayoutParams layoutParams = view.getLayoutParams();
-			if(isVertical) {
+			if (isVertical) {
 				layoutParams.height = value1;
 			}
 			else {
@@ -761,7 +761,7 @@ public class CodePanUtils {
 
 			@Override
 			public void onAnimationEnd(Animator arg0) {
-				if(isVertical) {
+				if (isVertical) {
 					view.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
 				}
 				else {
@@ -787,7 +787,7 @@ public class CodePanUtils {
 		animator.addUpdateListener(valueAnimator -> {
 			int value1 = (Integer) valueAnimator.getAnimatedValue();
 			LayoutParams layoutParams = view.getLayoutParams();
-			if(isVertical) {
+			if (isVertical) {
 				layoutParams.height = value1;
 			}
 			else {
@@ -804,7 +804,7 @@ public class CodePanUtils {
 			@Override
 			public void onAnimationEnd(Animator arg0) {
 				view.setVisibility(View.GONE);
-				if(isVertical) {
+				if (isVertical) {
 					view.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
 				}
 				else {
@@ -825,15 +825,15 @@ public class CodePanUtils {
 
 	public static void slideView(final View view, final boolean up, final long delay) {
 		final RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)
-				view.getLayoutParams();
+			view.getLayoutParams();
 		final Handler handler = new Handler();
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				if(up) {
+				if (up) {
 					params.bottomMargin += 10;
 					view.setLayoutParams(params);
-					if(params.bottomMargin < 0) {
+					if (params.bottomMargin < 0) {
 						handler.postDelayed(this, delay);
 					}
 					else {
@@ -845,7 +845,7 @@ public class CodePanUtils {
 					int size = -view.getHeight();
 					params.bottomMargin -= 10;
 					view.setLayoutParams(params);
-					if(params.bottomMargin > size) {
+					if (params.bottomMargin > size) {
 						handler.postDelayed(this, delay);
 					}
 					else {
@@ -862,22 +862,22 @@ public class CodePanUtils {
 		boolean result = false;
 		File dir = null;
 		try {
-			if(external) {
+			if (external) {
 				String path = context.getExternalFilesDir(null).getPath() + "/" + folder;
 				dir = new File(path);
 			}
 			else {
 				dir = context.getDir(folder, Context.MODE_PRIVATE);
 			}
-			if(!dir.exists()) {
+			if (!dir.exists()) {
 				dir.mkdir();
 			}
-			if(dir.canWrite()) {
+			if (dir.canWrite()) {
 				String currentDBPath = "//data//" + context.getPackageName() + "//databases//" + name;
 				File data = Environment.getDataDirectory();
 				File currentDB = new File(data, currentDBPath);
 				File backupDB = new File(dir, name);
-				if(currentDB.exists()) {
+				if (currentDB.exists()) {
 					FileChannel src = new FileInputStream(currentDB).getChannel();
 					FileChannel dst = new FileOutputStream(backupDB).getChannel();
 					dst.transferFrom(src, 0, src.size());
@@ -887,7 +887,7 @@ public class CodePanUtils {
 			}
 			result = true;
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
@@ -901,10 +901,10 @@ public class CodePanUtils {
 			key = sha.digest(key);
 			key = Arrays.copyOf(key, length);
 		}
-		catch(UnsupportedEncodingException e) {
+		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		catch(NoSuchAlgorithmException e) {
+		catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
 		return key;
@@ -917,7 +917,7 @@ public class CodePanUtils {
 	public static int getBatteryLevel(Context context) {
 		IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
 		Intent intent = context.getApplicationContext().registerReceiver(null, filter);
-		if(intent != null) {
+		if (intent != null) {
 			int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
 			int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100);
 			return (level * 100) / scale;
@@ -941,8 +941,8 @@ public class CodePanUtils {
 	@RequiresPermission("android.permission.READ_PHONE_STATE")
 	public static String getDeviceId(Context context) {
 		TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-		if(manager != null) {
-			if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+		if (manager != null) {
+			if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
 				return manager.getDeviceId();
 			}
 			else {
@@ -956,14 +956,14 @@ public class CodePanUtils {
 	public static PhoneInfoData getPhoneInfo(Context context) {
 		PhoneInfoData info = null;
 		TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-		if(manager != null) {
-			if(manager.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
+		if (manager != null) {
+			if (manager.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
 				String operator = manager.getNetworkOperator();
 				info = new PhoneInfoData();
 				info.mcc = Integer.parseInt(operator.substring(0, 3));
 				info.mnc = Integer.parseInt(operator.substring(3));
 				final GsmCellLocation location = (GsmCellLocation) manager.getCellLocation();
-				if(location != null) {
+				if (location != null) {
 					info.cid = location.getCid();
 					info.lac = location.getLac();
 				}
@@ -976,9 +976,9 @@ public class CodePanUtils {
 	public static String getPhoneNumber(Context context) {
 		String mobileNo = null;
 		TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-		if(manager != null) {
+		if (manager != null) {
 			String number = manager.getLine1Number();
-			if(number != null && !number.trim().isEmpty()) {
+			if (number != null && !number.trim().isEmpty()) {
 				mobileNo = number;
 			}
 		}
@@ -988,14 +988,14 @@ public class CodePanUtils {
 	public static String getImagePath(Context context, Uri uri) {
 		String path = null;
 		Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
-		if(cursor != null) {
+		if (cursor != null) {
 			cursor.moveToFirst();
 			String documentID = cursor.getString(0);
 			documentID = documentID.substring(documentID.lastIndexOf(":") + 1);
 			cursor.close();
 			cursor = context.getContentResolver().query(Media.EXTERNAL_CONTENT_URI,
-					null, Media._ID + " = ? ", new String[]{documentID}, null);
-			if(cursor != null) {
+				null, Media._ID + " = ? ", new String[]{documentID}, null);
+			if (cursor != null) {
 				cursor.moveToFirst();
 				path = cursor.getString(cursor.getColumnIndex(Media.DATA));
 				cursor.close();
@@ -1008,13 +1008,13 @@ public class CodePanUtils {
 		String keyHash = "";
 		try {
 			PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
-			for(Signature signature : info.signatures) {
+			for (Signature signature : info.signatures) {
 				MessageDigest md = MessageDigest.getInstance("SHA");
 				md.update(signature.toByteArray());
 				keyHash = Base64.encodeToString(md.digest(), Base64.DEFAULT);
 			}
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return keyHash;
@@ -1033,7 +1033,7 @@ public class CodePanUtils {
 			byte[] utf8 = plainText.getBytes("UTF-8");
 			password = "*" + DigestUtils.shaHex(DigestUtils.sha(utf8)).toUpperCase();
 		}
-		catch(UnsupportedEncodingException e) {
+		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		return password;
@@ -1041,7 +1041,7 @@ public class CodePanUtils {
 
 	public static String getNameOfMonths(int month, boolean isShort, boolean isUpperCase) {
 		String nameOfMonths = "";
-		switch(month) {
+		switch (month) {
 			case 1:
 				nameOfMonths = "January";
 				break;
@@ -1079,13 +1079,13 @@ public class CodePanUtils {
 				nameOfMonths = "December";
 				break;
 		}
-		if(!nameOfMonths.isEmpty()) {
-			if(isShort) {
+		if (!nameOfMonths.isEmpty()) {
+			if (isShort) {
 				nameOfMonths = nameOfMonths.substring(0, 3);
 			}
-			if(isUpperCase) {
+			if (isUpperCase) {
 				String upperCase = "";
-				for(int x = 0; x < nameOfMonths.length(); x++) {
+				for (int x = 0; x < nameOfMonths.length(); x++) {
 					Character temp;
 					temp = nameOfMonths.charAt(x);
 					temp = Character.toUpperCase(temp);
@@ -1107,12 +1107,12 @@ public class CodePanUtils {
 	public static String getVersionName(Context context) {
 		String name = null;
 		final PackageManager pm = context.getPackageManager();
-		if(pm != null) {
+		if (pm != null) {
 			try {
 				PackageInfo pi = pm.getPackageInfo(context.getPackageName(), 0);
 				name = pi.versionName;
 			}
-			catch(NameNotFoundException e) {
+			catch (NameNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
@@ -1122,8 +1122,8 @@ public class CodePanUtils {
 	public static String getDeviceModel() {
 		String manufacturer = Build.MANUFACTURER;
 		String model = Build.MODEL;
-		if(model != null && manufacturer != null) {
-			if(model.toLowerCase().startsWith(manufacturer.toLowerCase())) {
+		if (model != null && manufacturer != null) {
+			if (model.toLowerCase().startsWith(manufacturer.toLowerCase())) {
 				return model;
 			}
 			else {
@@ -1134,7 +1134,7 @@ public class CodePanUtils {
 	}
 
 	public static String nullify(String text) {
-		if(text == null || text.equals("null")) {
+		if (text == null || text.equals("null")) {
 			return null;
 		}
 		return text;
@@ -1142,10 +1142,10 @@ public class CodePanUtils {
 
 	public static String handleQuotesUniCodeToSQLite(String text) {
 		String result = "";
-		if(text != null && !text.equals("null")) {
+		if (text != null && !text.equals("null")) {
 			result = text
-					.replace("u0027", "''")
-					.replace("u0022", "\"");
+				.replace("u0027", "''")
+				.replace("u0022", "\"");
 		}
 		return result;
 	}
@@ -1177,9 +1177,9 @@ public class CodePanUtils {
 
 	@SuppressLint("MissingPermission")
 	public static void turnOnWifi(Context context) {
-		if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
 			WifiManager wm = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-			if(wm != null) {
+			if (wm != null) {
 				wm.setWifiEnabled(true);
 			}
 		}
@@ -1187,9 +1187,9 @@ public class CodePanUtils {
 
 	@SuppressLint("MissingPermission")
 	public static void turnOffWifi(Context context) {
-		if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
 			WifiManager wm = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-			if(wm != null) {
+			if (wm != null) {
 				wm.setWifiEnabled(false);
 			}
 		}
@@ -1198,7 +1198,7 @@ public class CodePanUtils {
 	@SuppressLint("MissingPermission")
 	public static boolean hasInternet(Context context) {
 		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		if(cm != null) {
+		if (cm != null) {
 			NetworkInfo network = cm.getActiveNetworkInfo();
 			return network != null && network.isAvailable();
 		}
@@ -1208,21 +1208,21 @@ public class CodePanUtils {
 	public static boolean isMockEnabled(Context context) {
 		boolean result = false;
 		try {
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 				AppOpsManager manager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
-				if(manager != null) {
+				if (manager != null) {
 					String name = context.getPackageName();
 					int op = manager.checkOp(AppOpsManager.OPSTR_MOCK_LOCATION,
-							android.os.Process.myUid(), name);
+						android.os.Process.myUid(), name);
 					result = op == AppOpsManager.MODE_ALLOWED;
 				}
 			}
 			else {
 				result = !Secure.getString(context.getContentResolver(),
-						"mock_location").equals("0");
+					"mock_location").equals("0");
 			}
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
@@ -1232,17 +1232,17 @@ public class CodePanUtils {
 		PackageManager pm = context.getPackageManager();
 		List<String> appList = exceptions != null ? Arrays.asList(exceptions) : new ArrayList<>();
 		List<ApplicationInfo> packageList = pm.getInstalledApplications(PackageManager.GET_META_DATA);
-		for(ApplicationInfo info : packageList) {
+		for (ApplicationInfo info : packageList) {
 			int mask = ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
-			if((info.flags & mask) == 0) {
+			if ((info.flags & mask) == 0) {
 				try {
 					PackageInfo pi = pm.getPackageInfo(info.packageName, PackageManager.GET_PERMISSIONS);
 					String[] permissionList = pi.requestedPermissions;
-					if(permissionList != null) {
-						for(String permission : permissionList) {
-							if(permission.equals("android.permission.ACCESS_MOCK_LOCATION")
-									&& !info.packageName.equals(context.getPackageName())
-									&& info.enabled && !appList.contains(info.packageName)) {
+					if (permissionList != null) {
+						for (String permission : permissionList) {
+							if (permission.equals("android.permission.ACCESS_MOCK_LOCATION")
+								&& !info.packageName.equals(context.getPackageName())
+								&& info.enabled && !appList.contains(info.packageName)) {
 								MockData mock = new MockData();
 								mock.packageId = info.packageName;
 								mock.label = pm.getApplicationLabel(info).toString();
@@ -1251,7 +1251,7 @@ public class CodePanUtils {
 						}
 					}
 				}
-				catch(Exception e) {
+				catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -1265,12 +1265,12 @@ public class CodePanUtils {
 	}
 
 	public static boolean isNumeric(String text) {
-		if(text == null || text.isEmpty() || text.equals(".")) {
+		if (text == null || text.isEmpty() || text.equals(".")) {
 			return false;
 		}
 		String t = text;
-		if(t.length() > 1) {
-			while(t.indexOf('0') == 0) {
+		if (t.length() > 1) {
+			while (t.indexOf('0') == 0) {
 				t = t.substring(1);
 			}
 		}
@@ -1280,8 +1280,8 @@ public class CodePanUtils {
 	public static boolean isServiceRunning(Context context, Class<?> c) {
 		boolean result = false;
 		ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-		for(RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-			if(c.getName().equals(service.service.getClassName())) {
+		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+			if (c.getName().equals(service.service.getClassName())) {
 				result = true;
 			}
 		}
@@ -1289,9 +1289,9 @@ public class CodePanUtils {
 	}
 
 	public static boolean isSubsetOf
-			(Collection<String> subset, Collection<String> superset) {
-		for(String string : subset) {
-			if(!superset.contains(string)) {
+		(Collection<String> subset, Collection<String> superset) {
+		for (String string : subset) {
+			if (!superset.contains(string)) {
 				return false;
 			}
 		}
@@ -1299,14 +1299,14 @@ public class CodePanUtils {
 	}
 
 	public static boolean isTimeEqual(int allowanceMin, String dateToCompare, String
-			timeToCompare,
-			String baseDate, String baseTime) {
+		timeToCompare,
+									  String baseDate, String baseTime) {
 		boolean result = false;
 		long millisToCompare = dateTimeToMillis(dateToCompare, timeToCompare);
 		long millisBase = dateTimeToMillis(baseDate, baseTime);
 		long millisAllowance = allowanceMin * 60000;
 		long difference = millisToCompare > millisBase ? millisToCompare - millisBase : millisBase - millisToCompare;
-		if(difference <= millisAllowance) {
+		if (difference <= millisAllowance) {
 			result = true;
 		}
 		return result;
@@ -1322,7 +1322,7 @@ public class CodePanUtils {
 
 	public static void removeNotification(Context context, int notificationID) {
 		NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		if(manager != null) manager.cancel(notificationID);
+		if (manager != null) manager.cancel(notificationID);
 	}
 
 	public static boolean alarmExists(Context context, Class<?> receiver, String action, int requestCode) {
@@ -1341,9 +1341,9 @@ public class CodePanUtils {
 		Intent intent = new Intent(context, receiver);
 		intent.setAction(action);
 		PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, 0);
-		if(pi != null) {
+		if (pi != null) {
 			AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-			if(manager != null) {
+			if (manager != null) {
 				manager.cancel(pi);
 			}
 			pi.cancel();
@@ -1353,9 +1353,9 @@ public class CodePanUtils {
 	public static void cancelAlarm(Context context, Class<?> receiver, int requestCode) {
 		Intent intent = new Intent(context, receiver);
 		PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, 0);
-		if(pi != null) {
+		if (pi != null) {
 			AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-			if(manager != null) {
+			if (manager != null) {
 				manager.cancel(pi);
 			}
 			pi.cancel();
@@ -1363,13 +1363,13 @@ public class CodePanUtils {
 	}
 
 	public static void setAlarm(Context context, PendingIntent pi, long trigger, int type) {
-		if(trigger > 0) {
+		if (trigger > 0) {
 			AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-			if(manager != null) {
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (manager != null) {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 					manager.setExactAndAllowWhileIdle(type, trigger, pi);
 				}
-				else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+				else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 					manager.setExact(type, trigger, pi);
 				}
 				else {
@@ -1380,9 +1380,9 @@ public class CodePanUtils {
 	}
 
 	public static void setAlarm(Context context, Intent intent, int minutes, int requestCode) {
-		if(minutes > 0) {
+		if (minutes > 0) {
 			PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-					PendingIntent.FLAG_UPDATE_CURRENT);
+				PendingIntent.FLAG_UPDATE_CURRENT);
 			int seconds = minutes * 60;
 			long trigger = System.currentTimeMillis() + (seconds * 1000L);
 			setAlarm(context, pi, trigger, AlarmManager.RTC_WAKEUP);
@@ -1390,11 +1390,11 @@ public class CodePanUtils {
 	}
 
 	public static void setAlarm(Context context, Class<?> receiver, int minutes,
-			int requestCode) {
-		if(minutes > 0) {
+								int requestCode) {
+		if (minutes > 0) {
 			Intent intent = new Intent(context, receiver);
 			PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-					PendingIntent.FLAG_UPDATE_CURRENT);
+				PendingIntent.FLAG_UPDATE_CURRENT);
 			int seconds = minutes * 60;
 			long trigger = System.currentTimeMillis() + (seconds * 1000L);
 			setAlarm(context, pi, trigger, AlarmManager.RTC_WAKEUP);
@@ -1403,12 +1403,12 @@ public class CodePanUtils {
 
 	public static void setAlarm(Context context, Intent intent, long schedule, int requestCode) {
 		PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
+			PendingIntent.FLAG_UPDATE_CURRENT);
 		setAlarm(context, pi, schedule, AlarmManager.RTC_WAKEUP);
 	}
 
 	public static void setAlarm(Context context, Class<?> receiver, long schedule,
-			int requestCode) {
+								int requestCode) {
 		Intent intent = new Intent(context, receiver);
 		setAlarm(context, intent, schedule, requestCode);
 	}
@@ -1430,30 +1430,30 @@ public class CodePanUtils {
 	}
 
 	public static boolean setErrorMsg(Context context, String message, String folder, String
-			password) {
+		password) {
 		boolean result = false;
 		String errorMsg = "Error: " + message;
 		errorMsg = errorMsg.replace("\n", "\r\n");
 		String fileName = getDate() + "_" + getTime() + ".txt";
 		fileName = fileName.replace(":", "-");
 		result = writeText(context, folder, fileName, errorMsg);
-		if(result) {
+		if (result) {
 			result = encryptFile(context, folder, fileName, password, ".txt");
 		}
 		return result;
 	}
 
 	public static boolean setErrorMsg(Context context, String message, String url, String
-			jsonString,
-			String response, String folder, String password) {
+		jsonString,
+									  String response, String folder, String password) {
 		boolean result = false;
 		String errorMsg = "Error: " + message + "\nURL: " + url + "\nParams: " +
-				jsonString + "\nResponse: " + response;
+			jsonString + "\nResponse: " + response;
 		errorMsg = errorMsg.replace("\n", "\r\n");
 		String fileName = getDate() + "_" + getTime() + ".txt";
 		fileName = fileName.replace(":", "-");
 		result = writeText(context, folder, fileName, errorMsg);
-		if(result) {
+		if (result) {
 			result = encryptFile(context, folder, fileName, password, ".txt");
 		}
 		return result;
@@ -1465,18 +1465,18 @@ public class CodePanUtils {
 			intent.putExtra("enabled", isEnabled);
 			context.sendBroadcast(intent);
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	public static NotificationCompat.Builder createNotificationBuilder(Context context,
-			String channelID, String channelName, int icon) {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+																	   String channelID, String channelName, int icon) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-			if(manager != null) {
+			if (manager != null) {
 				NotificationChannel channel = new NotificationChannel(channelID, channelName,
-						NotificationManager.IMPORTANCE_DEFAULT);
+					NotificationManager.IMPORTANCE_DEFAULT);
 				manager.createNotificationChannel(channel);
 			}
 		}
@@ -1489,20 +1489,20 @@ public class CodePanUtils {
 	}
 
 	public static void setNotification(Context context, int notificationID, Notification
-			notification) {
+		notification) {
 		NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		if(manager != null) {
+		if (manager != null) {
 			manager.notify(notificationID, notification);
 		}
 	}
 
 	public static void setNotification(Context context, String channelID, String channelName,
-			int notificationID, NotificationCompat.Builder builder) {
+									   int notificationID, NotificationCompat.Builder builder) {
 		NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		if(manager != null) {
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+		if (manager != null) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 				NotificationChannel channel = new NotificationChannel(channelID, channelName,
-						NotificationManager.IMPORTANCE_DEFAULT);
+					NotificationManager.IMPORTANCE_DEFAULT);
 				manager.createNotificationChannel(channel);
 			}
 			manager.notify(notificationID, builder.build());
@@ -1510,8 +1510,8 @@ public class CodePanUtils {
 	}
 
 	public static void setNotification(Context context, String title, String message,
-			String channelID, String channelName, int icon, int notificationID, int requestCode,
-			int color, boolean isVibrate, Intent intent, String uri) {
+									   String channelID, String channelName, int icon, int notificationID, int requestCode,
+									   int color, boolean isVibrate, Intent intent, String uri) {
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelID);
 		builder.setSmallIcon(icon);
 		builder.setContentTitle(title);
@@ -1521,21 +1521,21 @@ public class CodePanUtils {
 		builder.setOnlyAlertOnce(true);
 		builder.setAutoCancel(true);
 		builder.setColor(color);
-		if(isVibrate) {
+		if (isVibrate) {
 			builder.setVibrate(new long[]{500, 500});
 		}
 		Uri url = Uri.parse(uri);
 		builder.setSound(url);
 		builder.setContentText(message);
 		PendingIntent pi = PendingIntent.getActivity(context, requestCode,
-				intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		builder.setContentIntent(pi);
 		setNotification(context, channelID, channelName, notificationID, builder);
 	}
 
 	public static void setNotification(Context context, String title, String message,
-			String channelID, String channelName, int resource, int notificationID,
-			boolean isVibrate, String uri) {
+									   String channelID, String channelName, int resource, int notificationID,
+									   boolean isVibrate, String uri) {
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelID);
 		builder.setSmallIcon(resource);
 		builder.setContentTitle(title);
@@ -1544,7 +1544,7 @@ public class CodePanUtils {
 		builder.setLights(Color.GREEN, 500, 500);
 		builder.setOnlyAlertOnce(true);
 		builder.setAutoCancel(true);
-		if(isVibrate) {
+		if (isVibrate) {
 			builder.setVibrate(new long[]{500, 500});
 		}
 		Uri url = Uri.parse(uri);
@@ -1561,7 +1561,7 @@ public class CodePanUtils {
 	}
 
 	public static boolean writeText(Context context, String folderName, String fileName, String
-			text) {
+		text) {
 		boolean result = false;
 		try {
 			String path = context.getDir(folderName, Context.MODE_PRIVATE).getPath() + "/" + fileName;
@@ -1572,14 +1572,14 @@ public class CodePanUtils {
 			writer.close();
 			result = true;
 		}
-		catch(IOException e) {
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
 
 	public static boolean zipFile(Context context, String fileName, String folderName, String
-			zipFileName) {
+		zipFileName) {
 		String pathToZip = context.getDir(folderName, Context.MODE_PRIVATE).getPath() + "/" + fileName;
 		String pathForZip = context.getDir(folderName, Context.MODE_PRIVATE).getPath() + "/" + zipFileName;
 		int BUFFER = 80000;
@@ -1594,21 +1594,21 @@ public class CodePanUtils {
 			ZipEntry entry = new ZipEntry(pathToZip.substring(pathToZip.lastIndexOf("/") + 1));
 			out.putNextEntry(entry);
 			int count;
-			while((count = origin.read(data, 0, BUFFER)) != -1) {
+			while ((count = origin.read(data, 0, BUFFER)) != -1) {
 				out.write(data, 0, count);
 			}
 			origin.close();
 			out.close();
 			result = true;
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
 
 	public static boolean zipFolder(Context context, String folderToZip, String
-			folderForZip, String zipFileName) {
+		folderForZip, String zipFileName) {
 		String pathToZip = context.getDir(folderToZip, Context.MODE_PRIVATE).getPath();
 		String pathForZip = context.getDir(folderForZip, Context.MODE_PRIVATE).getPath() + "/" + zipFileName;
 		boolean result = false;
@@ -1617,12 +1617,12 @@ public class CodePanUtils {
 			ZipOutputStream zos = new ZipOutputStream(fos);
 			File srcFile = new File(pathToZip);
 			File[] files = srcFile.listFiles();
-			for(File file : files) {
+			for (File file : files) {
 				byte[] buffer = new byte[1024];
 				FileInputStream fis = new FileInputStream(file);
 				zos.putNextEntry(new ZipEntry(file.getName()));
 				int length;
-				while((length = fis.read(buffer)) > 0) {
+				while ((length = fis.read(buffer)) > 0) {
 					zos.write(buffer, 0, length);
 				}
 				zos.closeEntry();
@@ -1631,7 +1631,7 @@ public class CodePanUtils {
 			zos.close();
 			result = true;
 		}
-		catch(IOException e) {
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 		return result;
@@ -1677,7 +1677,7 @@ public class CodePanUtils {
 	}
 
 	public static void alertToast(FragmentActivity activity, SpannableStringBuilder ssb,
-			int duration) {
+								  int duration) {
 		int offsetY = activity.getResources().getDimensionPixelSize(R.dimen.one_hundred);
 		LayoutInflater inflater = activity.getLayoutInflater();
 		View layout = inflater.inflate(R.layout.alert_toast_layout, (ViewGroup) activity.findViewById(R.id.rlAlertToast));
@@ -1704,13 +1704,13 @@ public class CodePanUtils {
 	}
 
 	public static void alertToast(FragmentActivity activity, String message,
-			int duration, ArrayList<SpannableMap> list, Typeface typeface) {
+								  int duration, ArrayList<SpannableMap> list, Typeface typeface) {
 		int offsetY = activity.getResources().getDimensionPixelSize(R.dimen.one_hundred);
 		LayoutInflater inflater = activity.getLayoutInflater();
 		View layout = inflater.inflate(R.layout.alert_toast_layout, (ViewGroup) activity.findViewById(R.id.rlAlertToast));
 		CodePanLabel text = layout.findViewById(R.id.tvMessageAlertToast);
 		SpannableStringBuilder ssb = new SpannableStringBuilder(message);
-		for(SpannableMap obj : list) {
+		for (SpannableMap obj : list) {
 			ssb.setSpan(new CustomTypefaceSpan(typeface), obj.start, obj.end, android.text.Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 		}
 		text.setText(ssb);
@@ -1728,19 +1728,19 @@ public class CodePanUtils {
 
 	public static String convertBengaliNumerals(String text) {
 		return text.replace("০", "0")
-				.replace("১", "1")
-				.replace("২", "2")
-				.replace("৩", "3")
-				.replace("৪", "4")
-				.replace("৫", "5")
-				.replace("৬", "6")
-				.replace("৭", "7")
-				.replace("৮", "8")
-				.replace("৯", "9");
+			.replace("১", "1")
+			.replace("২", "2")
+			.replace("৩", "3")
+			.replace("৪", "4")
+			.replace("৫", "5")
+			.replace("৬", "6")
+			.replace("৭", "7")
+			.replace("৮", "8")
+			.replace("৯", "9");
 	}
 
 	public static boolean saveBitmap(Context context, String folder,
-			String fileName, Bitmap bitmap) {
+									 String fileName, Bitmap bitmap) {
 		boolean result = false;
 		String path = context.getDir(folder, Context.MODE_PRIVATE).getPath() + "/" + fileName;
 		FileOutputStream out = null;
@@ -1749,17 +1749,17 @@ public class CodePanUtils {
 			bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
 			out.flush();
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		finally {
 			try {
-				if(out != null) {
+				if (out != null) {
 					out.close();
 					result = true;
 				}
 			}
-			catch(IOException e) {
+			catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -1767,7 +1767,7 @@ public class CodePanUtils {
 	}
 
 	public static boolean saveBitmap(Context context, String folder,
-			String fileName, Bitmap bitmap, long maxSize) {
+									 String fileName, Bitmap bitmap, long maxSize) {
 		boolean result = false;
 		String path = context.getDir(folder, Context.MODE_PRIVATE).getPath() + "/" + fileName;
 		FileOutputStream out = null;
@@ -1776,7 +1776,7 @@ public class CodePanUtils {
 			long size = maxSize;
 			int quality = 100;
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();
-			while(size >= maxSize && quality > MINIMUM_QUALITY) {
+			while (size >= maxSize && quality > MINIMUM_QUALITY) {
 				stream.flush();
 				stream.reset();
 				quality -= 5;
@@ -1787,17 +1787,17 @@ public class CodePanUtils {
 			out.write(stream.toByteArray());
 			out.flush();
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		finally {
 			try {
-				if(out != null) {
+				if (out != null) {
 					out.close();
 					result = true;
 				}
 			}
-			catch(IOException e) {
+			catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -1806,9 +1806,9 @@ public class CodePanUtils {
 
 	public static boolean isThreadRunning(String name) {
 		Set<Thread> i = Thread.getAllStackTraces().keySet();
-		for(Thread bg : i) {
-			if(bg != null && bg.getName().equals(name) &&
-					!bg.isInterrupted()) {
+		for (Thread bg : i) {
+			if (bg != null && bg.getName().equals(name) &&
+				!bg.isInterrupted()) {
 				return true;
 			}
 		}
@@ -1817,9 +1817,9 @@ public class CodePanUtils {
 
 	public static Thread getThread(String name) {
 		Set<Thread> i = Thread.getAllStackTraces().keySet();
-		for(Thread bg : i) {
-			if(bg != null && bg.getName().equals(name) &&
-					!bg.isInterrupted()) {
+		for (Thread bg : i) {
+			if (bg != null && bg.getName().equals(name) &&
+				!bg.isInterrupted()) {
 				return bg;
 			}
 		}
@@ -1837,13 +1837,13 @@ public class CodePanUtils {
 	}
 
 	public static Bitmap getBitmapThumbnails(Context context, String folderName, String
-			fileName, int size) {
+		fileName, int size) {
 		String path = context.getDir(folderName, Context.MODE_PRIVATE).getPath() + "/" + fileName;
 		File image = new File(path);
 		BitmapFactory.Options bounds = new BitmapFactory.Options();
 		bounds.inJustDecodeBounds = true;
 		BitmapFactory.decodeFile(image.getPath(), bounds);
-		if((bounds.outWidth == -1) || (bounds.outHeight == -1)) {
+		if ((bounds.outWidth == -1) || (bounds.outHeight == -1)) {
 			return null;
 		}
 		int originalSize = Math.max(bounds.outHeight, bounds.outWidth);
@@ -1856,9 +1856,9 @@ public class CodePanUtils {
 		final int numCol = 3;
 		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 		float widthDp = metrics.widthPixels / metrics.density;
-		if(numCol != 0) {
-			if(widthDp <= 360) {
-				if(metrics.widthPixels % numCol == 0) {
+		if (numCol != 0) {
+			if (widthDp <= 360) {
+				if (metrics.widthPixels % numCol == 0) {
 					return numCol;
 				}
 				else {
@@ -1867,7 +1867,7 @@ public class CodePanUtils {
 			}
 			else {
 				int x = numCol + 1;
-				while(metrics.widthPixels % x != 0) {
+				while (metrics.widthPixels % x != 0) {
 					x++;
 				}
 				return x;
@@ -1901,7 +1901,7 @@ public class CodePanUtils {
 
 	public static int getWidth(View view) {
 		int width = 0;
-		if(view != null) {
+		if (view != null) {
 			view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 			width = view.getMeasuredWidth();
 		}
@@ -1910,7 +1910,7 @@ public class CodePanUtils {
 
 	public static int getHeight(View view) {
 		int height = 0;
-		if(view != null) {
+		if (view != null) {
 			view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 			height = view.getMeasuredHeight();
 		}
@@ -1918,14 +1918,14 @@ public class CodePanUtils {
 	}
 
 	public static void animateView(Context context, final View view, final int resID,
-			final int filler) {
+								   final int filler) {
 		Animation anim = AnimationUtils.loadAnimation(context, resID);
 		anim.setFillAfter(true);
 		view.startAnimation(anim);
 		anim.setAnimationListener(new AnimationListener() {
 			@Override
 			public void onAnimationStart(Animation animation) {
-				if(view instanceof ImageView) {
+				if (view instanceof ImageView) {
 					((ImageView) view).setImageResource(filler);
 				}
 				else {
@@ -2019,9 +2019,9 @@ public class CodePanUtils {
 
 	public static String handleSpecialCharacters(String text) {
 		String result = "";
-		if(text != null && !text.equals("null")) {
+		if (text != null && !text.equals("null")) {
 			result = text.replace("&NewLine;", "\n").
-					replace("&Tab;", "    ");
+				replace("&Tab;", "    ");
 			result = unicodeToString(result);
 			result = StringEscapeUtils.unescapeHtml4(result);
 		}
@@ -2034,7 +2034,7 @@ public class CodePanUtils {
 			pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
 			return true;
 		}
-		catch(NameNotFoundException e) {
+		catch (NameNotFoundException e) {
 			return false;
 		}
 	}
@@ -2048,9 +2048,9 @@ public class CodePanUtils {
 	}
 
 	public static void setStatusBarColor(Activity activity, int resID) {
-		if(resID != 0) {
+		if (resID != 0) {
 			int color = activity.getResources().getColor(resID);
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				Window window = activity.getWindow();
 				window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 				window.setStatusBarColor(color);
@@ -2060,7 +2060,7 @@ public class CodePanUtils {
 
 	public static SpannableStringBuilder customizeText(SpannableMap span, String text) {
 		SpannableStringBuilder ssb = new SpannableStringBuilder(text);
-		switch(span.type) {
+		switch (span.type) {
 			case SpannableMap.COLOR:
 				ssb.setSpan(new ForegroundColorSpan(span.color), span.start, span.end, SPAN_INCLUSIVE_INCLUSIVE);
 				break;
@@ -2076,7 +2076,7 @@ public class CodePanUtils {
 
 	public static SpannableStringBuilder customizeText(SpannableMap span) {
 		SpannableStringBuilder ssb = new SpannableStringBuilder();
-		switch(span.type) {
+		switch (span.type) {
 			case SpannableMap.COLOR:
 				ssb.setSpan(new ForegroundColorSpan(span.color), span.start, span.end, SPAN_INCLUSIVE_INCLUSIVE);
 				break;
@@ -2091,10 +2091,10 @@ public class CodePanUtils {
 	}
 
 	public static SpannableStringBuilder customizeText(ArrayList<SpannableMap> list, String
-			text) {
+		text) {
 		SpannableStringBuilder ssb = new SpannableStringBuilder(text);
-		for(SpannableMap span : list) {
-			switch(span.type) {
+		for (SpannableMap span : list) {
+			switch (span.type) {
 				case SpannableMap.COLOR:
 					ssb.setSpan(new ForegroundColorSpan(span.color), span.start, span.end, SPAN_INCLUSIVE_INCLUSIVE);
 					break;
@@ -2116,16 +2116,16 @@ public class CodePanUtils {
 	}
 
 	public static SpannableStringBuilder customizeText(Context context, String text,
-			SpannableMap.FontStyle style, char c) {
-		if(text != null) {
+													   SpannableMap.FontStyle style, char c) {
+		if (text != null) {
 			int index = 0;
 			int start = 0;
 			String replace = text.replace(String.valueOf(c), "");
 			int length = replace.length();
 			ArrayList<SpannableMap> map = new ArrayList<>();
-			for(int i = 0; i < text.length(); i++) {
-				if(text.charAt(i) == c) {
-					if(index % 2 != 0) {
+			for (int i = 0; i < text.length(); i++) {
+				if (text.charAt(i) == c) {
+					if (index % 2 != 0) {
 						int adj = map.size() * 2;
 						int end = i - adj - 1;
 						start -= adj;
@@ -2144,16 +2144,16 @@ public class CodePanUtils {
 	}
 
 	public static SpannableStringBuilder customizeText(Context context, String text,
-			String font, char c) {
-		if(text != null) {
+													   String font, char c) {
+		if (text != null) {
 			int index = 0;
 			int start = 0;
 			String replace = text.replace(String.valueOf(c), "");
 			int length = replace.length();
 			ArrayList<SpannableMap> map = new ArrayList<>();
-			for(int i = 0; i < text.length(); i++) {
-				if(text.charAt(i) == c) {
-					if(index % 2 != 0) {
+			for (int i = 0; i < text.length(); i++) {
+				if (text.charAt(i) == c) {
+					if (index % 2 != 0) {
 						int adj = map.size() * 2;
 						int end = i - adj - 1;
 						start -= adj;
@@ -2172,15 +2172,15 @@ public class CodePanUtils {
 	}
 
 	public static SpannableStringBuilder customizeText(String text, int color, char c) {
-		if(text != null) {
+		if (text != null) {
 			int index = 0;
 			int start = 0;
 			String replace = text.replace(String.valueOf(c), "");
 			int length = replace.length();
 			ArrayList<SpannableMap> map = new ArrayList<>();
-			for(int i = 0; i < text.length(); i++) {
-				if(text.charAt(i) == c) {
-					if(index % 2 != 0) {
+			for (int i = 0; i < text.length(); i++) {
+				if (text.charAt(i) == c) {
+					if (index % 2 != 0) {
 						int adj = map.size() * 2;
 						int end = i - adj - 1;
 						start -= adj;
@@ -2201,14 +2201,14 @@ public class CodePanUtils {
 	public static boolean withGooglePlayServices(final Activity activity) {
 		boolean result = false;
 		final int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(activity);
-		if(resultCode != ConnectionResult.SUCCESS) {
-			if(GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+		if (resultCode != ConnectionResult.SUCCESS) {
+			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
 				Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultCode, activity, 1);
-				if(dialog != null) {
+				if (dialog != null) {
 					dialog.show();
 					dialog.setCancelable(true);
 					dialog.setOnDismissListener(dialog12 -> {
-						if(ConnectionResult.SERVICE_INVALID == resultCode) {
+						if (ConnectionResult.SERVICE_INVALID == resultCode) {
 							activity.finish();
 						}
 					});
@@ -2225,8 +2225,8 @@ public class CodePanUtils {
 	public static String validateURL(String url) {
 		String https = "https://";
 		String http = "http://";
-		if(url != null) {
-			if(!url.contains(https) && !url.contains(http)) {
+		if (url != null) {
+			if (!url.contains(https) && !url.contains(http)) {
 				return https + url;
 			}
 		}
@@ -2247,7 +2247,7 @@ public class CodePanUtils {
 
 	public static ImageLoader getImageLoader(Context context) {
 		ImageLoader imageLoader = ImageLoader.getInstance();
-		if(!imageLoader.isInited()) {
+		if (!imageLoader.isInited()) {
 			imageLoader.init(ImageLoaderConfiguration.createDefault(context));
 		}
 		return imageLoader;
@@ -2255,10 +2255,10 @@ public class CodePanUtils {
 
 	public static DisplayImageOptions buildOptions(int placeholder, boolean fadeIn) {
 		DisplayImageOptions.Builder builder = new DisplayImageOptions.Builder();
-		if(fadeIn) {
+		if (fadeIn) {
 			builder.displayer(new FadeInBitmapDisplayer(250));
 		}
-		if(placeholder != 0) {
+		if (placeholder != 0) {
 			builder.showImageOnLoading(placeholder);
 			builder.showImageForEmptyUri(placeholder);
 		}
@@ -2268,7 +2268,7 @@ public class CodePanUtils {
 	}
 
 	public static void displayImage(ImageView view, String uri) {
-		if(view != null) {
+		if (view != null) {
 			ImageLoader imageLoader = getImageLoader(view.getContext());
 			DisplayImageOptions options = buildOptions(0, true);
 			imageLoader.displayImage(uri, view, options);
@@ -2276,7 +2276,7 @@ public class CodePanUtils {
 	}
 
 	public static void displayImage(ImageView view, String uri, ImageLoadingListener listener) {
-		if(view != null) {
+		if (view != null) {
 			ImageLoader imageLoader = getImageLoader(view.getContext());
 			DisplayImageOptions options = buildOptions(0, true);
 			imageLoader.displayImage(uri, view, options, listener);
@@ -2284,7 +2284,7 @@ public class CodePanUtils {
 	}
 
 	public static void displayImage(ImageView view, String uri, int placeholder) {
-		if(view != null) {
+		if (view != null) {
 			ImageLoader imageLoader = getImageLoader(view.getContext());
 			DisplayImageOptions options = buildOptions(placeholder, true);
 			imageLoader.displayImage(uri, view, options);
@@ -2292,8 +2292,8 @@ public class CodePanUtils {
 	}
 
 	public static void displayImage(ImageView view, String uri, int placeholder,
-			ImageLoadingListener listener) {
-		if(view != null) {
+									ImageLoadingListener listener) {
+		if (view != null) {
 			ImageLoader imageLoader = getImageLoader(view.getContext());
 			DisplayImageOptions options = buildOptions(placeholder, true);
 			imageLoader.displayImage(uri, view, options, listener);
@@ -2301,8 +2301,8 @@ public class CodePanUtils {
 	}
 
 	public static void displayImage(ImageView view, String uri, int placeholder,
-			ImageLoadingListener listener, ImageLoadingProgressListener progress) {
-		if(view != null) {
+									ImageLoadingListener listener, ImageLoadingProgressListener progress) {
+		if (view != null) {
 			ImageLoader imageLoader = getImageLoader(view.getContext());
 			DisplayImageOptions options = buildOptions(placeholder, true);
 			imageLoader.displayImage(uri, view, options, listener, progress);
@@ -2360,20 +2360,20 @@ public class CodePanUtils {
 	}
 
 	public static void setCrashHandler(final Context context, String folder, String password) {
-		if(!BuildConfig.DEBUG) {
+		if (!BuildConfig.DEBUG) {
 			Thread.setDefaultUncaughtExceptionHandler(new CrashHandler(context, folder, password));
 		}
 	}
 
 	public static String capitalizeWord(String text) {
-		if(text != null && !text.isEmpty()) {
+		if (text != null && !text.isEmpty()) {
 			String[] words = text.trim().split(" ");
 			StringBuilder builder = new StringBuilder();
-			for(int i = 0; i < words.length; i++) {
-				if(words[i].trim().length() > 0) {
+			for (int i = 0; i < words.length; i++) {
+				if (words[i].trim().length() > 0) {
 					builder.append(Character.toUpperCase(words[i].trim().charAt(0)));
 					builder.append(words[i].trim().substring(1));
-					if(i < words.length - 1) {
+					if (i < words.length - 1) {
 						builder.append(' ');
 					}
 				}
@@ -2384,7 +2384,7 @@ public class CodePanUtils {
 	}
 
 	public static String capitalizeSentence(String text) {
-		if(text != null) {
+		if (text != null) {
 			return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
 		}
 		return null;
@@ -2404,21 +2404,21 @@ public class CodePanUtils {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			byte[] buffer = new byte[1024];
 			int length;
-			while((length = is.read(buffer)) != -1) {
+			while ((length = is.read(buffer)) != -1) {
 				bos.write(buffer, 0, length);
 			}
 			result = bos.toString("UTF-8");
 			is.close();
 			bos.close();
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
 
 	public static String handleSQLite(String text) {
-		if(text != null) {
+		if (text != null) {
 			return text.replace("''", "'");
 		}
 		return null;
@@ -2426,7 +2426,7 @@ public class CodePanUtils {
 
 	public static void sendSMS(String address, String message) {
 		if (message != null && !message.isEmpty() &&
-				address != null && !address.isEmpty()) {
+			address != null && !address.isEmpty()) {
 			SmsManager manager = SmsManager.getDefault();
 			manager.sendTextMessage(address, null, message, null, null);
 		}
@@ -2434,7 +2434,7 @@ public class CodePanUtils {
 
 	public static void sendSMS(String address, String message, PendingIntent si) {
 		if (message != null && !message.isEmpty() &&
-				address != null && !address.isEmpty()) {
+			address != null && !address.isEmpty()) {
 			SmsManager manager = SmsManager.getDefault();
 			ArrayList<String> parts = manager.divideMessage(message);
 			ArrayList<PendingIntent> siList = new ArrayList<>();
@@ -2464,7 +2464,7 @@ public class CodePanUtils {
 	}
 
 	public static Spanned underlineText(String text) {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 			return Html.fromHtml("<u>" + text + "</u>", Html.FROM_HTML_MODE_LEGACY);
 		}
 		else {
@@ -2474,7 +2474,7 @@ public class CodePanUtils {
 
 	public static void e(String TAG, String message) {
 		int maxLogSize = 2000;
-		for(int i = 0; i <= message.length() / maxLogSize; i++) {
+		for (int i = 0; i <= message.length() / maxLogSize; i++) {
 			int start = i * maxLogSize;
 			int end = (i + 1) * maxLogSize;
 			end = end > message.length() ? message.length() : end;
@@ -2505,7 +2505,7 @@ public class CodePanUtils {
 	public static boolean isPhoneRooted() {
 		try {
 			File apk = new File("/system/app/Superuser.apk");
-			if(apk.exists()) {
+			if (apk.exists()) {
 				return true;
 			}
 			else {
@@ -2513,7 +2513,7 @@ public class CodePanUtils {
 				return su.exists();
 			}
 		}
-		catch(Throwable t) {
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return false;
@@ -2595,7 +2595,7 @@ public class CodePanUtils {
 	}
 
 	public static LatLng travel(double latitude, double longitude, double bearing,
-			double distance) {
+								double distance) {
 		final double earth = 6371000D;
 		double b = Math.toRadians(bearing);
 		double latIn = Math.toRadians(latitude);
@@ -2610,18 +2610,18 @@ public class CodePanUtils {
 	public static ArrayList<SystemMediaData> loadAllImages(Context context) {
 		ArrayList<SystemMediaData> mediaList = new ArrayList<>();
 		String[] projection = {
-				MediaStore.MediaColumns._ID,
-				MediaStore.MediaColumns.DATA,
-				MediaStore.MediaColumns.DATE_ADDED,
-				MediaStore.MediaColumns.DISPLAY_NAME,
-				MediaStore.MediaColumns.MIME_TYPE,
-				MediaStore.MediaColumns.SIZE,
+			MediaStore.MediaColumns._ID,
+			MediaStore.MediaColumns.DATA,
+			MediaStore.MediaColumns.DATE_ADDED,
+			MediaStore.MediaColumns.DISPLAY_NAME,
+			MediaStore.MediaColumns.MIME_TYPE,
+			MediaStore.MediaColumns.SIZE,
 		};
 		boolean isDeprecated = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
 		Cursor cursor = context.getContentResolver().query(Media.EXTERNAL_CONTENT_URI, projection,
-				null, null, MediaStore.MediaColumns.DATE_ADDED + " DESC");
-		if(cursor != null) {
-			while(cursor.moveToNext()) {
+			null, null, MediaStore.MediaColumns.DATE_ADDED + " DESC");
+		if (cursor != null) {
+			while (cursor.moveToNext()) {
 				int idIndex = cursor.getColumnIndex(MediaStore.MediaColumns._ID);
 				int pathIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DATA);
 				int dateIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DATE_ADDED);
@@ -2630,7 +2630,7 @@ public class CodePanUtils {
 				int sizeIndex = cursor.getColumnIndex(MediaStore.MediaColumns.SIZE);
 				SystemMediaData media = new SystemMediaData();
 				media.uri = ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, cursor.getLong(idIndex));
-				if(!isDeprecated) {
+				if (!isDeprecated) {
 					media.path = cursor.getString(pathIndex);
 				}
 				media.date = cursor.getString(dateIndex);
@@ -2649,7 +2649,7 @@ public class CodePanUtils {
 		ContentResolver resolver = context.getContentResolver();
 		String[] projection = {Media.DATA};
 		Cursor cursor = resolver.query(uri, projection, null, null, null);
-		if(cursor != null) {
+		if (cursor != null) {
 			int index = cursor.getColumnIndex(Media.DATA);
 			cursor.moveToFirst();
 			path = cursor.getString(index);
@@ -2659,7 +2659,7 @@ public class CodePanUtils {
 	}
 
 	public static Bitmap stampPhoto(Context context, Bitmap input, String font,
-			ArrayList<StampData> stampList) {
+									ArrayList<StampData> stampList) {
 		Resources res = context.getResources();
 		DisplayMetrics dm = res.getDisplayMetrics();
 		final int textSize = res.getDimensionPixelSize(R.dimen.thirteen);
@@ -2684,9 +2684,9 @@ public class CodePanUtils {
 		canvas.drawBitmap(input, 0F, 0F, null);
 		int lc = 0;
 		int rc = 0;
-		for(StampData stamp : stampList) {
-			if(stamp.alignment != null) {
-				switch(stamp.alignment) {
+		for (StampData stamp : stampList) {
+			if (stamp.alignment != null) {
+				switch (stamp.alignment) {
 					case LEFT:
 						lc++;
 						break;
@@ -2698,10 +2698,10 @@ public class CodePanUtils {
 		}
 		float yl = height - (size * lc) + (m / 2);
 		float yr = height - (size * rc) + (m / 2);
-		for(StampData stamp : stampList) {
-			if(stamp.alignment != null) {
+		for (StampData stamp : stampList) {
+			if (stamp.alignment != null) {
 				paint.setTextAlign(stamp.alignment);
-				switch(stamp.alignment) {
+				switch (stamp.alignment) {
 					case LEFT:
 						canvas.drawText(stamp.data, m, yl, paint);
 						yl += size;
@@ -2717,11 +2717,11 @@ public class CodePanUtils {
 	}
 
 	public static Bitmap createBitmapFromView(View view) {
-		if(view != null) {
+		if (view != null) {
 			int width = getWidth(view);
 			int height = getHeight(view);
 			LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
-					LayoutParams.WRAP_CONTENT);
+				LayoutParams.WRAP_CONTENT);
 			view.setLayoutParams(params);
 			view.layout(0, 0, width, height);
 			view.buildDrawingCache();
@@ -2740,19 +2740,19 @@ public class CodePanUtils {
 
 	public static String replacePlaceholder(String text, String... placeholders) {
 		final String key = "$";
-		if(text != null && text.contains(" ")) {
+		if (text != null && text.contains(" ")) {
 			String result = "";
 			String[] array = text.split(" ");
 			int index = 0;
 			int size = array.length;
-			for(int i = 0; i < size; i++) {
+			for (int i = 0; i < size; i++) {
 				String word = array[i];
-				if(word.contains(key)) {
+				if (word.contains(key)) {
 					int k = word.indexOf(key);
 					String sub = word.substring(k);
 					String code = key + sub.replaceAll("[^a-zA-z0-9]", "");
 					String placeholder = index < placeholders.length ?
-							placeholders[index] : placeholders[0];
+						placeholders[index] : placeholders[0];
 					word = word.replace(code, placeholder);
 					index++;
 				}
@@ -2771,15 +2771,15 @@ public class CodePanUtils {
 			FileOutputStream fos = new FileOutputStream(file);
 			int read;
 			byte[] bytes = new byte[1024];
-			while((read = is.read(bytes)) != -1) {
+			while ((read = is.read(bytes)) != -1) {
 				fos.write(bytes, 0, read);
 			}
 			result = true;
 		}
-		catch(FileNotFoundException e) {
+		catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		catch(IOException e) {
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 		return result;
@@ -2797,10 +2797,10 @@ public class CodePanUtils {
 		long seconds = millis / 1000L;
 		long minutes = 0L;
 		long hours = 0L;
-		if(seconds > max) {
+		if (seconds > max) {
 			minutes = seconds / max;
 			seconds = seconds % max;
-			if(minutes > max) {
+			if (minutes > max) {
 				hours = minutes / max;
 				minutes = minutes % max;
 			}
@@ -2809,7 +2809,7 @@ public class CodePanUtils {
 		String m = String.format(Locale.ENGLISH, "%02d", minutes);
 		String s = String.format(Locale.ENGLISH, "%02d", seconds);
 		String duration = m + ":" + s;
-		if(hours != 0) {
+		if (hours != 0) {
 			duration = h + ":" + duration;
 		}
 		return duration;
@@ -2817,24 +2817,24 @@ public class CodePanUtils {
 
 	public static void enableFullscreen(Activity activity) {
 		Window window = activity.getWindow();
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			View decorView = window.getDecorView();
 			final int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-					View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-					View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-					View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-					View.SYSTEM_UI_FLAG_FULLSCREEN |
-					View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+				View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+				View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+				View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+				View.SYSTEM_UI_FLAG_FULLSCREEN |
+				View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 			decorView.setSystemUiVisibility(flags);
 		}
 		else {
 			window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-					WindowManager.LayoutParams.FLAG_FULLSCREEN);
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		}
 	}
 
 	public static void changeOrientation(Activity activity, boolean isLandscape) {
-		if(isLandscape) {
+		if (isLandscape) {
 			activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
 		}
 		else {
@@ -2844,7 +2844,7 @@ public class CodePanUtils {
 
 	public static void disableFullscreen(Activity activity) {
 		Window window = activity.getWindow();
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			View decorView = window.getDecorView();
 			final int flags = View.SYSTEM_UI_FLAG_VISIBLE;
 			decorView.setSystemUiVisibility(flags);
@@ -2855,10 +2855,10 @@ public class CodePanUtils {
 	}
 
 	public static boolean hasData(String text) {
-		if(text != null) {
+		if (text != null) {
 			return !text.equals("null") && !text.isEmpty() && !text.equals("0")
-					&& !text.equalsIgnoreCase("na")
-					&& !text.equals("n/a");
+				&& !text.equalsIgnoreCase("na")
+				&& !text.equals("n/a");
 		}
 		return false;
 	}
@@ -2879,10 +2879,10 @@ public class CodePanUtils {
 	}
 
 	public static ArrayList<String> removeDuplicateEntry(ArrayList<String> entryList) {
-		if(entryList != null) {
+		if (entryList != null) {
 			ArrayList<String> holderList = new ArrayList<>();
-			for(String entry : entryList) {
-				if(!holderList.contains(entry)) {
+			for (String entry : entryList) {
+				if (!holderList.contains(entry)) {
 					holderList.add(entry);
 				}
 			}
@@ -2893,14 +2893,14 @@ public class CodePanUtils {
 	}
 
 	public static boolean isValidTime(String time) {
-		if(time != null && !time.isEmpty()) {
+		if (time != null && !time.isEmpty()) {
 			try {
 				final String PATTERN = "HH:mm:ss";
 				SimpleDateFormat format = new SimpleDateFormat(PATTERN, Locale.ENGLISH);
 				java.util.Date d = format.parse(time);
 				return true;
 			}
-			catch(ParseException e) {
+			catch (ParseException e) {
 				e.printStackTrace();
 			}
 		}
@@ -2908,13 +2908,13 @@ public class CodePanUtils {
 	}
 
 	public static String censorMobileNo(String mobileNo) {
-		if(mobileNo != null) {
+		if (mobileNo != null) {
 			final int length = mobileNo.length();
 			final int lastDigits = 4;
 			String censored = "";
-			for(int i = length - 1; i >= 0; i--) {
+			for (int i = length - 1; i >= 0; i--) {
 				char c = mobileNo.charAt(i);
-				if(i >= length - lastDigits) {
+				if (i >= length - lastDigits) {
 					censored = c + censored;
 				}
 				else {
@@ -2927,13 +2927,13 @@ public class CodePanUtils {
 	}
 
 	public static boolean withinMonthlyCutOffExact(String date, int cutOff,
-			HashMap<String, String> feedback) {
-		if(cutOff != 0 && cutOff <= 28) {
+												   HashMap<String, String> feedback) {
+		if (cutOff != 0 && cutOff <= 28) {
 			String current = getDate();
 			Calendar cal = Calendar.getInstance();
 			cal.setTimeInMillis(dateToMillis(current));
 			int today = cal.get(Calendar.DAY_OF_MONTH);
-			if(today <= cutOff) {
+			if (today <= cutOff) {
 				cal.roll(Calendar.MONTH, -1);
 			}
 			cal.roll(Calendar.DAY_OF_MONTH, cutOff - today);
@@ -2942,7 +2942,7 @@ public class CodePanUtils {
 			cal.roll(Calendar.MONTH, 1);
 			cal.roll(Calendar.DAY_OF_MONTH, -1);
 			String endDate = String.format(Locale.ENGLISH, "%tF", cal);
-			if(feedback != null) {
+			if (feedback != null) {
 				feedback.put("startDate", startDate);
 				feedback.put("endDate", endDate);
 			}
@@ -2952,18 +2952,18 @@ public class CodePanUtils {
 	}
 
 	public static boolean withinMonthlyCutOff(String date, int cutOff,
-			HashMap<String, String> feedback) {
-		if(cutOff != 0 && cutOff <= 28) {
+											  HashMap<String, String> feedback) {
+		if (cutOff != 0 && cutOff <= 28) {
 			String current = getDate();
 			Calendar cal = Calendar.getInstance();
 			cal.setTimeInMillis(dateToMillis(current));
 			int today = cal.get(Calendar.DAY_OF_MONTH);
-			if(today <= cutOff) {
+			if (today <= cutOff) {
 				cal.roll(Calendar.MONTH, -1);
 			}
 			cal.set(Calendar.DAY_OF_MONTH, 1);
 			String startDate = String.format(Locale.ENGLISH, "%tF", cal);
-			if(feedback != null) {
+			if (feedback != null) {
 				feedback.put("startDate", startDate);
 				feedback.put("endDate", current);
 			}
@@ -2973,14 +2973,14 @@ public class CodePanUtils {
 	}
 
 	public static boolean withinWeeklyCutOff(String date, int cutOff,
-			HashMap<String, String> feedback) {
-		if(cutOff != 0 && cutOff <= 7) {
+											 HashMap<String, String> feedback) {
+		if (cutOff != 0 && cutOff <= 7) {
 			String current = getDate();
 			Calendar cal = Calendar.getInstance();
 			cal.setTimeInMillis(dateToMillis(current));
 			int today = cal.get(Calendar.DAY_OF_WEEK);
 			int rollCount = 0;
-			if(today <= cutOff) {
+			if (today <= cutOff) {
 				int difference = cutOff - today;
 				rollCount = 7 - difference - 1;
 			}
@@ -2991,22 +2991,22 @@ public class CodePanUtils {
 			String after = rollDate(current, -rollCount);
 			cal.setTimeInMillis(dateToMillis(after));
 			String startDate = String.format(Locale.ENGLISH, "%tF", cal);
-			if(feedback != null) {
+			if (feedback != null) {
 				feedback.put("startDate", startDate);
 				feedback.put("endDate", current);
 			}
 			return isDateBetween(date, startDate, current);
 		}
 		throw new IllegalArgumentException("Cut-off period must be between 1 to 7 " +
-				"indicating the numeric value of each weekday " +
-				"Su=1, Mo=2, Tu=3, We=4, Th=5, Fr=6, Sa=7.");
+			"indicating the numeric value of each weekday " +
+			"Su=1, Mo=2, Tu=3, We=4, Th=5, Fr=6, Sa=7.");
 	}
 
 	public static boolean withinDailyCutOff(String date, String cutOff) {
-		if(cutOff != null && cutOff.split(":").length == 3) {
+		if (cutOff != null && cutOff.split(":").length == 3) {
 			String startDate = getDate();
 			String time = getTime();
-			if(timeToMillis(time) > timeToMillis(cutOff)) {
+			if (timeToMillis(time) > timeToMillis(cutOff)) {
 				startDate = rollDate(startDate, 1);
 			}
 			return isDateOnOrAfter(date, startDate);
@@ -3015,9 +3015,9 @@ public class CodePanUtils {
 	}
 
 	public static int getDayOfTheWeek(String day) {
-		if(day != null && day.length() >= 2) {
+		if (day != null && day.length() >= 2) {
 			String key = day.substring(0, 2).toLowerCase();
-			switch(key) {
+			switch (key) {
 				case "su":
 					return 1;
 				case "mo":
@@ -3072,18 +3072,18 @@ public class CodePanUtils {
 	}
 
 	public static LatLng geocodeAddress(Context context, String address) {
-		if(hasInternet(context) && Geocoder.isPresent() && address != null) {
+		if (hasInternet(context) && Geocoder.isPresent() && address != null) {
 			Geocoder geocoder = new Geocoder(context, Locale.getDefault());
 			try {
 				List<Address> coordinates = geocoder.getFromLocationName(address, 1);
-				if(coordinates != null && !coordinates.isEmpty()) {
+				if (coordinates != null && !coordinates.isEmpty()) {
 					Address coordinate = coordinates.get(0);
 					double longitude = coordinate.getLongitude();
 					double latitude = coordinate.getLatitude();
 					return new LatLng(latitude, longitude);
 				}
 			}
-			catch(IOException e) {
+			catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -3092,47 +3092,47 @@ public class CodePanUtils {
 
 	public static String reverseGeocode(Context context, double latitude, double longitude) {
 		final StringBuilder builder = new StringBuilder();
-		if(Geocoder.isPresent()) {
+		if (Geocoder.isPresent()) {
 			Geocoder geocoder = new Geocoder(context, Locale.getDefault());
 			try {
 				List<Address> addressList = geocoder.getFromLocation(latitude, longitude, 1);
-				if(addressList != null && !addressList.isEmpty()) {
+				if (addressList != null && !addressList.isEmpty()) {
 					Address address = addressList.get(0);
 					final String streetNo = address.getSubThoroughfare();
 					final String streetName = address.getThoroughfare();
 					final String locality = address.getLocality();
 					final String adminArea = address.getAdminArea();
 					final String country = address.getCountryName();
-					if(streetNo != null) {
+					if (streetNo != null) {
 						builder.append(streetNo);
 					}
-					if(streetName != null) {
-						if(!builder.toString().isEmpty()) {
+					if (streetName != null) {
+						if (!builder.toString().isEmpty()) {
 							builder.append(" ");
 						}
 						builder.append(streetName);
 					}
-					if(locality != null) {
-						if(!builder.toString().isEmpty()) {
+					if (locality != null) {
+						if (!builder.toString().isEmpty()) {
 							builder.append(", ");
 						}
 						builder.append(locality);
 					}
-					if(adminArea != null) {
-						if(!builder.toString().isEmpty()) {
+					if (adminArea != null) {
+						if (!builder.toString().isEmpty()) {
 							builder.append(", ");
 						}
 						builder.append(adminArea);
 					}
-					if(country != null) {
-						if(!builder.toString().isEmpty()) {
+					if (country != null) {
+						if (!builder.toString().isEmpty()) {
 							builder.append(", ");
 						}
 						builder.append(country);
 					}
 				}
 			}
-			catch(IOException e) {
+			catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -3158,13 +3158,13 @@ public class CodePanUtils {
 	}
 
 	public static String replaceVariableInEquation(String input,
-			String variableName, String value) {
+												   String variableName, String value) {
 		String equation = input;
 		Pattern pattern = Pattern.compile("[A-Za-z0-9]+");
 		Matcher matcher = pattern.matcher(equation);
-		while(matcher.find()) {
+		while (matcher.find()) {
 			String word = matcher.group();
-			if(word.equals(variableName)) {
+			if (word.equals(variableName)) {
 				int startIndex = matcher.start();
 				int endIndex = matcher.end();
 				equation = equation.substring(0, startIndex) + value + equation.substring(endIndex);
@@ -3176,13 +3176,13 @@ public class CodePanUtils {
 	public static Bitmap getBitmapImage(Context context, Uri uri) {
 		try {
 			ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "r");
-			if(pfd != null) {
+			if (pfd != null) {
 				BitmapFactory.Options opts = new BitmapFactory.Options();
 				opts.inSampleSize = 2;
 				return BitmapFactory.decodeFileDescriptor(pfd.getFileDescriptor(), null, opts);
 			}
 		}
-		catch(FileNotFoundException e) {
+		catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -3190,21 +3190,21 @@ public class CodePanUtils {
 
 	public static void setSoftInputModeToAdjustResize(Activity activity) {
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
-				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+			WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 	}
 
 	public static void setSoftInputModeToAdjustPan(Activity activity) {
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN |
-				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+			WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 	}
 
 	public static int getMax(String... numbers) {
 		int max = 0;
-		if(numbers != null) {
-			for(String element : numbers) {
-				if(isNumeric(element)) {
+		if (numbers != null) {
+			for (String element : numbers) {
+				if (isNumeric(element)) {
 					final int value = Integer.parseInt(element);
-					if(value > max) {
+					if (value > max) {
 						max = value;
 					}
 				}
@@ -3215,11 +3215,11 @@ public class CodePanUtils {
 
 	public static int getMin(String... numbers) {
 		int min = 0;
-		if(numbers != null) {
-			for(String element : numbers) {
-				if(isNumeric(element)) {
+		if (numbers != null) {
+			for (String element : numbers) {
+				if (isNumeric(element)) {
 					final int value = Integer.parseInt(element);
-					if(value < min) {
+					if (value < min) {
 						min = value;
 					}
 				}
@@ -3230,9 +3230,9 @@ public class CodePanUtils {
 
 	public static int getMax(int... numbers) {
 		int max = 0;
-		if(numbers != null) {
-			for(final int value : numbers) {
-				if(value > max) {
+		if (numbers != null) {
+			for (final int value : numbers) {
+				if (value > max) {
 					max = value;
 				}
 			}
@@ -3242,9 +3242,9 @@ public class CodePanUtils {
 
 	public static int getMin(int... numbers) {
 		int min = 0;
-		if(numbers != null) {
-			for(final int value : numbers) {
-				if(value < min) {
+		if (numbers != null) {
+			for (final int value : numbers) {
+				if (value < min) {
 					min = value;
 				}
 			}
@@ -3272,5 +3272,28 @@ public class CodePanUtils {
 			e.printStackTrace();
 		}
 		return sb.toString();
+	}
+
+	public static String toMultiline(String input, int maxLength) {
+		final String space = " ";
+		final String[] words = input.split(space);
+		int current = 0;
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < words.length; i++) {
+			final String word = words[i];
+			current += word.length();
+			if (current <= maxLength) {
+				builder.append(word);
+			}
+			else {
+				builder.append("\n");
+				builder.append(word);
+				current = 0;
+			}
+			if (i < words.length - 1) {
+				builder.append(space);
+			}
+		}
+		return builder.toString();
 	}
 }
