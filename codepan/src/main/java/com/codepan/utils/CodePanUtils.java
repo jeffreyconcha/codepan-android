@@ -3288,7 +3288,7 @@ public class CodePanUtils {
 			else {
 				builder.append("\n");
 				builder.append(word);
-				current = 0;
+				current = word.length();
 			}
 			if (i < words.length - 1) {
 				builder.append(space);
