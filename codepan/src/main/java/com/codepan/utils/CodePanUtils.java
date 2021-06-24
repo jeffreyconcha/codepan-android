@@ -3292,6 +3292,7 @@ public class CodePanUtils {
 			}
 			if (i < words.length - 1) {
 				builder.append(space);
+				current += 1;
 			}
 		}
 		return builder.toString();
