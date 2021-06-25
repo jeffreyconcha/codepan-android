@@ -27,6 +27,7 @@ import com.codepan.R;
 import com.codepan.callback.Interface.OnCameraChangeCallback;
 import com.codepan.model.StampData;
 import com.codepan.utils.CodePanUtils;
+import com.codepan.utils.Console;
 import com.codepan.widget.FocusIndicatorView;
 import com.codepan.widget.camera.Callback.OnCameraErrorCallback;
 import com.codepan.widget.camera.Callback.OnCaptureCallback;
@@ -61,9 +62,15 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	private Camera camera;
 
 	@SuppressWarnings("deprecation")
-	public CameraSurfaceView(Context context, OnCameraErrorCallback cameraErrorCallback,
-							 int cameraSelection, String flashMode, String folder,
-							 int maxWidth, int maxHeight) {
+	public CameraSurfaceView(
+		Context context,
+		OnCameraErrorCallback cameraErrorCallback,
+		int cameraSelection,
+		String flashMode,
+		String folder,
+		int maxWidth,
+		int maxHeight
+	) {
 		super(context);
 		PackageManager pm = context.getPackageManager();
 		this.hasFrontCam = pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT);
@@ -93,7 +100,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 			}
 		}
 		else {
-			if(cameraErrorCallback != null) {
+			if (cameraErrorCallback != null) {
 				cameraErrorCallback.onCameraError();
 			}
 		}
@@ -101,7 +108,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
 	@Override
 	public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
-		if(hasAutoFocus) {
+		if (hasAutoFocus) {
 			camera.getParameters().setFocusMode(Parameters.FOCUS_MODE_AUTO);
 			camera.autoFocus(null);
 		}
@@ -113,7 +120,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 		try {
 			camera.setPreviewDisplay(holder);
 			params = camera.getParameters();
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
 				int orientation = 90;
 				if (hasFrontCam && cameraSelection == CameraInfo.CAMERA_FACING_FRONT) {
 					CameraInfo info = new CameraInfo();
@@ -128,7 +135,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 			else {
 				params.set("orientation", "portrait");
 			}
-			if(hasFlash && cameraSelection == CameraInfo.CAMERA_FACING_BACK) {
+			if (hasFlash && cameraSelection == CameraInfo.CAMERA_FACING_BACK) {
 				params.setFlashMode(flashMode);
 			}
 			List<Size> previewSizes = params.getSupportedPreviewSizes();
@@ -138,7 +145,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 			int pictureWidth = 0;
 			int pictureHeight = 0;
 			float maxOutputHeight = 0f;
-			for(Size s : previewSizes) {
+			for (Size s : previewSizes) {
 				float ratio = (float) s.width / (float) s.height;
 				float outputHeight = isLandscape ?
 					(float) maxWidth / ratio :
@@ -150,19 +157,20 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 				}
 			}
 			List<Size> sizes = new ArrayList<>();
-			for(Size s : pictureSizes) {
+			for (Size s : pictureSizes) {
+				Console.debug("AVAILABLE: " + s.width + "x" + s.height);
 				int resolution = s.width * s.height;
-				if(resolution <= HIGH_RESO && resolution >= OPTIMAL_RESO) {
+				if (resolution <= HIGH_RESO && resolution >= OPTIMAL_RESO) {
 					sizes.add(s);
 				}
 			}
-			if(sizes.isEmpty()) {
+			if (sizes.isEmpty()) {
 				sizes = pictureSizes;
 			}
 			int count = sizes.size();
 			Size first = sizes.get(0);
 			Size last = sizes.get(count - 1);
-			if(first.width * first.height > last.width * last.height) {
+			if (first.width * first.height > last.width * last.height) {
 				pictureWidth = first.width;
 				pictureHeight = first.height;
 			}
@@ -170,13 +178,14 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 				pictureWidth = last.width;
 				pictureHeight = last.height;
 			}
+			Console.log("SELECTED: " + previewWidth + "x" + previewHeight);
 			params.setRotation(0);
 			params.setPreviewSize(previewWidth, previewHeight);
 			params.setPictureSize(pictureWidth, pictureHeight);
 			camera.setParameters(params);
 			camera.startPreview();
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 			camera.release();
 		}
@@ -184,14 +193,14 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-		if(camera != null) {
+		if (camera != null) {
 			camera.stopPreview();
 			camera.setPreviewCallback(null);
 			camera.release();
 			camera = null;
 		}
 		surfaceHolder.removeCallback(this);
-		if(cameraChangeCallback != null) {
+		if (cameraChangeCallback != null) {
 			cameraChangeCallback.onCameraChange(false);
 		}
 	}
@@ -201,8 +210,8 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 		Camera camera = null;
 		try {
 			int count = Camera.getNumberOfCameras();
-			if(hasFrontCam) {
-				if(count >= 2) {
+			if (hasFrontCam) {
+				if (count >= 2) {
 					camera = Camera.open(selection);
 				}
 				else {
@@ -213,21 +222,21 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 				camera = Camera.open(DEFAULT);
 			}
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return camera;
 	}
 
 	public void takePicture() {
-		if(camera != null) {
+		if (camera != null) {
 			isCaptured = true;
 			camera.takePicture(null, null, this);
 		}
 	}
 
 	public void reset() {
-		if(camera != null) {
+		if (camera != null) {
 			camera.startPreview();
 			isCaptured = false;
 		}
@@ -239,26 +248,26 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 		options.inTempStorage = new byte[16 * 1024];
 		Parameters params = camera.getParameters();
 		Size size = params.getPictureSize();
-		float mb = (float) (size.height * size.width) / 1024000f;
-		if(mb > 4f) {
+		float memory = (float) (size.height * size.width) / 1024000F;
+		if (memory > 4F) {
 			options.inSampleSize = 4;
 		}
-		else if(mb > 3f) {
+		else if (memory > 3F) {
 			options.inSampleSize = 2;
 		}
 		Bitmap src = BitmapFactory.decodeByteArray(data, 0, data.length, options);
 		String fileName = System.currentTimeMillis() + ".jpg";
-		if(prefix != null) {
+		if (prefix != null) {
 			fileName = prefix + "-" + fileName;
 		}
-		if(isScaled) {
+		if (isScaled) {
 			src = scale(src);
 		}
 		Matrix matrix = new Matrix();
 		matrix.postRotate(getImageRotation());
 		Bitmap bitmap = Bitmap.createBitmap(src, 0, 0, src.getWidth(),
-				src.getHeight(), matrix, true);
-		if(stampList != null) {
+			src.getHeight(), matrix, true);
+		if (stampList != null) {
 			String font = context.getString(R.string.calibri_regular);
 			bitmap = CodePanUtils.stampPhoto(context, bitmap, font, stampList);
 			saveBitmap(fileName, bitmap);
@@ -269,7 +278,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 		final Handler handler = new Handler(Looper.getMainLooper(), msg -> {
 			File dir = context.getDir(folder, Context.MODE_PRIVATE);
 			File file = new File(dir, fileName);
-			if(file.exists() && file.length() > 0) {
+			if (file.exists() && file.length() > 0) {
 				captureCallback.onCapture(fileName);
 			}
 			else {
@@ -283,7 +292,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 				try {
 					File dir = context.getDir(folder, Context.MODE_PRIVATE);
 					File file = new File(dir, fileName);
-					if(!dir.exists()) {
+					if (!dir.exists()) {
 						dir.mkdir();
 					}
 					FileOutputStream fos = new FileOutputStream(file);
@@ -291,11 +300,11 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 					fos.close();
 					handler.obtainMessage().sendToTarget();
 				}
-				catch(IOException e) {
+				catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
-			catch(Exception e) {
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		});
@@ -311,13 +320,13 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 		int height = bitmap.getHeight();
 		int srcWidth = bitmap.getWidth();
 		int srcHeight = bitmap.getHeight();
-		if(srcWidth > picWidth) {
+		if (srcWidth > picWidth) {
 			width = picWidth;
 			float ratio = (float) picWidth / (float) srcWidth;
 			height = (int) ((float) bitmap.getHeight() * ratio);
 		}
 		else {
-			if(srcHeight > picHeight) {
+			if (srcHeight > picHeight) {
 				height = picHeight;
 				float ratio = (float) picHeight / (float) srcHeight;
 				width = (int) ((float) bitmap.getWidth() * ratio);
@@ -362,13 +371,13 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	}
 
 	public void stopCamera() {
-		if(camera != null) {
+		if (camera != null) {
 			camera.stopPreview();
 			camera.setPreviewCallback(null);
 			camera.release();
 			camera = null;
 		}
-		if(surfaceHolder != null) {
+		if (surfaceHolder != null) {
 			surfaceHolder.removeCallback(this);
 		}
 		this.hasStopped = true;
@@ -379,12 +388,12 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	 *                  centerCrop scale
 	 */
 	public void fullScreenToContainer(ViewGroup container) {
-		if(camera != null) {
+		if (camera != null) {
 			Parameters params = camera.getParameters();
 			float maxOutputHeight = 0f;
 			float maxRatio = 0f;
 			List<Size> sizes = params.getSupportedPreviewSizes();
-			for(Size s : sizes) {
+			for (Size s : sizes) {
 				float ratio = (float) s.width / (float) s.height;
 				float outputHeight = isLandscape ?
 					(float) maxWidth / ratio :
@@ -395,7 +404,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 				}
 			}
 			LayoutParams lp = (LayoutParams) container.getLayoutParams();
-			if(maxOutputHeight >= maxHeight) {
+			if (maxOutputHeight >= maxHeight) {
 				lp.width = maxWidth;
 				lp.height = (int) maxOutputHeight;
 			}
@@ -410,10 +419,10 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	public int getImageRotation() {
 		int rotation = 0;
 		int count = Camera.getNumberOfCameras();
-		if(count >= 2) {
-			switch(cameraSelection) {
+		if (count >= 2) {
+			switch (cameraSelection) {
 				case CameraInfo.CAMERA_FACING_FRONT:
-					if(isFrontCamInverted) {
+					if (isFrontCamInverted) {
 						rotation = IMAGE_ROTATION_BACK;
 					}
 					else {
@@ -438,7 +447,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
 	@SuppressLint("NewApi")
 	public void tapToFocus(final Rect tfocusRect) {
-		if(camera != null) {
+		if (camera != null) {
 			try {
 				List<Area> focusList = new ArrayList<>();
 				Area focusArea = new Area(tfocusRect, 1000);
@@ -449,14 +458,14 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 				camera.setParameters(params);
 				camera.cancelAutoFocus();
 				camera.autoFocus((success, camera) -> {
-					if(success) {
+					if (success) {
 						String focusMode = Parameters.FOCUS_MODE_CONTINUOUS_PICTURE;
 						Parameters params1 = camera.getParameters();
 						List<String> focusModeList = params1.getSupportedFocusModes();
-						if(focusModeList.contains(focusMode)) {
-							if(!params1.getFocusMode().equals(focusMode)) {
+						if (focusModeList.contains(focusMode)) {
+							if (!params1.getFocusMode().equals(focusMode)) {
 								params1.setFocusMode(focusMode);
-								if(params1.getMaxNumFocusAreas() > 0) {
+								if (params1.getMaxNumFocusAreas() > 0) {
 									params1.setFocusAreas(null);
 								}
 								camera.setParameters(params1);
@@ -466,7 +475,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 					}
 				});
 			}
-			catch(Exception e) {
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -475,26 +484,26 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		if(hasAutoFocus && cameraSelection == CameraInfo.CAMERA_FACING_BACK) {
+		if (hasAutoFocus && cameraSelection == CameraInfo.CAMERA_FACING_BACK) {
 			final int SIZE = 60;
 			final int DELAY = 1000;
 			int width = this.getWidth();
 			int height = this.getHeight();
-			if(event.getAction() == MotionEvent.ACTION_DOWN) {
+			if (event.getAction() == MotionEvent.ACTION_DOWN) {
 				float x = event.getX();
 				float y = event.getY();
 				Rect touchRect = new Rect(
-						(int) (x - SIZE),
-						(int) (y - SIZE),
-						(int) (x + SIZE),
-						(int) (y + SIZE));
+					(int) (x - SIZE),
+					(int) (y - SIZE),
+					(int) (x + SIZE),
+					(int) (y + SIZE));
 				int left = touchRect.left * 2000 / width - 1000;
 				int top = touchRect.top * 2000 / height - 1000;
 				int right = touchRect.right * 2000 / width - 1000;
 				int bottom = touchRect.bottom * 2000 / height - 1000;
 				final Rect targetFocusRect = new Rect(left, top, right, bottom);
 				tapToFocus(targetFocusRect);
-				if(focusIndicatorView != null) {
+				if (focusIndicatorView != null) {
 					focusIndicatorView.setHaveTouch(true, touchRect);
 					focusIndicatorView.invalidate();
 					Handler handler = new Handler();

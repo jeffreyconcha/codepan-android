@@ -1,7 +1,6 @@
 package com.codepan.example;
 
 import android.app.AlertDialog;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.hardware.Camera;
@@ -17,8 +16,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.codepan.model.StampData;
-import com.codepan.utils.CodePanUtils;
 import com.codepan.time.DateTime;
+import com.codepan.utils.CodePanUtils;
 import com.codepan.widget.CodePanButton;
 import com.codepan.widget.FocusIndicatorView;
 import com.codepan.widget.camera.Callback.OnCameraErrorCallback;
@@ -117,7 +116,6 @@ public class CameraFragment extends Fragment implements OnClickListener, OnCaptu
         final Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(() -> {
             if (surfaceView != null) surfaceView.stopCamera();
-            Resources res = main.getResources();
             surfaceView = new CameraSurfaceView(main, this,
                 cameraSelection, flashMode, FOLDER, maxWidth, maxHeight);
             surfaceView.setOnCaptureCallback(this);
