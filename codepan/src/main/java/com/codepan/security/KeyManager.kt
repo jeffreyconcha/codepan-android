@@ -2,25 +2,24 @@ package com.codepan.security
 
 import android.util.Base64
 import java.security.MessageDigest
-import java.security.SecureRandom
 import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-class KeyManager(private val key: String) {
+class KeyManager(private val seed: String) {
 
     private val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
-    private var iv: IvParameterSpec
     private var secret: SecretKeySpec
+    private var iv: IvParameterSpec
 
     private val generatedKey: ByteArray?
         get() {
             try {
-                val data = key.toByteArray(Charsets.UTF_8)
+                val data = seed.toByteArray(Charsets.UTF_8)
                 val md = MessageDigest.getInstance("SHA-1")
                 val hash = md.digest(data)
-                return Arrays.copyOf(hash, 32)
+                return Arrays.copyOf(hash, cipher.blockSize)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -29,11 +28,9 @@ class KeyManager(private val key: String) {
 
 
     init {
-        val data = ByteArray(cipher.blockSize)
-        val random = SecureRandom()
-        random.nextBytes(data)
-        this.iv = IvParameterSpec(data)
-        this.secret = SecretKeySpec(generatedKey, "AES")
+        val generated = generatedKey
+        this.iv = IvParameterSpec(generated)
+        this.secret = SecretKeySpec(generated, "AES")
     }
 
     fun encrypt(text: String): String {
@@ -41,21 +38,23 @@ class KeyManager(private val key: String) {
         return encryptBytes(data)
     }
 
-    fun encryptBytes(data: ByteArray): String {
+    fun encryptBytes(input: ByteArray): String {
         cipher.init(Cipher.ENCRYPT_MODE, secret, iv)
+        val data = cipher.doFinal(input)
         val encoded = Base64.encode(data, Base64.DEFAULT)
         return String(encoded)
     }
 
-    fun decrypt(text: String): String {
-        val data = text.toByteArray(Charsets.UTF_8)
+    fun decrypt(encrypted: String): String {
+        val input = encrypted.toByteArray(Charsets.UTF_8)
+        val data = Base64.decode(input, Base64.DEFAULT)
         return decryptBytes(data)
     }
 
-    fun decryptBytes(data: ByteArray): String {
+    fun decryptBytes(input: ByteArray): String {
         cipher.init(Cipher.DECRYPT_MODE, secret, iv)
-        val encoded = Base64.decode(data, Base64.DEFAULT)
-        return String(encoded)
+        val data = cipher.doFinal(input)
+        return String(data)
     }
 
     fun decryptUnsorted(input: ByteArray): String {
