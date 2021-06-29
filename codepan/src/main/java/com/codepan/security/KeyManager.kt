@@ -47,13 +47,13 @@ class KeyManager(private val seed: String) {
 
     fun decrypt(encrypted: String): String {
         val input = encrypted.toByteArray(Charsets.UTF_8)
-        val data = Base64.decode(input, Base64.DEFAULT)
-        return decryptBytes(data)
+        return decryptBytes(input)
     }
 
     fun decryptBytes(input: ByteArray): String {
+        val decoded = Base64.decode(input, Base64.DEFAULT)
         cipher.init(Cipher.DECRYPT_MODE, secret, iv)
-        val data = cipher.doFinal(input)
+        val data = cipher.doFinal(decoded)
         return String(data)
     }
 
