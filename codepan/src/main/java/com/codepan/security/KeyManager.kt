@@ -102,7 +102,7 @@ class KeyManager(private val seed: String) {
             val collections = arrayListOf<Char>()
             encrypted.toCharArray().toCollection(collections)
             var first = true
-            var index = 0
+            var counter = 0
             while (collections.isNotEmpty()) {
                 first = if (first) {
                     val char = collections.first()
@@ -118,11 +118,10 @@ class KeyManager(private val seed: String) {
                 if (collections.isNotEmpty()) {
                     builder.append(",")
                 }
-                if (index >= 20) {
+                if (counter++ == 19) {
                     builder.append("\n\t")
-                    index = 0
+                    counter = 0
                 }
-                index++
             }
             builder.append("\n}")
             return builder.toString()
