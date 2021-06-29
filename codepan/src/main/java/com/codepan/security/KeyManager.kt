@@ -42,7 +42,7 @@ class KeyManager(private val seed: String) {
         cipher.init(Cipher.ENCRYPT_MODE, secret, iv)
         val data = cipher.doFinal(input)
         val encoded = Base64.encode(data, Base64.DEFAULT)
-        return String(encoded)
+        return String(encoded).trim()
     }
 
     fun decrypt(encrypted: String): String {
@@ -98,9 +98,11 @@ class KeyManager(private val seed: String) {
 
         fun getElements(encrypted: String): String {
             val builder = StringBuilder("{")
+            builder.append("\n\t")
             val collections = arrayListOf<Char>()
-            encrypted.trim().toCharArray().toCollection(collections)
+            encrypted.toCharArray().toCollection(collections)
             var first = true
+            var index = 0
             while (collections.isNotEmpty()) {
                 first = if (first) {
                     val char = collections.first()
@@ -116,8 +118,13 @@ class KeyManager(private val seed: String) {
                 if (collections.isNotEmpty()) {
                     builder.append(",")
                 }
+                if (index >= 20) {
+                    builder.append("\n\t")
+                    index = 0
+                }
+                index++
             }
-            builder.append("}")
+            builder.append("\n}")
             return builder.toString()
         }
     }
