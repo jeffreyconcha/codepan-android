@@ -2494,12 +2494,7 @@ public class CodePanUtils {
 			|| Build.MANUFACTURER.contains("Genymobile")
 			|| Build.HOST.startsWith("Build")
 			|| (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
-			|| Build.PRODUCT.contains("sdk")
-			|| Build.PRODUCT.contains("vbox86p")
-			|| Build.PRODUCT.contains("emulator")
-			|| Build.PRODUCT.contains("simulator")
-			|| Build.HARDWARE.contains("goldfish")
-			|| Build.HARDWARE.contains("ranchu");
+			|| "google_sdk".equals(Build.PRODUCT);
 	}
 
 	public static boolean isPhoneRooted() {
