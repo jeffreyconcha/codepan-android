@@ -203,12 +203,18 @@ public class Do {
 		return response.toString();
 	}
 
-	public static void downloadFile(Context context, String uri, String folder,
-									String fileName, boolean external, Cipher cipher,
-									OnDownloadFileCallback callback) {
+	public static void downloadFile(
+		Context context,
+		String uri,
+		String folder,
+		String fileName,
+		boolean external,
+		Cipher cipher,
+		int timeout,
+		OnDownloadFileCallback callback
+	) {
 		ErrorHandler handler = new ErrorHandler();
 		try {
-			final int TIMEOUT = 10000;
 			String ex = context.getExternalFilesDir(null).getPath() + "/" + folder;
 			File dir = external ? new File(ex) : context.getDir(folder, Context.MODE_PRIVATE);
 			boolean result = dir.exists() || dir.mkdir();
@@ -220,8 +226,8 @@ public class Do {
 					https.setSSLSocketFactory(new TLSSocketFactory());
 					connection = https;
 				}
-				connection.setConnectTimeout(TIMEOUT);
-				connection.setReadTimeout(TIMEOUT);
+				connection.setConnectTimeout(timeout);
+				connection.setReadTimeout(timeout);
 				String path = dir.getPath() + "/" + fileName;
 				File file = new File(path);
 				int downloaded = 0;
