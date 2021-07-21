@@ -39,10 +39,10 @@ class SmsEventManager(val context: Context) : SmsNotifier {
 
     private val preferences = SharedPreferencesManager(context)
     private val uri = Uri.parse("content://sms")
-    private val resolver = context.contentResolver
-    private lateinit var observer: SmsObserver
-    private var callback: SmsEvents? = null
     private val handler = Handler(Looper.getMainLooper())
+    private val resolver = context.contentResolver
+    private var observer: SmsObserver? = null
+    private var callback: SmsEvents? = null
 
     private var lastId: Int = 0
         get() = preferences.getValue(LAST_SMS_ID, 0)
@@ -56,12 +56,14 @@ class SmsEventManager(val context: Context) : SmsNotifier {
     @RequiresPermission(Manifest.permission.READ_SMS)
     fun registerObserver(callback: SmsEvents) {
         observer = SmsObserver(this, handler)
-        resolver.registerContentObserver(uri, true, observer)
+        resolver.registerContentObserver(uri, true, observer!!)
         this.callback = callback;
     }
 
     fun unregisterObserver() {
-        resolver.unregisterContentObserver(observer)
+        if (observer != null) {
+            resolver.unregisterContentObserver(observer!!)
+        }
     }
 
     companion object {
