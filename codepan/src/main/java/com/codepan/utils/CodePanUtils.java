@@ -2019,7 +2019,7 @@ public class CodePanUtils {
 
 	public static String handleSpecialCharacters(String text) {
 		String result = "";
-		if (text != null && !text.equals("null")) {
+		if (text != null && !text.equals("null") && containsSpecialCharacters(text)) {
 			result = text.replace("&NewLine;", "\n").
 				replace("&Tab;", "    ");
 			result = unicodeToString(result);
