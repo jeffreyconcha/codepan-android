@@ -2018,17 +2018,16 @@ public class CodePanUtils {
 	}
 
 	public static String handleSpecialCharacters(String text) {
-		String result = "";
 		if (text != null && !text.equals("null")) {
 			if (containsSpecialCharacters(text)) {
-				result = text.replace("&NewLine;", "\n").
+				String replaced = text.replace("&NewLine;", "\n").
 					replace("&Tab;", "    ");
-				result = unicodeToString(result);
-				result = StringEscapeUtils.unescapeHtml4(result);
+				String unicode = unicodeToString(replaced);
+				return StringEscapeUtils.unescapeHtml4(unicode);
 			}
 			return text;
 		}
-		return result;
+		return "";
 	}
 
 	public static boolean isAppInstalled(Context context, String packageName) {
