@@ -18,8 +18,6 @@ import com.codepan.callback.Interface.OnTextChangedCallback;
 import com.codepan.utils.CodePanUtils;
 import com.codepan.utils.Debouncer;
 
-import java.util.TimerTask;
-
 public class CodePanTextField extends EditText {
 
 	private boolean autoHideKeyboard, autoClearFocus, hasCloseableSpan;
@@ -28,7 +26,7 @@ public class CodePanTextField extends EditText {
 	private OnTextChangedCallback textChangedCallback;
 	private OnFocusChangeListener focusChangeListener;
 	private int textColorEnabled, textColorDisabled;
-	private Debouncer debouncer;
+	private Debouncer<String> debouncer;
 	private Context context;
 
 	public CodePanTextField(Context context, AttributeSet attrs) {
@@ -143,8 +141,7 @@ public class CodePanTextField extends EditText {
 		this.textChangedCallback = textChangedCallback;
 	}
 
-	public void setOnTextChangedCallback(Debouncer debouncer, OnTextChangedCallback textChangedCallback) {
-		this.textChangedCallback = textChangedCallback;
+	public void setOnTextChangedCallback(Debouncer<String> debouncer) {
 		this.debouncer = debouncer;
 	}
 
@@ -152,14 +149,7 @@ public class CodePanTextField extends EditText {
 	protected void onTextChanged(CharSequence cs, int start, int lengthBefore, int lengthAfter) {
 		super.onTextChanged(cs, start, lengthBefore, lengthAfter);
 		if (debouncer != null) {
-			debouncer.run(new TimerTask() {
-				@Override
-				public void run() {
-					if (textChangedCallback != null) {
-						textChangedCallback.onTextChanged(CodePanTextField.this, cs.toString());
-					}
-				}
-			});
+			debouncer.run(cs.toString());
 		}
 		else {
 			if (textChangedCallback != null) {
