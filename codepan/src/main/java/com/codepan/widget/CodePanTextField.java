@@ -8,7 +8,6 @@ import android.text.Editable;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
@@ -17,6 +16,9 @@ import com.codepan.cache.TypefaceCache;
 import com.codepan.callback.Interface.OnKeyboardDismissCallback;
 import com.codepan.callback.Interface.OnTextChangedCallback;
 import com.codepan.utils.CodePanUtils;
+import com.codepan.utils.Debouncer;
+
+import java.util.TimerTask;
 
 public class CodePanTextField extends EditText {
 
@@ -26,6 +28,7 @@ public class CodePanTextField extends EditText {
 	private OnTextChangedCallback textChangedCallback;
 	private OnFocusChangeListener focusChangeListener;
 	private int textColorEnabled, textColorDisabled;
+	private Debouncer debouncer;
 	private Context context;
 
 	public CodePanTextField(Context context, AttributeSet attrs) {
@@ -140,15 +143,40 @@ public class CodePanTextField extends EditText {
 		this.textChangedCallback = textChangedCallback;
 	}
 
+	public void setOnTextChangedCallback(Debouncer debouncer, OnTextChangedCallback textChangedCallback) {
+		this.textChangedCallback = textChangedCallback;
+		this.debouncer = debouncer;
+	}
+
 	@Override
 	protected void onTextChanged(CharSequence cs, int start, int lengthBefore, int lengthAfter) {
 		super.onTextChanged(cs, start, lengthBefore, lengthAfter);
-		if(textChangedCallback != null) {
-			textChangedCallback.onTextChanged(this, cs.toString());
+		if (debouncer != null) {
+			debouncer.run(new TimerTask() {
+				@Override
+				public void run() {
+					if (textChangedCallback != null) {
+						textChangedCallback.onTextChanged(CodePanTextField.this, cs.toString());
+					}
+				}
+			});
+		}
+		else {
+			if (textChangedCallback != null) {
+				textChangedCallback.onTextChanged(this, cs.toString());
+			}
 		}
 	}
 
 	public void setHasCloseableSpan(boolean hasCloseableSpan) {
 		this.hasCloseableSpan = hasCloseableSpan;
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		if (debouncer != null) {
+			debouncer.cancel();
+		}
 	}
 }
