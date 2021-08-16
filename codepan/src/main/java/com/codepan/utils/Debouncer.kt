@@ -16,17 +16,17 @@ interface ViewNotifier {
 }
 
 class Debouncer<T>(
-    val runner: TaskRunner<T>,
     val notifier: ViewNotifier?,
+    val runner: TaskRunner<T>,
     val delay: Long
 ) {
     private var timer: Timer? = null
 
     constructor(runner: TaskRunner<T>) :
-        this(runner, null, 500L);
+        this(null, runner, 500L);
 
-    constructor(runner: TaskRunner<T>, notifier: ViewNotifier) :
-        this(runner, notifier, 500L);
+    constructor(notifier: ViewNotifier, runner: TaskRunner<T>) :
+        this(notifier, runner, 500L);
 
     fun run(data: T) {
         timer?.cancel()
