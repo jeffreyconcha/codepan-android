@@ -7,6 +7,7 @@
     <string name="calibri_bold">fonts/Calibri-Bold.otf</string>
     <string name="calibri_light">fonts/Calibri-Light.otf</string>
     <string name="calibri_regular">fonts/Calibri-Regular.otf</string>
+    <string name="calibri_italic">fonts/Calibri-Italic.otf</string>
     <string name="toast_font">@string/calibri_regular</string>
     <string name="of">of</string>
 </resources>
