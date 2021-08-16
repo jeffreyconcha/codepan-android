@@ -7,20 +7,27 @@ import android.os.Message
 import java.util.*
 
 
-interface DebouncerNotifier<T> {
-    fun onUpdateView()
-    fun onRunTask(data: T)
+interface TaskRunner<T> {
+    fun run(data: T)
 }
 
-class Debouncer<T>(val notifier: DebouncerNotifier<T>, val delay: Long) {
+interface ViewNotifier {
+    fun updateView();
+}
+
+class Debouncer<T>(val runner: TaskRunner<T>, val notifier: ViewNotifier?, val delay: Long) {
     private var timer: Timer? = null
 
-    constructor(notifier: DebouncerNotifier<T>) : this(notifier, 500L);
+    constructor(runner: TaskRunner<T>) :
+        this(runner, null, 500L);
+
+    constructor(runner: TaskRunner<T>, notifier: ViewNotifier) :
+        this(runner, notifier, 500L);
 
     fun run(data: T) {
         timer?.cancel()
         timer = Timer()
-        val handler = TaskHandler(data, notifier)
+        val handler = TaskHandler(data, runner, notifier)
         timer!!.schedule(handler, delay)
     }
 
@@ -29,16 +36,16 @@ class Debouncer<T>(val notifier: DebouncerNotifier<T>, val delay: Long) {
     }
 }
 
-private class TaskHandler<T>(val data: T, val notifier: DebouncerNotifier<T>) :
+private class TaskHandler<T>(val data: T, val runner: TaskRunner<T>, val notifier: ViewNotifier?) :
     TimerTask(), Callback {
     override fun run() {
         val handler = Handler(Looper.getMainLooper(), this)
         handler.obtainMessage().sendToTarget()
-        notifier.onRunTask(data)
+        runner.run(data)
     }
 
     override fun handleMessage(msg: Message): Boolean {
-        notifier.onUpdateView()
+        notifier?.updateView()
         return true
     }
 }
