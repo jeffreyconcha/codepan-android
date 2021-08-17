@@ -51,5 +51,4 @@ class ExpandableListView(context: Context, attrs: AttributeSet) :
     fun setScrollNotifier(notifier: ScrollNotifier) {
         this.notifier = notifier
     }
-
 }
