@@ -189,6 +189,11 @@ class DateTime(
         return timestamp != other.timestamp
     }
 
+    fun isZero(): Boolean {
+        val offset = getOffset().toLong()
+        return timestamp - offset == 0L;
+    }
+
     override fun toString(): String {
         val timeZone = "${timeZone.id} $offsetHours"
         return "DateTime(date = $date, time = $time, timeZone = $timeZone)"
