@@ -94,6 +94,7 @@ import com.codepan.BuildConfig;
 import com.codepan.R;
 import com.codepan.cache.TypefaceCache;
 import com.codepan.database.SQLiteAdapter;
+import com.codepan.location.Place;
 import com.codepan.model.GpsData;
 import com.codepan.model.MockData;
 import com.codepan.model.PhoneInfoData;
@@ -3087,45 +3088,15 @@ public class CodePanUtils {
 		return null;
 	}
 
-	public static String reverseGeocode(Context context, double latitude, double longitude) {
-		final StringBuilder builder = new StringBuilder();
+	public static Place reverseGeocode(Context context, double latitude, double longitude) {
 		if (Geocoder.isPresent()) {
 			Geocoder geocoder = new Geocoder(context, Locale.getDefault());
 			try {
 				List<Address> addressList = geocoder.getFromLocation(latitude, longitude, 1);
 				if (addressList != null && !addressList.isEmpty()) {
 					Address address = addressList.get(0);
-					final String streetNo = address.getSubThoroughfare();
-					final String streetName = address.getThoroughfare();
-					final String locality = address.getLocality();
-					final String adminArea = address.getAdminArea();
-					final String country = address.getCountryName();
-					if (streetNo != null) {
-						builder.append(streetNo);
-					}
-					if (streetName != null) {
-						if (!builder.toString().isEmpty()) {
-							builder.append(" ");
-						}
-						builder.append(streetName);
-					}
-					if (locality != null) {
-						if (!builder.toString().isEmpty()) {
-							builder.append(", ");
-						}
-						builder.append(locality);
-					}
-					if (adminArea != null) {
-						if (!builder.toString().isEmpty()) {
-							builder.append(", ");
-						}
-						builder.append(adminArea);
-					}
-					if (country != null) {
-						if (!builder.toString().isEmpty()) {
-							builder.append(", ");
-						}
-						builder.append(country);
+					if (address != null) {
+						return new Place(address);
 					}
 				}
 			}
@@ -3133,7 +3104,7 @@ public class CodePanUtils {
 				e.printStackTrace();
 			}
 		}
-		return builder.toString();
+		return null;
 	}
 
 	public static boolean containsLetters(String text) {
