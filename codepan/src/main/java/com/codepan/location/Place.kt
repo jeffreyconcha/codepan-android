@@ -5,19 +5,19 @@ import android.location.Address
 data class Place(
     val data: Address
 ) {
-    val city: String
+    val city: String?
         get() = data.locality
 
-    val area: String
+    val area: String?
         get() = data.adminArea
 
-    val zipCode: String
+    val zipCode: String?
         get() = data.postalCode
 
-    val country: String
+    val country: String?
         get() = data.countryName
 
-    val countryCode: String
+    val countryCode: String?
         get() = data.countryCode
 
     val address: String
