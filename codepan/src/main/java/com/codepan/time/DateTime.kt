@@ -80,7 +80,7 @@ class DateTime(
                     }
                     difference >= HOUR.milliseconds -> {
                         val h = (difference / HOUR.milliseconds).toInt()
-                        val type = if (h > 1) "hours" else "hours"
+                        val type = if (h > 1) "hours" else "hour"
                         return "$h $type ago"
                     }
                     difference >= MINUTE.milliseconds -> {
