@@ -191,7 +191,7 @@ class DateTime(
 
     fun isZero(): Boolean {
         val offset = getOffset().toLong()
-        return timestamp - offset == 0L
+        return timestamp - offset <= 0L
     }
 
     fun isNotZero(): Boolean {
