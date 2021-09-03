@@ -218,8 +218,6 @@ public class TimePickerView extends FrameLayout {
 		vHourTimePicker = view.findViewById(R.id.vHourTimePicker);
 		vMinuteTimePicker = view.findViewById(R.id.vMinuteTimePicker);
 		vTimeSpacingTimePicker = view.findViewById(R.id.vTimeSpacingTimePicker);
-		loadItems(TimeElementType.HOUR, rvHourTimePicker);
-		loadItems(TimeElementType.MINUTE, rvMinutesTimePicker);
 		period = context.getString(R.string.tp_am);
 		defaultTime = defaultTime != null ? defaultTime : CodePanUtils.getTime();
 		SimpleDateFormat sdf = new SimpleDateFormat(PATTERN_24HR, Locale.ENGLISH);
@@ -238,6 +236,8 @@ public class TimePickerView extends FrameLayout {
 		catch (ParseException e) {
 			e.printStackTrace();
 		}
+		loadItems(TimeElementType.HOUR, rvHourTimePicker);
+		loadItems(TimeElementType.MINUTE, rvMinutesTimePicker);
 		tvAMTimePicker.setOnClickListener(v -> {
 			period = context.getString(R.string.tp_am);
 			setDayPeriod(period);
@@ -349,7 +349,7 @@ public class TimePickerView extends FrameLayout {
 			}
 		});
 		view.setAdapter(adapter);
-		switch(type) {
+		switch (type) {
 			case HOUR: {
 				int initial = (Integer.MAX_VALUE / 2) - 5 + initialHour;
 				view.scrollToPosition(initial);

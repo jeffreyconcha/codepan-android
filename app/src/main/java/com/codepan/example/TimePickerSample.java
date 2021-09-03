@@ -20,7 +20,7 @@ public class TimePickerSample extends Fragment {
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.time_picker_sample_layout, container, false);
 		TimePickerView tpvTimePicker = view.findViewById(R.id.tpvTimePicker);
-		tpvTimePicker.setDefaultTime("12:00:00");
+		tpvTimePicker.setDefaultTime("03:00:00");
 		tpvTimePicker.setOnCancelCallback(() -> {
 			FragmentManager manager = getFragmentManager();
 			if (manager != null) {
