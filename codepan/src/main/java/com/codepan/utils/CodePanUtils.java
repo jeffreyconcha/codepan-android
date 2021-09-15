@@ -167,6 +167,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import androidx.annotation.RequiresPermission;
 import androidx.core.app.NotificationCompat;
+import androidx.core.graphics.BitmapCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -1740,8 +1741,12 @@ public class CodePanUtils {
 			.replace("৯", "9");
 	}
 
-	public static boolean saveBitmap(Context context, String folder,
-									 String fileName, Bitmap bitmap) {
+	public static boolean saveBitmap(
+		Context context,
+		String folder,
+		String fileName,
+		Bitmap bitmap
+	) {
 		boolean result = false;
 		String path = context.getDir(folder, Context.MODE_PRIVATE).getPath() + "/" + fileName;
 		FileOutputStream out = null;
@@ -1767,22 +1772,28 @@ public class CodePanUtils {
 		return result;
 	}
 
-	public static boolean saveBitmap(Context context, String folder,
-									 String fileName, Bitmap bitmap, long maxSize) {
+	public static boolean saveBitmap(
+		Context context,
+		String folder,
+		String fileName,
+		Bitmap bitmap,
+		long maxSize
+	) {
 		boolean result = false;
 		String path = context.getDir(folder, Context.MODE_PRIVATE).getPath() + "/" + fileName;
 		FileOutputStream out = null;
-		final int MINIMUM_QUALITY = 20;
 		try {
-			long size = maxSize;
 			int quality = 100;
+			long size = BitmapCompat.getAllocationByteCount(bitmap);
+			Console.debug("INITIAL SIZE: " + size);
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();
-			while (size >= maxSize && quality > MINIMUM_QUALITY) {
-				stream.flush();
+			while (size > maxSize) {
 				stream.reset();
 				quality -= 5;
 				bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
+				stream.flush();
 				size = stream.size();
+				Console.debug(fileName + " SIZE: " + size);
 			}
 			out = new FileOutputStream(path);
 			out.write(stream.toByteArray());
