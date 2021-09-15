@@ -1784,10 +1784,12 @@ public class CodePanUtils {
 		FileOutputStream out = null;
 		try {
 			int quality = 100;
-			long size = BitmapCompat.getAllocationByteCount(bitmap);
-			Console.debug("INITIAL SIZE: " + size);
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();
-			while (size > maxSize) {
+			bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
+			stream.flush();
+			int size = stream.size();
+			Console.debug("INITIAL SIZE: "+size);
+			while(size > maxSize) {
 				stream.reset();
 				quality -= 5;
 				bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
@@ -1799,17 +1801,17 @@ public class CodePanUtils {
 			out.write(stream.toByteArray());
 			out.flush();
 		}
-		catch (Exception e) {
+		catch(Exception e) {
 			e.printStackTrace();
 		}
 		finally {
 			try {
-				if (out != null) {
+				if(out != null) {
 					out.close();
 					result = true;
 				}
 			}
-			catch (IOException e) {
+			catch(IOException e) {
 				e.printStackTrace();
 			}
 		}
