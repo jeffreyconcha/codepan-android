@@ -3,6 +3,9 @@ package com.codepan.example;
 import android.os.Bundle;
 
 import com.codepan.test.Test;
+import com.codepan.utils.Console;
+import com.codepan.utils.Debouncer;
+import com.codepan.widget.CodePanTextField;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
@@ -56,5 +59,9 @@ public class MainActivity extends FragmentActivity {
 			transaction.addToBackStack(null);
 			transaction.commit();
 		});
+		CodePanTextField tf = findViewById(R.id.etNumeric);
+		tf.setOnTextChangedCallback(new Debouncer<>(data -> {
+			Console.log(data);
+		}));
 	}
 }

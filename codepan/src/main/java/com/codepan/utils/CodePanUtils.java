@@ -3265,4 +3265,26 @@ public class CodePanUtils {
 		}
 		return builder.toString();
 	}
+
+	public static String groupNumbers(String text) {
+		final StringBuilder builder = new StringBuilder();
+		String whole = text;
+		String decimal = "";
+		if (text.contains(".")) {
+			int index = text.indexOf(".");
+			decimal = text.substring(index);
+			whole = text.substring(0, index);
+		}
+		int count = 0;
+		for (int i = whole.length() - 1; i >= 0; i--) {
+			char c = whole.charAt(i);
+			builder.append(c);
+			count++;
+			if (count == 3 && i != 0) {
+				builder.append(",");
+				count = 0;
+			}
+		}
+		return builder.reverse().append(decimal).toString();
+	}
 }

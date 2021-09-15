@@ -34,6 +34,7 @@
         <attr name="backgroundEnabled" format="reference"/>
         <attr name="backgroundDisabled" format="reference"/>
         <attr name="enableStatePressed" format="boolean"/>
+        <attr name="enableDigitSeparator" format="boolean"/>
         <attr name="autoHideKeyboard" format="boolean"/>
         <attr name="autoClearFocus" format="boolean"/>
         <attr name="setScrollable" format="boolean"/>

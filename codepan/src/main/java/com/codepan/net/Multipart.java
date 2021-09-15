@@ -43,6 +43,8 @@ public class Multipart {
 			connection = https;
 		}
 		connection.setRequestProperty("Content-Type", type);
+		connection.setReadTimeout(120000);
+		connection.setConnectTimeout(120000);
 		connection.setUseCaches(false);
 		connection.setDoOutput(true);
 		connection.setDoInput(true);

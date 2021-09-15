@@ -18,7 +18,7 @@ interface ViewNotifier {
 class Debouncer<T>(
     val notifier: ViewNotifier?,
     val runner: TaskRunner<T>,
-    val delay: Long
+    val delay: Long = 500L
 ) {
     private var timer: Timer? = null
 

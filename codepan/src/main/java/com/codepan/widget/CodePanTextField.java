@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -18,9 +19,9 @@ import com.codepan.callback.Interface.OnTextChangedCallback;
 import com.codepan.utils.CodePanUtils;
 import com.codepan.utils.Debouncer;
 
-public class CodePanTextField extends EditText {
+public class CodePanTextField extends EditText implements TextWatcher {
 
-	private boolean autoHideKeyboard, autoClearFocus, hasCloseableSpan;
+	private boolean autoHideKeyboard, autoClearFocus, hasCloseableSpan, enableDigitSeparator;
 	private OnKeyboardDismissCallback keyboardDismissCallback;
 	private Drawable backgroundEnabled, backgroundDisabled;
 	private OnTextChangedCallback textChangedCallback;
@@ -33,18 +34,20 @@ public class CodePanTextField extends EditText {
 		super(context, attrs);
 		init(context, attrs);
 		this.context = context;
+		addTextChangedListener(this);
 	}
 
 	public void init(final Context context, AttributeSet attrs) {
 		TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.codePan);
 		autoHideKeyboard = ta.getBoolean(R.styleable.codePan_autoHideKeyboard, false);
+		enableDigitSeparator = ta.getBoolean(R.styleable.codePan_enableDigitSeparator, false);
 		autoClearFocus = ta.getBoolean(R.styleable.codePan_autoClearFocus, false);
 		textColorEnabled = ta.getColor(R.styleable.codePan_textColorEnabled, getCurrentTextColor());
 		textColorDisabled = ta.getColor(R.styleable.codePan_textColorDisabled, getCurrentTextColor());
 		backgroundEnabled = ta.getDrawable(R.styleable.codePan_backgroundEnabled);
 		backgroundDisabled = ta.getDrawable(R.styleable.codePan_backgroundDisabled);
 		String typeface = ta.getString(R.styleable.codePan_typeface);
-		if(typeface != null) {
+		if (typeface != null) {
 			setTypeface(TypefaceCache.get(getContext().getAssets(), typeface));
 		}
 		setTextColor(isEnabled() ? textColorEnabled : textColorDisabled);
@@ -146,14 +149,47 @@ public class CodePanTextField extends EditText {
 	}
 
 	@Override
-	protected void onTextChanged(CharSequence cs, int start, int lengthBefore, int lengthAfter) {
+	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+	}
+
+	@Override
+	public void onTextChanged(CharSequence cs, int start, int lengthBefore, int lengthAfter) {
 		super.onTextChanged(cs, start, lengthBefore, lengthAfter);
+	}
+
+	@Override
+	public void afterTextChanged(Editable s) {
+		if (enableDigitSeparator) {
+			String text = s.toString().replace(",", "");
+			if (CodePanUtils.isNumeric(text)) {
+				removeTextChangedListener(this);
+				String formatted = CodePanUtils.groupNumbers(text);
+				int selection = getSelectionEnd();
+				if (formatted.length() > s.length()) {
+					selection += 1;
+				}
+				setText(formatted);
+				setSelection(selection);
+				addTextChangedListener(this);
+				triggerNotifier(text);
+				return;
+			}
+		}
+		triggerNotifier(s.toString());
+	}
+
+	public String getNumericText() {
+		return getText().toString().trim().replace(",", "");
+	}
+
+	private void triggerNotifier(String text) {
 		if (debouncer != null) {
-			debouncer.run(cs.toString());
+			debouncer.run(text);
 		}
 		else {
 			if (textChangedCallback != null) {
-				textChangedCallback.onTextChanged(this, cs.toString());
+				textChangedCallback.onTextChanged(this, text);
 			}
 		}
 	}
