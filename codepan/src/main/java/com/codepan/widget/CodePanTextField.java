@@ -125,17 +125,15 @@ public class CodePanTextField extends EditText implements TextWatcher {
 
 	@Override
 	public boolean onKeyPreIme(int keyCode, KeyEvent event) {
-		switch(event.getKeyCode()) {
-			case KeyEvent.KEYCODE_BACK:
-				if(event.getAction() == KeyEvent.ACTION_UP) {
-					if(keyboardDismissCallback != null) {
-						keyboardDismissCallback.onKeyboardDismiss();
-					}
-					if(autoClearFocus) {
-						clearFocus();
-					}
+		if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+			if (event.getAction() == KeyEvent.ACTION_UP) {
+				if (keyboardDismissCallback != null) {
+					keyboardDismissCallback.onKeyboardDismiss();
 				}
-				break;
+				if (autoClearFocus) {
+					clearFocus();
+				}
+			}
 		}
 		return super.dispatchKeyEvent(event);
 	}
@@ -165,12 +163,17 @@ public class CodePanTextField extends EditText implements TextWatcher {
 			if (CodePanUtils.isNumeric(text)) {
 				removeTextChangedListener(this);
 				String formatted = CodePanUtils.groupNumbers(text);
-				int selection = getSelectionEnd();
-				if (formatted.length() > s.length()) {
-					selection += 1;
+				int cursorIndex = getSelectionEnd();
+				if (cursorIndex > formatted.length()) {
+					cursorIndex -= 1;
+				}
+				else {
+					if (formatted.length() > s.length()) {
+						cursorIndex += 1;
+					}
 				}
 				setText(formatted);
-				setSelection(selection);
+				setSelection(cursorIndex);
 				addTextChangedListener(this);
 				triggerNotifier(text);
 				return;
