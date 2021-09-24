@@ -20,6 +20,10 @@ import androidx.annotation.NonNull;
 public class PDFViewerFragment extends CPFragment implements OnPageChangeListener,
 	OnLoadCompleteListener {
 
+	public void setDeleteConfirmationCallback(OnConfirmDeleteCallback callback) {
+		this.callback = callback;
+	}
+
 	public interface OnConfirmDeleteCallback {
 		void onConfirmDelete(PDFViewerFragment viewer);
 	}
