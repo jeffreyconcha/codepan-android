@@ -20,11 +20,11 @@ import androidx.annotation.NonNull;
 public class PDFViewerFragment extends CPFragment implements OnPageChangeListener,
 	OnLoadCompleteListener {
 
-	public interface OnDeleteFileCallback {
-		void deleteFile(File file);
+	public interface OnConfirmDeleteCallback {
+		void onConfirmDelete(PDFViewerFragment viewer);
 	}
 
-	private OnDeleteFileCallback deleteFileCallback;
+	private OnConfirmDeleteCallback callback;
 	private PDFView pdfViewer;
 	private String path;
 	private File file;
@@ -43,8 +43,8 @@ public class PDFViewerFragment extends CPFragment implements OnPageChangeListene
 		CodePanButton btnClosePDFViewer = view.findViewById(R.id.btnClosePDFViewer);
 		btnClosePDFViewer.setOnClickListener(v -> onBackPressed());
 		btnClosePDFViewer.setOnLongClickListener(v -> {
-			if (deleteFileCallback != null) {
-				deleteFileCallback.deleteFile(file);
+			if (callback != null) {
+				callback.onConfirmDelete(this);
 			}
 			return true;
 		});
@@ -59,6 +59,14 @@ public class PDFViewerFragment extends CPFragment implements OnPageChangeListene
 			config.load();
 		}
 		return view;
+	}
+
+	public boolean delete() {
+		manager.popBackStack();
+		if (file != null) {
+			return file.delete();
+		}
+		return false;
 	}
 
 	public void setPath(String path) {
