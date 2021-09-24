@@ -3,7 +3,6 @@ package com.codepan.graphics;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import com.codepan.R;
@@ -19,8 +18,13 @@ import java.io.File;
 import androidx.annotation.NonNull;
 
 public class PDFViewerFragment extends CPFragment implements OnPageChangeListener,
-		OnLoadCompleteListener {
+	OnLoadCompleteListener {
 
+	public interface OnDeleteFileCallback {
+		void deleteFile(File file);
+	}
+
+	private OnDeleteFileCallback deleteFileCallback;
 	private PDFView pdfViewer;
 	private String path;
 	private File file;
@@ -28,7 +32,7 @@ public class PDFViewerFragment extends CPFragment implements OnPageChangeListene
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if(path != null) {
+		if (path != null) {
 			file = new File(path);
 		}
 	}
@@ -37,9 +41,15 @@ public class PDFViewerFragment extends CPFragment implements OnPageChangeListene
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.pdf_viewer_layout, container, false);
 		CodePanButton btnClosePDFViewer = view.findViewById(R.id.btnClosePDFViewer);
-		btnClosePDFViewer.setOnClickListener(view1 -> onBackPressed());
+		btnClosePDFViewer.setOnClickListener(v -> onBackPressed());
+		btnClosePDFViewer.setOnLongClickListener(v -> {
+			if (deleteFileCallback != null) {
+				deleteFileCallback.deleteFile(file);
+			}
+			return true;
+		});
 		pdfViewer = view.findViewById(R.id.pdfViewer);
-		if(file != null && file.exists()) {
+		if (file != null && file.exists()) {
 			Configurator config = pdfViewer.fromFile(file);
 			config.defaultPage(0);
 			config.enableSwipe(true);
