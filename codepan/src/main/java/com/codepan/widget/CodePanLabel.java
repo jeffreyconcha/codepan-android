@@ -82,6 +82,10 @@ public class CodePanLabel extends TextView {
 			SpannableStringBuilder ssb = CodePanUtils.customizeText(list, name);
 			this.setText(ssb);
 		}
+		else {
+			String text = this.getText().toString().replace("*", "");
+			this.setText(text);
+		}
 	}
 
 	public void setRequiredText(String text) {
