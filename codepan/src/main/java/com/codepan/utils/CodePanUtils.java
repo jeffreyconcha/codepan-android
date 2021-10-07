@@ -2640,6 +2640,7 @@ public class CodePanUtils {
 				int mimeIndex = cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE);
 				int sizeIndex = cursor.getColumnIndex(MediaStore.MediaColumns.SIZE);
 				SystemMediaData media = new SystemMediaData();
+				media.id = cursor.getLong(idIndex);
 				media.uri = ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, cursor.getLong(idIndex));
 				if (!isDeprecated) {
 					media.path = cursor.getString(pathIndex);
