@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -148,6 +149,11 @@ public class Do {
 			}
 			catch (SSLProtocolException spe) {
 				spe.printStackTrace();
+				return getHttpsResponse(host, params,
+					authorization, timeOut, method);
+			}
+			catch(EOFException eof) {
+				eof.printStackTrace();
 				return getHttpsResponse(host, params,
 					authorization, timeOut, method);
 			}
