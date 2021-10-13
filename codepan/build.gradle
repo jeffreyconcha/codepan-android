@@ -55,7 +55,7 @@ dependencies {
     api fileTree(include: ['*.jar'], dir: 'libs')
     api 'androidx.legacy:legacy-support-v4:1.0.0'
     api 'net.zetetic:android-database-sqlcipher:3.5.6'
-    api 'com.github.barteksc:android-pdf-viewer:2.0.3'
+    api 'com.github.barteksc:android-pdf-viewer:2.8.1'
     api 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     api 'com.google.android.gms:play-services-location:17.1.0'
     api 'com.google.android.gms:play-services-maps:17.0.0'
