@@ -11,6 +11,7 @@ import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteDatabase.CursorFactory;
 import net.sqlcipher.database.SQLiteDatabaseHook;
+import net.sqlcipher.database.SQLiteException;
 import net.sqlcipher.database.SQLiteOpenHelper;
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -50,14 +51,35 @@ public class SQLiteAdapter implements SQLiteDatabaseHook {
 		}
 		try {
 			sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(
-				databaseFile, password, null, this);
+				databaseFile, password, null);
 		}
-		catch(Exception e) {
-			Log.e(TAG, e.getMessage());
-			sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(databaseFile, old, null);
-			sqLiteDatabase.changePassword(password);
+		catch(SQLiteException e) {
+			e.printStackTrace();
+			try {
+				Console.log("Updating password...");
+				sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(
+					databaseFile, old, null);
+				sqLiteDatabase.changePassword(password);
+			}
+			catch(SQLiteException ex) {
+				ex.printStackTrace();
+				Console.log("Migrating database...");
+				sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(
+					databaseFile, password, null, this);
+			}
 		}
 		sqLiteDatabase.close();
+	}
+
+	@Override
+	public void preKey(SQLiteDatabase database) {
+	}
+
+	@Override
+	public void postKey(SQLiteDatabase database) {
+		database.rawExecSQL("PRAGMA key = '" + password + "'");
+		database.rawExecSQL("PRAGMA cipher_migrate");
+		Console.log("Database has been migrated!!!");
 	}
 
 	public SQLiteAdapter openConnection() throws android.database.SQLException {
@@ -337,17 +359,6 @@ public class SQLiteAdapter implements SQLiteDatabaseHook {
 			result = unencryptedFile.delete();
 		}
 		return result;
-	}
-
-	@Override
-	public void preKey(SQLiteDatabase database) {
-	}
-
-	@Override
-	public void postKey(SQLiteDatabase database) {
-		database.rawExecSQL("PRAGMA key = '" + password + "'");
-		database.rawExecSQL("PRAGMA cipher_migrate");
-		Console.log("Database has been migrated!!!");
 	}
 
 	private class SQLiteHelper extends SQLiteOpenHelper {
