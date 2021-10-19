@@ -9,6 +9,7 @@ import com.codepan.database.Callback.OnUpgradeDatabaseCallback;
 import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteDatabase.CursorFactory;
+import net.sqlcipher.database.SQLiteDatabaseHook;
 import net.sqlcipher.database.SQLiteOpenHelper;
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -16,7 +17,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SQLiteAdapter {
+public class SQLiteAdapter implements SQLiteDatabaseHook {
 
 	private OnUpgradeDatabaseCallback upgradeDatabaseCallback;
 	private OnCreateDatabaseCallback createDatabaseCallback;
@@ -47,7 +48,8 @@ public class SQLiteAdapter {
 			dir.mkdir();
 		}
 		try {
-			sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(databaseFile, password, null);
+			sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(
+				databaseFile, password, null, this);
 		}
 		catch(Exception e) {
 			Log.e(TAG, e.getMessage());
@@ -334,6 +336,16 @@ public class SQLiteAdapter {
 			result = unencryptedFile.delete();
 		}
 		return result;
+	}
+
+	@Override
+	public void preKey(SQLiteDatabase database) {
+	}
+
+	@Override
+	public void postKey(SQLiteDatabase database) {
+		database.rawExecSQL("PRAGMA key = '" + password + "'");
+		database.rawExecSQL("PRAGMA cipher_migrate");
 	}
 
 	private class SQLiteHelper extends SQLiteOpenHelper {
