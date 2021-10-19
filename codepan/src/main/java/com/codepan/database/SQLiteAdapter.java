@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.codepan.database.Callback.OnCreateDatabaseCallback;
 import com.codepan.database.Callback.OnUpgradeDatabaseCallback;
+import com.codepan.utils.Console;
 
 import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
@@ -44,7 +45,7 @@ public class SQLiteAdapter implements SQLiteDatabaseHook {
 		SQLiteDatabase.loadLibs(context);
 		File databaseFile = context.getDatabasePath(database);
 		File dir = databaseFile.getParentFile();
-		if(!dir.exists()) {
+		if(dir != null && !dir.exists()) {
 			dir.mkdir();
 		}
 		try {
@@ -346,6 +347,7 @@ public class SQLiteAdapter implements SQLiteDatabaseHook {
 	public void postKey(SQLiteDatabase database) {
 		database.rawExecSQL("PRAGMA key = '" + password + "'");
 		database.rawExecSQL("PRAGMA cipher_migrate");
+		Console.log("Database has been migrated!!!");
 	}
 
 	private class SQLiteHelper extends SQLiteOpenHelper {
