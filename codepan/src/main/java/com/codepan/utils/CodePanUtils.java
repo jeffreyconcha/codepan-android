@@ -2745,15 +2745,41 @@ public class CodePanUtils {
 		return null;
 	}
 
-	public static String text(Context context, int resId, String... placeholders) {
+	public static String text(
+		Context context,
+		int resId,
+		String... placeholders
+	) {
 		String text = context.getString(resId);
+		return replacePlaceholder(text, placeholders);
+	}
+	public static String text(
+		Context context,
+		int resId,
+		boolean isSpannable,
+		boolean withQuotes,
+		String... placeholders
+	) {
+		String text = context.getString(resId);
+		if(isSpannable) {
+			String[] spannablePlaceholders = new String[placeholders.length];
+			for(int i = 0; i < placeholders.length; i++) {
+				if(withQuotes) {
+					spannablePlaceholders[i] = "$\"" + placeholders[i] + "\"$";
+				}
+				else {
+					spannablePlaceholders[i] = "$" + placeholders[i] + "$";
+				}
+			}
+			return replacePlaceholder(text, spannablePlaceholders);
+		}
 		return replacePlaceholder(text, placeholders);
 	}
 
 	public static String replacePlaceholder(String text, String... placeholders) {
 		final String key = "$";
 		if (text != null && text.contains(" ")) {
-			String result = "";
+			StringBuilder result = new StringBuilder();
 			String[] array = text.split(" ");
 			int index = 0;
 			int size = array.length;
@@ -2769,9 +2795,9 @@ public class CodePanUtils {
 					index++;
 				}
 				String w = i < size - 1 ? word + " " : word;
-				result += w;
+				result.append(w);
 			}
-			return result;
+			return result.toString();
 		}
 		return text;
 	}

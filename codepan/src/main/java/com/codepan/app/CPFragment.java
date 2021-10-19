@@ -127,4 +127,8 @@ public class CPFragment extends Fragment implements OnBackPressedCallback, OnFra
 	protected String text(int resId, String... placeholders) {
 		return CodePanUtils.text(activity, resId, placeholders);
 	}
+
+	protected String text(int resId, boolean isSpannable, boolean withQuotes, String... placeholders) {
+		return CodePanUtils.text(activity, resId, isSpannable, withQuotes, placeholders);
+	}
 }
