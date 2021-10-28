@@ -78,8 +78,18 @@ public class SQLiteAdapter implements SQLiteDatabaseHook {
 	@Override
 	public void postKey(SQLiteDatabase database) {
 		database.rawExecSQL("PRAGMA key = '" + password + "'");
-		database.rawExecSQL("PRAGMA cipher_migrate");
-		Console.log("Database has been migrated!!!");
+		Cursor cursor = database.rawQuery("PRAGMA cipher_migrate", null);
+		if(cursor.moveToNext()) {
+			int result = cursor.getInt(0);
+			if(result == 0) {
+				Console.log("Database has been migrated.");
+			}
+			else {
+				Console.log("Failed to migrate database");
+				Console.log("Setting compatibility to version 3...");
+				database.rawExecSQL("PRAGMA cipher_compatibility = 3");
+			}
+		}
 	}
 
 	public SQLiteAdapter openConnection() throws android.database.SQLException {
