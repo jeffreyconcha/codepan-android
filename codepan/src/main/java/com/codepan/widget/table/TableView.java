@@ -26,6 +26,7 @@ import com.codepan.widget.ScrollListenerView;
 import com.codepan.widget.table.Callback.OnTableAddRowCallback;
 import com.codepan.widget.table.Callback.OnTableCellClickCallback;
 import com.codepan.widget.table.Callback.OnTableCellCreatedCallback;
+import com.codepan.widget.table.Callback.OnTableCellUpdatedCallback;
 import com.codepan.widget.table.Callback.OnTableColumnClickCallback;
 import com.codepan.widget.table.Callback.OnTableRowClickCallback;
 import com.codepan.widget.table.model.CellData;
@@ -36,6 +37,8 @@ import com.codepan.widget.table.model.RowData;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
+import androidx.annotation.NonNull;
 
 public class TableView extends FrameLayout {
 
@@ -521,33 +524,36 @@ public class TableView extends FrameLayout {
 	/**
 	 * @param dataList Data set of cells in columns. Each cell must have a rowID
 	 * @param mci      Column index to be updated.
+	 * @param callback Callback to be called when the cell is ready for update.
 	 */
-	public void updateCellsInColumn(ArrayList<CellData> dataList, int mci) {
+	public void updateCellsInColumn(
+		int mci,
+		@NonNull ArrayList<CellData> dataList,
+		@NonNull OnTableCellUpdatedCallback callback
+	) {
 		final int size = columnList.size();
-		if (mci < size) {
+		if(mci < size) {
 			final ArrayList<CellData> cellList = new ArrayList<>(dataList);
-			for (int ri = 0; ri < rowList.size(); ri++) {
-				final RowData row = rowList.get(ri);
-				if (row != null && !row.isEmpty()) {
+			for(int mri = 0; mri < rowList.size(); mri++) {
+				final RowData row = rowList.get(mri);
+				if(row != null && !row.isEmpty()) {
 					final CellData cell = getCell(row.ID, cellList);
-					if (cell != null) {
+					if(cell != null) {
 						final int index = cellList.indexOf(cell);
 						row.set(mci, cell);
 						cellList.remove(index);
 					}
 				}
 			}
-			if (mci != 0 || !freezeFirstColumn) {
-				for (int ri = 0; ri < llContentTable.getChildCount(); ri++) {
+			if(mci != 0 || !freezeFirstColumn) {
+				for(int ri = 0; ri < llContentTable.getChildCount(); ri++) {
 					LinearLayout llRow = (LinearLayout) llContentTable.getChildAt(ri);
 					int mri = (int) llRow.getTag();
-					for (int ci = 0; ci < llRow.getChildCount(); ci++) {
+					for(int ci = 0; ci < llRow.getChildCount(); ci++) {
 						View child = llRow.getChildAt(ci);
 						PositionData position = (PositionData) child.getTag();
-						if (position != null && position.mci == mci) {
-							CellData cell = rowList.get(mri).get(mci);
-							TextView tvTableTextCell = child.findViewById(R.id.tvTableTextCell);
-							tvTableTextCell.setText(cell.name);
+						if(position != null && position.mci == mci) {
+							callback.onTableCellUpdated(child, ri, mri, mci);
 							break;
 						}
 					}
@@ -555,12 +561,10 @@ public class TableView extends FrameLayout {
 			}
 			else {
 				int count = llLeftTable.getChildCount();
-				for (int i = 0; i < count; i++) {
-					View child = llLeftTable.getChildAt(i);
+				for(int ri = 0; ri < count; ri++) {
+					View child = llLeftTable.getChildAt(ri);
 					int mri = (int) child.getTag();
-					CellData cell = rowList.get(mri).get(0);
-					TextView tvTableTextCell = child.findViewById(R.id.tvTableTextCell);
-					tvTableTextCell.setText(cell.name);
+					callback.onTableCellUpdated(child, ri, mri, 0);
 				}
 			}
 		}

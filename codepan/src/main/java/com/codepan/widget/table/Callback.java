@@ -24,6 +24,16 @@ public class Callback {
 		void onTableCellCreated(View view, int ri, int mri, int mci);
 	}
 
+	public interface OnTableCellUpdatedCallback {
+		/**
+		 * @param view The parent view of the cell
+		 * @param ri   The row index of the current page.
+		 * @param mri  The map row index or x.
+		 * @param mci  The map column index or y.
+		 */
+		void onTableCellUpdated(View view, int ri, int mri, int mci);
+	}
+
 	public interface OnTableCellClearCallback {
 		void onTableCellClear();
 	}

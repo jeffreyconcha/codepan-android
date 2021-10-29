@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.codepan.widget.CodePanLabel;
 import com.codepan.widget.table.TableView;
 import com.codepan.widget.table.model.CellData;
 import com.codepan.widget.table.model.ColumnData;
@@ -51,7 +52,11 @@ public class TableSample extends Fragment {
 		view.findViewById(R.id.btnTable).setOnClickListener(v -> {
 			ArrayList<CellData> dataList = new ArrayList<>();
 			dataList.add(new CellData("6", "Replaced 6"));
-			tvTable.updateCellsInColumn(dataList, 3);
+			tvTable.updateCellsInColumn(3, dataList, (cell, ri, mri, mci) -> {
+				CellData data = rowList.get(mri).get(mci);
+				CodePanLabel tvTableTextCell = cell.findViewById(R.id.tvTableTextCell);
+				tvTableTextCell.setText(data.name);
+			});
 		});
 		return view;
 	}
