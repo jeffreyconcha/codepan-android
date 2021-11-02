@@ -1330,31 +1330,48 @@ public class CodePanUtils {
 	public static boolean alarmExists(Context context, Class<?> receiver, String action, int requestCode) {
 		Intent intent = new Intent(context, receiver);
 		intent.setAction(action);
-		PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE);
+		int flags = PendingIntent.FLAG_NO_CREATE;
+		if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+			flags = PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE;
+		}
+		PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, flags);
 		return pi != null;
 	}
 
 	public static boolean alarmExists(Context context, Intent intent, int requestCode) {
-		PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE);
+		int flags = PendingIntent.FLAG_NO_CREATE;
+		if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+			flags = PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE;
+		}
+		PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, flags);
 		return pi != null;
 	}
 
 	public static void cancelAlarm(Context context, Class<?> receiver, String action, int requestCode) {
 		Intent intent = new Intent(context, receiver);
 		intent.setAction(action);
-		PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, 0);
-		if (pi != null) {
+		int flags = 0;
+		if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+			flags = PendingIntent.FLAG_IMMUTABLE;
+		}
+		PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, flags);
+		if(pi != null) {
 			AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-			if (manager != null) {
+			if(manager != null) {
 				manager.cancel(pi);
 			}
 			pi.cancel();
 		}
+
 	}
 
 	public static void cancelAlarm(Context context, Class<?> receiver, int requestCode) {
 		Intent intent = new Intent(context, receiver);
-		PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, 0);
+		int flags = 0;
+		if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+			flags = PendingIntent.FLAG_IMMUTABLE;
+		}
+		PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, flags);
 		if (pi != null) {
 			AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 			if (manager != null) {
@@ -1383,8 +1400,11 @@ public class CodePanUtils {
 
 	public static void setAlarm(Context context, Intent intent, int minutes, int requestCode) {
 		if (minutes > 0) {
-			PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
+			int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+			if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+				flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
+			}
+			PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, flags);
 			int seconds = minutes * 60;
 			long trigger = System.currentTimeMillis() + (seconds * 1000L);
 			setAlarm(context, pi, trigger, AlarmManager.RTC_WAKEUP);
@@ -1395,8 +1415,11 @@ public class CodePanUtils {
 								int requestCode) {
 		if (minutes > 0) {
 			Intent intent = new Intent(context, receiver);
-			PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
+			int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+			if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+				flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
+			}
+			PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, flags);
 			int seconds = minutes * 60;
 			long trigger = System.currentTimeMillis() + (seconds * 1000L);
 			setAlarm(context, pi, trigger, AlarmManager.RTC_WAKEUP);
@@ -1404,8 +1427,11 @@ public class CodePanUtils {
 	}
 
 	public static void setAlarm(Context context, Intent intent, long schedule, int requestCode) {
-		PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-			PendingIntent.FLAG_UPDATE_CURRENT);
+		int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+		if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+			flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
+		}
+		PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, flags);
 		setAlarm(context, pi, schedule, AlarmManager.RTC_WAKEUP);
 	}
 
@@ -1529,8 +1555,12 @@ public class CodePanUtils {
 		Uri url = Uri.parse(uri);
 		builder.setSound(url);
 		builder.setContentText(message);
+		int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+		if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+			flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
+		}
 		PendingIntent pi = PendingIntent.getActivity(context, requestCode,
-			intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			intent, flags);
 		builder.setContentIntent(pi);
 		setNotification(context, channelID, channelName, notificationID, builder);
 	}
