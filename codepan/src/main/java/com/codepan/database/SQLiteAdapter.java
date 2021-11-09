@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.codepan.database.Callback.OnCreateDatabaseCallback;
 import com.codepan.database.Callback.OnUpgradeDatabaseCallback;
+import com.codepan.storage.SharedPreferencesManager;
 import com.codepan.utils.Console;
 
 import net.sqlcipher.Cursor;
@@ -20,34 +21,39 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SQLiteAdapter implements SQLiteDatabaseHook {
+	private final String MIGRATION_ATTEMPT = "migration";
+	private final String ERROR_TAG = "DB-Error";
+	private final int MAX_MIGRATION_ATTEMPT = 2;
 
 	private OnUpgradeDatabaseCallback upgradeDatabaseCallback;
 	private OnCreateDatabaseCallback createDatabaseCallback;
 	private SQLiteDatabase sqLiteDatabase;
-	private final String TAG = "DB-Error";
+	private SharedPreferencesManager spm;
 	private String temp = "temp";
-	private String database;
+	private String name;
 	private String password;
 	private Context context;
+	private File directory;
 	private int version;
 	private String old;
 
-	public SQLiteAdapter(Context context, String database, String password, String old, int version) {
+	public SQLiteAdapter(Context context, String name, String password, String old, int version) {
 		this.context = context;
-		this.database = database;
+		this.name = name;
 		this.password = password;
 		this.version = version;
-		this.temp += database;
+		this.temp += name;
 		this.old = old;
 		this.init();
 	}
 
 	private void init() {
 		SQLiteDatabase.loadLibs(context);
-		File databaseFile = context.getDatabasePath(database);
-		File dir = databaseFile.getParentFile();
-		if(dir != null && !dir.exists()) {
-			dir.mkdir();
+		File databaseFile = context.getDatabasePath(name);
+		this.directory = databaseFile.getParentFile();
+		this.spm = new SharedPreferencesManager(context);
+		if(directory != null && !directory.exists()) {
+			directory.mkdir();
 		}
 		try {
 			sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(
@@ -85,16 +91,30 @@ public class SQLiteAdapter implements SQLiteDatabaseHook {
 				Console.log("Database has been migrated.");
 			}
 			else {
-				Console.log("Failed to migrate database");
-				Console.log("Setting compatibility to version 3...");
-				database.rawExecSQL("PRAGMA cipher_compatibility = 3");
+				Console.log("Deleting temporary migration files...");
+				File migrated = new File(directory, name + "-migrated");
+				if(migrated.exists()) {
+					migrated.delete();
+					File journal = new File(directory, name + "-migrated-journal");
+					if(journal.exists()) {
+						journal.delete();
+					}
+				}
+				final int attempt = spm.getValue(MIGRATION_ATTEMPT, 0);
+				if(attempt >= MAX_MIGRATION_ATTEMPT) {
+					Console.log("Setting compatibility to version 3...");
+					database.rawExecSQL("PRAGMA cipher_compatibility = 3");
+				}
+				else {
+					spm.setValue(MIGRATION_ATTEMPT, attempt + 1);
+				}
 			}
 		}
 	}
 
 	public SQLiteAdapter openConnection() throws android.database.SQLException {
 		if(!sqLiteDatabase.isOpen()) {
-			SQLiteHelper helper = new SQLiteHelper(context, database, null, version);
+			SQLiteHelper helper = new SQLiteHelper(context, name, null, version);
 			sqLiteDatabase = helper.getWritableDatabase(password);
 		}
 		return this;
@@ -123,7 +143,7 @@ public class SQLiteAdapter implements SQLiteDatabaseHook {
 			return true;
 		}
 		catch(Exception e) {
-			Log.e(TAG, e.getMessage() + "\r sql:" + query);
+			Log.e(ERROR_TAG, e.getMessage() + "\r sql:" + query);
 			return false;
 		}
 	}
@@ -418,6 +438,6 @@ public class SQLiteAdapter implements SQLiteDatabaseHook {
 	}
 
 	public String getName() {
-		return this.database;
+		return this.name;
 	}
 }
