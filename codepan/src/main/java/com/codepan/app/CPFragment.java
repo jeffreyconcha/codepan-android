@@ -1,8 +1,10 @@
 package com.codepan.app;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 
+import com.codepan.app.CPFragmentActivity.KeyListener;
 import com.codepan.callback.Interface.OnBackPressedCallback;
 import com.codepan.callback.Interface.OnFragmentCallback;
 import com.codepan.utils.CodePanUtils;
@@ -11,7 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-public class CPFragment extends Fragment implements OnBackPressedCallback, OnFragmentCallback {
+public class CPFragment extends Fragment implements OnBackPressedCallback,
+	OnFragmentCallback, KeyListener {
 
 	private OnFragmentCallback fragmentCallback;
 	private boolean isDisabled, hasBackPressed;
@@ -24,7 +27,9 @@ public class CPFragment extends Fragment implements OnBackPressedCallback, OnFra
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		activity = (CPFragmentActivity) getActivity();
-		manager = activity.getSupportFragmentManager();
+		if(activity != null) {
+			manager = activity.getSupportFragmentManager();
+		}
 	}
 
 	@Override
@@ -81,6 +86,9 @@ public class CPFragment extends Fragment implements OnBackPressedCallback, OnFra
 		if(fragmentCallback != null) {
 			fragmentCallback.onFragment(true, hasBackPressed);
 		}
+		if(activity != null) {
+			activity.setKeyListener(this);
+		}
 	}
 
 	@Override
@@ -130,5 +138,17 @@ public class CPFragment extends Fragment implements OnBackPressedCallback, OnFra
 
 	protected String text(int resId, boolean isSpannable, boolean withQuotes, String... placeholders) {
 		return CodePanUtils.text(activity, resId, isSpannable, withQuotes, placeholders);
+	}
+
+	@Override
+	public void onKeyUp(int code, KeyEvent event) {
+	}
+
+	@Override
+	public void onKeyDown(int code, KeyEvent event) {
+	}
+
+	@Override
+	public void onKeyLongPress(int code, KeyEvent event) {
 	}
 }

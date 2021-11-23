@@ -2,6 +2,7 @@ package com.codepan.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 
 import com.codepan.callback.Interface.OnBackPressedCallback;
 import com.codepan.callback.Interface.OnInitializeCallback;
@@ -18,12 +19,25 @@ import androidx.fragment.app.FragmentTransaction;
 
 public abstract class CPFragmentActivity extends FragmentActivity implements OnInitializeCallback {
 
+	public void setKeyListener(KeyListener keyListener) {
+		this.keyListener = keyListener;
+	}
+
+	interface KeyListener {
+		void onKeyUp(int code, KeyEvent event);
+
+		void onKeyDown(int code, KeyEvent event);
+
+		void onKeyLongPress(int code, KeyEvent event);
+	}
+
 	private OnRequestPermissionsResultCallback permissionsResultCallback;
 	protected OnBackPressedCallback backPressedCallback;
 	protected FragmentTransaction transaction;
 	protected FragmentManager manager;
 	private PermissionHandler handler;
 	private boolean isOverrideLocked;
+	private KeyListener keyListener;
 	private boolean isInitialized;
 	private boolean isOverridden;
 	protected SQLiteAdapter db;
@@ -118,5 +132,29 @@ public abstract class CPFragmentActivity extends FragmentActivity implements OnI
 
 	public boolean notInBackStack(String tag) {
 		return !inBackStack(tag);
+	}
+
+	@Override
+	public boolean onKeyUp(int code, KeyEvent event) {
+		if(keyListener != null) {
+			keyListener.onKeyUp(code, event);
+		}
+		return super.onKeyUp(code, event);
+	}
+
+	@Override
+	public boolean onKeyDown(int code, KeyEvent event) {
+		if(keyListener != null) {
+			keyListener.onKeyDown(code, event);
+		}
+		return super.onKeyDown(code, event);
+	}
+
+	@Override
+	public boolean onKeyLongPress(int code, KeyEvent event) {
+		if(keyListener != null) {
+			keyListener.onKeyLongPress(code, event);
+		}
+		return super.onKeyLongPress(code, event);
 	}
 }
