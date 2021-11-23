@@ -24,11 +24,11 @@ public abstract class CPFragmentActivity extends FragmentActivity implements OnI
 	}
 
 	interface KeyListener {
-		void onKeyUp(int code, KeyEvent event);
+		boolean onKeyUp(int code, KeyEvent event);
 
-		void onKeyDown(int code, KeyEvent event);
+		boolean onKeyDown(int code, KeyEvent event);
 
-		void onKeyLongPress(int code, KeyEvent event);
+		boolean onKeyLongPress(int code, KeyEvent event);
 	}
 
 	private OnRequestPermissionsResultCallback permissionsResultCallback;
@@ -137,7 +137,7 @@ public abstract class CPFragmentActivity extends FragmentActivity implements OnI
 	@Override
 	public boolean onKeyUp(int code, KeyEvent event) {
 		if(keyListener != null) {
-			keyListener.onKeyUp(code, event);
+			return keyListener.onKeyUp(code, event);
 		}
 		return super.onKeyUp(code, event);
 	}
@@ -145,7 +145,7 @@ public abstract class CPFragmentActivity extends FragmentActivity implements OnI
 	@Override
 	public boolean onKeyDown(int code, KeyEvent event) {
 		if(keyListener != null) {
-			keyListener.onKeyDown(code, event);
+			return keyListener.onKeyDown(code, event);
 		}
 		return super.onKeyDown(code, event);
 	}
@@ -153,7 +153,7 @@ public abstract class CPFragmentActivity extends FragmentActivity implements OnI
 	@Override
 	public boolean onKeyLongPress(int code, KeyEvent event) {
 		if(keyListener != null) {
-			keyListener.onKeyLongPress(code, event);
+			return keyListener.onKeyLongPress(code, event);
 		}
 		return super.onKeyLongPress(code, event);
 	}

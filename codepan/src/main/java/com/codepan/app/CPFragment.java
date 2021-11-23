@@ -141,14 +141,17 @@ public class CPFragment extends Fragment implements OnBackPressedCallback,
 	}
 
 	@Override
-	public void onKeyUp(int code, KeyEvent event) {
+	public boolean onKeyUp(int code, KeyEvent event) {
+		return false;
 	}
 
 	@Override
-	public void onKeyDown(int code, KeyEvent event) {
+	public boolean onKeyDown(int code, KeyEvent event) {
+		return false;
 	}
 
 	@Override
-	public void onKeyLongPress(int code, KeyEvent event) {
+	public boolean onKeyLongPress(int code, KeyEvent event) {
+		return false;
 	}
 }
