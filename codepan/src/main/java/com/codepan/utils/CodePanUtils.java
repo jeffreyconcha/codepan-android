@@ -116,6 +116,7 @@ import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -2946,6 +2947,7 @@ public class CodePanUtils {
 		return b;
 	}
 
+	@Deprecated
 	public static ArrayList<String> removeDuplicateEntry(ArrayList<String> entryList) {
 		if (entryList != null) {
 			ArrayList<String> holderList = new ArrayList<>();
