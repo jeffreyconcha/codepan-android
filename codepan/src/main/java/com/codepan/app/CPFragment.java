@@ -55,6 +55,9 @@ public class CPFragment extends Fragment implements OnBackPressedCallback,
 				activity.overrideBackPressed(false);
 			}
 		}
+		if(!hidden) {
+			activity.setKeyListener(this);
+		}
 	}
 
 	@Override
@@ -86,9 +89,7 @@ public class CPFragment extends Fragment implements OnBackPressedCallback,
 		if(fragmentCallback != null) {
 			fragmentCallback.onFragment(true, hasBackPressed);
 		}
-		if(activity != null) {
-			activity.setKeyListener(this);
-		}
+		activity.setKeyListener(this);
 	}
 
 	@Override
