@@ -46,8 +46,8 @@ public class CPFragment extends Fragment implements OnBackPressedCallback, KeyLi
 	}
 
 	@Override
-	public void onDetach() {
-		super.onDetach();
+	public void onStop() {
+		super.onStop();
 		activity.setKeyListener(keyListener);
 	}
 
