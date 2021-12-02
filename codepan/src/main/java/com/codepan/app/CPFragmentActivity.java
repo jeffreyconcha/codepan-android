@@ -109,24 +109,24 @@ public abstract class CPFragmentActivity extends FragmentActivity
 
 	@Override
 	public boolean onKeyUp(int code, KeyEvent event) {
-		if(keyListener != null) {
-			return keyListener.onKeyUp(code, event);
+		if(keyListener != null && keyListener.onKeyUp(code, event)) {
+			return true;
 		}
 		return super.onKeyUp(code, event);
 	}
 
 	@Override
 	public boolean onKeyDown(int code, KeyEvent event) {
-		if(keyListener != null) {
-			return keyListener.onKeyDown(code, event);
+		if(keyListener != null && keyListener.onKeyDown(code, event)) {
+			return true;
 		}
 		return super.onKeyDown(code, event);
 	}
 
 	@Override
 	public boolean onKeyLongPress(int code, KeyEvent event) {
-		if(keyListener != null) {
-			return keyListener.onKeyLongPress(code, event);
+		if(keyListener != null && keyListener.onKeyLongPress(code, event)) {
+			return true;
 		}
 		return super.onKeyLongPress(code, event);
 	}

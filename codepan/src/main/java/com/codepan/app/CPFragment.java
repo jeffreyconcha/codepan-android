@@ -5,16 +5,14 @@ import android.view.KeyEvent;
 
 import com.codepan.app.CPFragmentActivity.KeyListener;
 import com.codepan.callback.Interface.OnBackPressedCallback;
-import com.codepan.callback.Interface.OnFragmentCallback;
 import com.codepan.utils.CodePanUtils;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-public class CPFragment extends Fragment implements OnBackPressedCallback, KeyListener, OnFragmentCallback {
+public class CPFragment extends Fragment implements OnBackPressedCallback, KeyListener {
 
-	private OnFragmentCallback fragmentCallback;
 	protected FragmentTransaction transaction;
 	private boolean isBackPressedDisabled;
 	protected CPFragmentActivity activity;
@@ -88,18 +86,5 @@ public class CPFragment extends Fragment implements OnBackPressedCallback, KeyLi
 	@Override
 	public boolean onKeyLongPress(int code, KeyEvent event) {
 		return false;
-	}
-
-	/**
-	 * <b>Note</b>: Only use this if the current fragment is not going
-	 * to call @{@link FragmentTransaction#hide(Fragment)}
-	 */
-	@Deprecated
-	public void setOnFragmentCallback(OnFragmentCallback fragmentCallback) {
-		this.fragmentCallback = fragmentCallback;
-	}
-
-	@Override
-	public void onFragment(boolean isActive, boolean hasBackPressed) {
 	}
 }

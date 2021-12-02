@@ -39,10 +39,6 @@ public class Interface {
 		void onPhotoZoom(boolean isZoom);
 	}
 
-	public interface OnFragmentCallback {
-		void onFragment(boolean isActive, boolean hasBackPressed);
-	}
-
 	public interface OnHideKeyboardCallback {
 		void onHideKeyboard();
 	}
