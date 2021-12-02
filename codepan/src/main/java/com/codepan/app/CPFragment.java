@@ -12,15 +12,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-public class CPFragment extends Fragment implements OnBackPressedCallback,
-	OnFragmentCallback, KeyListener {
+public class CPFragment extends Fragment implements OnBackPressedCallback, KeyListener {
 
 	private OnFragmentCallback fragmentCallback;
-	private boolean isDisabled, hasBackPressed;
 	protected FragmentTransaction transaction;
 	protected CPFragmentActivity activity;
 	protected FragmentManager manager;
 	protected boolean withChanges;
+	private boolean isDisabled;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -31,49 +30,14 @@ public class CPFragment extends Fragment implements OnBackPressedCallback,
 		}
 	}
 
-//	@Override
-//	public void onViewCreated(View view, Bundle savedInstanceState) {
-//		super.onViewCreated(view, savedInstanceState);
-//		if(!isDisabled) {
-//			activity.overrideBackPressed(true);
-//			activity.setOnBackPressedCallback(this);
-//		}
-//	}
-
 	@Override
 	public void onHiddenChanged(boolean hidden) {
 		super.onHiddenChanged(hidden);
-//		if(!isDisabled) {
-//			if(!hidden) {
-//				activity.setOverrideLocked(true);
-//				activity.setOnBackPressedCallback(this);
-//				activity.overrideBackPressed(true);
-//			}
-//			else {
-//				activity.setOnBackPressedCallback(null);
-//				activity.overrideBackPressed(false);
-//			}
+//		if(!hidden) {
+//			activity.setKeyListener(this);
 //		}
-		if(!hidden) {
-			activity.setKeyListener(this);
-		}
 	}
 
-//	@Override
-//	public void onDestroyView() {
-//		super.onDestroyView();
-//		if(!isDisabled) {
-//			if(fragmentCallback == null) {
-//				if(!activity.isOverrideLocked()) {
-//					activity.setOnBackPressedCallback(null);
-//					activity.overrideBackPressed(false);
-//				}
-//				else {
-//					activity.setOverrideLocked(false);
-//				}
-//			}
-//		}
-//	}
 
 	@Override
 	public void onBackPressed() {
@@ -85,31 +49,7 @@ public class CPFragment extends Fragment implements OnBackPressedCallback,
 	@Override
 	public void onStart() {
 		super.onStart();
-//		if(fragmentCallback != null) {
-//			fragmentCallback.onFragment(true, hasBackPressed);
-//		}
-		activity.setKeyListener(this);
-	}
-
-//	@Override
-//	public void onStop() {
-//		super.onStop();
-//		if(fragmentCallback != null) {
-//			fragmentCallback.onFragment(false, hasBackPressed);
-//		}
-//	}
-
-	@Override
-	public void onFragment(boolean isActive, boolean hasBackPressed) {
-//		if(!isDisabled) {
-//			if(isActive) {
-//				activity.overrideBackPressed(hasBackPressed);
-//			}
-//			else {
-//				activity.setOnBackPressedCallback(this);
-//				activity.overrideBackPressed(true);
-//			}
-//		}
+//		activity.setKeyListener(this);
 	}
 
 	/**
@@ -126,10 +66,6 @@ public class CPFragment extends Fragment implements OnBackPressedCallback,
 
 	protected void enableBackPressed() {
 		this.isDisabled = false;
-	}
-
-	public void setHasBackPressed(boolean hasBackPressed) {
-		this.hasBackPressed = hasBackPressed;
 	}
 
 	protected String text(int resId, String... placeholders) {
@@ -157,5 +93,9 @@ public class CPFragment extends Fragment implements OnBackPressedCallback,
 	@Override
 	public boolean onKeyLongPress(int code, KeyEvent event) {
 		return false;
+	}
+
+	public KeyListener getKeyListener() {
+		return this;
 	}
 }

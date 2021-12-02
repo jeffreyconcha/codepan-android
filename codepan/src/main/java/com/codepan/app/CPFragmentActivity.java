@@ -4,20 +4,22 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 
-import com.codepan.callback.Interface.OnBackPressedCallback;
 import com.codepan.callback.Interface.OnInitializeCallback;
 import com.codepan.database.SQLiteAdapter;
 import com.codepan.permission.PermissionHandler;
 import com.codepan.utils.CodePanUtils;
+import com.codepan.utils.Console;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
 import androidx.fragment.app.FragmentTransaction;
 
-public abstract class CPFragmentActivity extends FragmentActivity implements OnInitializeCallback {
+public abstract class CPFragmentActivity extends FragmentActivity
+	implements OnInitializeCallback, OnBackStackChangedListener {
 
 	public void setKeyListener(KeyListener keyListener) {
 		this.keyListener = keyListener;
@@ -32,14 +34,11 @@ public abstract class CPFragmentActivity extends FragmentActivity implements OnI
 	}
 
 	private OnRequestPermissionsResultCallback permissionsResultCallback;
-	protected OnBackPressedCallback backPressedCallback;
 	protected FragmentTransaction transaction;
 	protected FragmentManager manager;
 	private PermissionHandler handler;
-	private boolean isOverrideLocked;
 	private KeyListener keyListener;
 	private boolean isInitialized;
-	private boolean isOverridden;
 	protected SQLiteAdapter db;
 
 	@Override
@@ -55,6 +54,7 @@ public abstract class CPFragmentActivity extends FragmentActivity implements OnI
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.manager = getSupportFragmentManager();
+		this.manager.addOnBackStackChangedListener(this);
 		if(savedInstanceState != null) {
 			if(!isInitialized) {
 				overridePendingTransition(0, 0);
@@ -75,28 +75,8 @@ public abstract class CPFragmentActivity extends FragmentActivity implements OnI
 
 	public abstract void onLoadSplash(OnInitializeCallback initializeCallback);
 
-	public boolean isOverridden() {
-		return this.isOverridden;
-	}
-
 	public boolean isInitialized() {
 		return this.isInitialized;
-	}
-
-	public void setOverrideLocked(boolean isLocked) {
-		this.isOverrideLocked = isLocked;
-	}
-
-	public boolean isOverrideLocked() {
-		return this.isOverrideLocked;
-	}
-
-	public void overrideBackPressed(boolean isOverridden) {
-		this.isOverridden = isOverridden;
-	}
-
-	public void setOnBackPressedCallback(OnBackPressedCallback backPressedCallback) {
-		this.backPressedCallback = backPressedCallback;
 	}
 
 	public void setOnRequestPermissionsResultCallback(OnRequestPermissionsResultCallback permissionsResultCallback) {
@@ -156,5 +136,17 @@ public abstract class CPFragmentActivity extends FragmentActivity implements OnI
 			return keyListener.onKeyLongPress(code, event);
 		}
 		return super.onKeyLongPress(code, event);
+	}
+
+	@Override
+	public void onBackStackChanged() {
+		Fragment fragment = manager.getPrimaryNavigationFragment();
+		if(fragment instanceof CPFragment) {
+			Console.debug(fragment.getClass());
+			keyListener = ((CPFragment) fragment).getKeyListener();
+		}
+		else {
+			keyListener = null;
+		}
 	}
 }
