@@ -19,6 +19,7 @@ public class CPFragment extends Fragment implements OnBackPressedCallback, KeyLi
 	private boolean isBackPressedDisabled;
 	protected CPFragmentActivity activity;
 	protected FragmentManager manager;
+	private KeyListener keyListener;
 	protected boolean withChanges;
 
 	@Override
@@ -31,15 +32,6 @@ public class CPFragment extends Fragment implements OnBackPressedCallback, KeyLi
 	}
 
 	@Override
-	public void onHiddenChanged(boolean hidden) {
-		super.onHiddenChanged(hidden);
-//		if(!hidden) {
-//			activity.setKeyListener(this);
-//		}
-	}
-
-
-	@Override
 	public void onBackPressed() {
 		if(manager != null) {
 			manager.popBackStack();
@@ -49,7 +41,14 @@ public class CPFragment extends Fragment implements OnBackPressedCallback, KeyLi
 	@Override
 	public void onStart() {
 		super.onStart();
-//		activity.setKeyListener(this);
+		keyListener = activity.getKeyListener();
+		activity.setKeyListener(this);
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		activity.setKeyListener(keyListener);
 	}
 
 	protected void disableBackPressed() {
@@ -89,10 +88,6 @@ public class CPFragment extends Fragment implements OnBackPressedCallback, KeyLi
 	@Override
 	public boolean onKeyLongPress(int code, KeyEvent event) {
 		return false;
-	}
-
-	public KeyListener getKeyListener() {
-		return this;
 	}
 
 	/**

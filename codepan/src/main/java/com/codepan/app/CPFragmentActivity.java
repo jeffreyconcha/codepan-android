@@ -8,22 +8,16 @@ import com.codepan.callback.Interface.OnInitializeCallback;
 import com.codepan.database.SQLiteAdapter;
 import com.codepan.permission.PermissionHandler;
 import com.codepan.utils.CodePanUtils;
-import com.codepan.utils.Console;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
 import androidx.fragment.app.FragmentTransaction;
 
 public abstract class CPFragmentActivity extends FragmentActivity
-	implements OnInitializeCallback, OnBackStackChangedListener {
-
-	public void setKeyListener(KeyListener keyListener) {
-		this.keyListener = keyListener;
-	}
+	implements OnInitializeCallback {
 
 	interface KeyListener {
 		boolean onKeyUp(int code, KeyEvent event);
@@ -54,7 +48,6 @@ public abstract class CPFragmentActivity extends FragmentActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.manager = getSupportFragmentManager();
-		this.manager.addOnBackStackChangedListener(this);
 		if(savedInstanceState != null) {
 			if(!isInitialized) {
 				overridePendingTransition(0, 0);
@@ -138,17 +131,11 @@ public abstract class CPFragmentActivity extends FragmentActivity
 		return super.onKeyLongPress(code, event);
 	}
 
-	@Override
-	public void onBackStackChanged() {
-		Fragment fragment = manager.getPrimaryNavigationFragment();
-		if(fragment instanceof CPFragment) {
-			Console.debug("FOREGROUND FRAGMENT: " + fragment.getClass());
-			CPFragment child = (CPFragment) fragment;
-			if(!child.isBackPressedDisabled()) {
-				keyListener = child.getKeyListener();
-				return;
-			}
-		}
-		keyListener = null;
+	public void setKeyListener(KeyListener keyListener) {
+		this.keyListener = keyListener;
+	}
+
+	public KeyListener getKeyListener() {
+		return keyListener;
 	}
 }
