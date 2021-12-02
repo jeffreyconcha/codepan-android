@@ -12,14 +12,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-public class CPFragment extends Fragment implements OnBackPressedCallback, KeyListener {
+public class CPFragment extends Fragment implements OnBackPressedCallback, KeyListener, OnFragmentCallback {
 
 	private OnFragmentCallback fragmentCallback;
 	protected FragmentTransaction transaction;
+	private boolean isBackPressedDisabled;
 	protected CPFragmentActivity activity;
 	protected FragmentManager manager;
 	protected boolean withChanges;
-	private boolean isDisabled;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -52,20 +52,16 @@ public class CPFragment extends Fragment implements OnBackPressedCallback, KeyLi
 //		activity.setKeyListener(this);
 	}
 
-	/**
-	 * <b>Note</b>: Only use this if the current fragment is not going
-	 * to call @{@link FragmentTransaction#hide(Fragment)}
-	 */
-	public void setOnFragmentCallback(OnFragmentCallback fragmentCallback) {
-		this.fragmentCallback = fragmentCallback;
-	}
-
 	protected void disableBackPressed() {
-		this.isDisabled = true;
+		this.isBackPressedDisabled = true;
 	}
 
 	protected void enableBackPressed() {
-		this.isDisabled = false;
+		this.isBackPressedDisabled = false;
+	}
+
+	public boolean isBackPressedDisabled() {
+		return this.isBackPressedDisabled;
 	}
 
 	protected String text(int resId, String... placeholders) {
@@ -78,7 +74,7 @@ public class CPFragment extends Fragment implements OnBackPressedCallback, KeyLi
 
 	@Override
 	public boolean onKeyUp(int code, KeyEvent event) {
-		if(!isDisabled && code == KeyEvent.KEYCODE_BACK) {
+		if(!isBackPressedDisabled && code == KeyEvent.KEYCODE_BACK) {
 			onBackPressed();
 			return true;
 		}
@@ -97,5 +93,18 @@ public class CPFragment extends Fragment implements OnBackPressedCallback, KeyLi
 
 	public KeyListener getKeyListener() {
 		return this;
+	}
+
+	/**
+	 * <b>Note</b>: Only use this if the current fragment is not going
+	 * to call @{@link FragmentTransaction#hide(Fragment)}
+	 */
+	@Deprecated
+	public void setOnFragmentCallback(OnFragmentCallback fragmentCallback) {
+		this.fragmentCallback = fragmentCallback;
+	}
+
+	@Override
+	public void onFragment(boolean isActive, boolean hasBackPressed) {
 	}
 }

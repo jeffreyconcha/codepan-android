@@ -142,11 +142,13 @@ public abstract class CPFragmentActivity extends FragmentActivity
 	public void onBackStackChanged() {
 		Fragment fragment = manager.getPrimaryNavigationFragment();
 		if(fragment instanceof CPFragment) {
-			Console.debug(fragment.getClass());
-			keyListener = ((CPFragment) fragment).getKeyListener();
+			Console.debug("FOREGROUND FRAGMENT: " + fragment.getClass());
+			CPFragment child = (CPFragment) fragment;
+			if(!child.isBackPressedDisabled()) {
+				keyListener = child.getKeyListener();
+				return;
+			}
 		}
-		else {
-			keyListener = null;
-		}
+		keyListener = null;
 	}
 }
