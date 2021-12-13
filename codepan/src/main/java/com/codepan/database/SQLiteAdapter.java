@@ -433,6 +433,12 @@ public class SQLiteAdapter implements SQLiteDatabaseHook {
 		}
 	}
 
+	public void disableMemorySecurity() {
+		if(!sqLiteDatabase.inTransaction()) {
+			this.execQuery("PRAGMA cipher_memory_security = OFF");
+		}
+	}
+
 	public Context getContext() {
 		return this.context;
 	}
