@@ -3005,6 +3005,9 @@ public class CodePanUtils {
 			int today = cal.get(Calendar.DAY_OF_MONTH);
 			if (today <= cutOff) {
 				cal.roll(Calendar.MONTH, -1);
+				if(cal.get(Calendar.MONTH) == Calendar.DECEMBER) {
+					cal.roll(Calendar.YEAR, -1);
+				}
 			}
 			cal.roll(Calendar.DAY_OF_MONTH, cutOff - today);
 			cal.roll(Calendar.DAY_OF_MONTH, 1);
@@ -3030,6 +3033,9 @@ public class CodePanUtils {
 			int today = cal.get(Calendar.DAY_OF_MONTH);
 			if (today <= cutOff) {
 				cal.roll(Calendar.MONTH, -1);
+				if(cal.get(Calendar.MONTH) == Calendar.DECEMBER) {
+					cal.roll(Calendar.YEAR, -1);
+				}
 			}
 			cal.set(Calendar.DAY_OF_MONTH, 1);
 			String startDate = String.format(Locale.ENGLISH, "%tF", cal);
