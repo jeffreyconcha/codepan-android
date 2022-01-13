@@ -1,13 +1,17 @@
 package com.codepan.security
 
 import android.util.Base64
+import com.codepan.utils.Console
 import java.security.MessageDigest
 import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-class KeyManager(private val seed: String) {
+class KeyManager(
+    private val seed: String,
+    log: Boolean = false
+) {
 
     private val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
     private var secret: SecretKeySpec
@@ -31,6 +35,9 @@ class KeyManager(private val seed: String) {
         val generated = generatedKey
         this.iv = IvParameterSpec(generated)
         this.secret = SecretKeySpec(generated, "AES")
+        if (log) {
+            Console.log("SEED: $seed");
+        }
     }
 
     fun encrypt(text: String): String {
