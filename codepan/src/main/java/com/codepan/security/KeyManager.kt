@@ -9,8 +9,7 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 class KeyManager(
-    private val seed: String,
-    log: Boolean = false
+    private val seed: String
 ) {
 
     private val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
@@ -111,12 +110,12 @@ class KeyManager(
             while (collections.isNotEmpty()) {
                 first = if (first) {
                     val char = collections.first()
-                    builder.append(char.toByte())
+                    builder.append(char.code)
                     collections.removeFirst()
                     false
                 } else {
                     val char = collections.last()
-                    builder.append(char.toByte())
+                    builder.append(char.code)
                     collections.removeLast()
                     true
                 }
