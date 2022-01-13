@@ -35,9 +35,7 @@ class KeyManager(
         val generated = generatedKey
         this.iv = IvParameterSpec(generated)
         this.secret = SecretKeySpec(generated, "AES")
-        if (log) {
-            Console.log("SEED: $seed");
-        }
+        Console.log("SEED: $seed");
     }
 
     fun encrypt(text: String): String {
