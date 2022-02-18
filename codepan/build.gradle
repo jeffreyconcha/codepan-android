@@ -7,11 +7,11 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion '30.0.3'
+    compileSdkVersion 31
+    buildToolsVersion '31.0.0'
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 30
+        targetSdkVersion 31
         renderscriptTargetApi 17
         renderscriptSupportModeEnabled false
     }
@@ -57,11 +57,11 @@ dependencies {
     api 'net.zetetic:android-database-sqlcipher:4.4.2'
     api 'com.github.barteksc:android-pdf-viewer:2.8.1'
     api 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    api 'com.google.android.gms:play-services-location:18.0.0'
-    api 'com.google.android.gms:play-services-maps:17.0.1'
+    api 'com.google.android.gms:play-services-location:19.0.1'
+    api 'com.google.android.gms:play-services-maps:18.0.2'
     api 'com.google.maps.android:android-maps-utils:0.5'
     api 'androidx.recyclerview:recyclerview:1.2.1'
     api 'com.google.android:flexbox:2.0.1'
-    api "androidx.core:core-ktx:1.6.0"
+    api "androidx.core:core-ktx:1.7.0"
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }

@@ -77,6 +77,36 @@
         android:layout_alignParentBottom="true"
         android:orientation="vertical">
 
+        <LinearLayout
+            android:id="@+id/llGrandTotalTable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/black_trans_forty"
+            android:orientation="horizontal"
+            android:padding="@dimen/seven"
+            android:visibility="gone">
+
+            <com.codepan.widget.CodePanLabel
+                android:id="@+id/tvGrandTotalTitleTable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/total"
+                android:textColor="@color/white"
+                android:textSize="@dimen/seventeen"
+                codePan:typeface="@string/calibri_bold"/>
+
+            <com.codepan.widget.CodePanLabel
+                android:id="@+id/tvGrandTotalValueTable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="0.00"
+                android:textColor="@color/white"
+                android:textSize="@dimen/seventeen"
+                codePan:typeface="@string/calibri_bold"/>
+
+        </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/one"
@@ -95,12 +125,12 @@
                 android:layout_centerVertical="true"
                 android:background="@drawable/bg_spinner">
 
-                <ImageView
+                <View
                     android:layout_width="@dimen/ten"
                     android:layout_height="@dimen/seven"
                     android:layout_gravity="center_vertical|end"
                     android:layout_margin="@dimen/ten"
-                    android:src="@drawable/ic_dropdown_disabled"/>
+                    android:background="@drawable/ic_dropdown_disabled"/>
 
                 <Spinner
                     android:id="@+id/spinLimitTable"

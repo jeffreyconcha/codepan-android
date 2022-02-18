@@ -10,4 +10,5 @@
     <string name="calibri_italic">fonts/Calibri-Italic.otf</string>
     <string name="toast_font">@string/calibri_regular</string>
     <string name="of">of</string>
+    <string name="total">Total</string>
 </resources>

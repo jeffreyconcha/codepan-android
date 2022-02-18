@@ -48,7 +48,9 @@ public class TableView extends FrameLayout {
 	};
 	private final String DELIMITER = " - ";
 	private final String PARENT_TAG = "parent";
-	private LinearLayout llMainTable, llContentTable, llTopTable, llLeftTable, llParentTable;
+	private LinearLayout llMainTable, llContentTable, llTopTable, llLeftTable, llParentTable,
+		llGrandTotalTable;
+	private CodePanLabel tvTotalTable, tvGrandTotalTitleTable, tvGrandTotalValueTable;
 	private CodePanButton btnNextTable, btnPreviousTable, btnAddTable;
 	private boolean isInitialized, withRowNumbers, isRowFlexible;
 	private OnTableCellCreatedCallback tableCellCreatedCallback;
@@ -64,7 +66,6 @@ public class TableView extends FrameLayout {
 	private View vPreviousTable, vNextTable;
 	private final LayoutInflater inflater;
 	private ArrayList<RowData> rowList;
-	private CodePanLabel tvTotalTable;
 	private final Context context;
 	private final int numWidth;
 	private int current, count;
@@ -116,6 +117,9 @@ public class TableView extends FrameLayout {
 		btnAddTable = view.findViewById(R.id.btnAddTable);
 		vNextTable = view.findViewById(R.id.vNextTable);
 		vPreviousTable = view.findViewById(R.id.vPreviousTable);
+		llGrandTotalTable = view.findViewById(R.id.llGrandTotalTable);
+		tvGrandTotalTitleTable = view.findViewById(R.id.tvGrandTotalTitleTable);
+		tvGrandTotalValueTable = view.findViewById(R.id.tvGrandTotalValueTable);
 		svLeftTable.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
 		ArrayAdapter<String> limitAdapter = new ArrayAdapter<>(context, R.layout.table_spinner_selected_item);
 		limitAdapter.setDropDownViewResource(R.layout.table_spinner_selection_item);
@@ -125,7 +129,7 @@ public class TableView extends FrameLayout {
 		spinLimitTable.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if (isInitialized && rowList != null) {
+				if(isInitialized && rowList != null) {
 					String text = limits[position];
 					limit = Integer.parseInt(text);
 					populateContent(rowList, 0);
@@ -156,13 +160,13 @@ public class TableView extends FrameLayout {
 			}
 		});
 		btnAddTable.setOnClickListener(v -> {
-			if (isInitialized && rowList != null) {
-				if (tableAddRowCallback != null) {
+			if(isInitialized && rowList != null) {
+				if(tableAddRowCallback != null) {
 					tableAddRowCallback.onTableAddRow();
 				}
 			}
 		});
-		if (isRowFlexible) {
+		if(isRowFlexible) {
 			btnAddTable.setParentVisibility(View.VISIBLE);
 		}
 		update();
@@ -175,17 +179,17 @@ public class TableView extends FrameLayout {
 
 	public void updateAndRetainPage() {
 		ArrayList<RowData> rowList = getFilteredRowList();
-		if (rowList != null && columnList != null) {
+		if(rowList != null && columnList != null) {
 			View child = llParentTable.getChildAt(0);
 			Object object = child.getTag();
-			if (object instanceof String) {
+			if(object instanceof String) {
 				String tag = (String) object;
-				if (tag.equals(PARENT_TAG)) {
+				if(tag.equals(PARENT_TAG)) {
 					llParentTable.removeView(child);
 				}
 			}
 			llTopTable.removeAllViews();
-			for (final ColumnData column : columnList) {
+			for(final ColumnData column : columnList) {
 				int mci = columnList.indexOf(column);
 				final int resId = column.headerResId != 0 ? column.headerResId : headerResId;
 				View header = inflater.inflate(resId, this, false);
@@ -193,13 +197,13 @@ public class TableView extends FrameLayout {
 				CodePanLabel tvTableTextHeader = header.findViewById(R.id.tvTableTextHeader);
 				View vFilterTextHeader = header.findViewById(R.id.vFilterTextHeader);
 				tvTableTextHeader.setText(column.value);
-				if (vFilterTextHeader != null) {
-					if (column.isFilterEnabled) {
+				if(vFilterTextHeader != null) {
+					if(column.isFilterEnabled) {
 						vFilterTextHeader.setVisibility(View.VISIBLE);
 						ArrayList<String> filter = getFilterItemList(mci);
 						vFilterTextHeader.setEnabled(filter != null && !filter.isEmpty());
 						header.setOnClickListener(v -> {
-							if (tableColumnClickCallback != null) {
+							if(tableColumnClickCallback != null) {
 								ArrayList<String> list = getDistinctItems(column);
 								tableColumnClickCallback.onTableColumnClick(mci, list);
 							}
@@ -255,13 +259,20 @@ public class TableView extends FrameLayout {
 		}
 	}
 
+	public void setGrandTotal(String title, String value) {
+		if(tvGrandTotalTitleTable != null && tvGrandTotalValueTable != null) {
+			tvGrandTotalTitleTable.setText(title);
+			tvGrandTotalValueTable.setText(value);
+		}
+	}
+
 	private ArrayList<String> getDistinctItems(ColumnData column) {
 		if(column != null) {
 			ArrayList<String> list = new ArrayList<>();
 			int columnIndex = columnList.indexOf(column);
-			for (RowData row : rowList) {
+			for(RowData row : rowList) {
 				CellData cell = row.cellList.get(columnIndex);
-				if (cell.name != null) {
+				if(cell.name != null) {
 					list.add(cell.name);
 				}
 			}
@@ -457,7 +468,7 @@ public class TableView extends FrameLayout {
 				loadedList.add(row);
 				rowIndex++;
 			}
-			if (llMainTable.getVisibility() == View.GONE) {
+			if(llMainTable.getVisibility() == View.GONE) {
 				llMainTable.setVisibility(View.VISIBLE);
 			}
 			equalizeHeight(loadedList);
@@ -466,20 +477,20 @@ public class TableView extends FrameLayout {
 	}
 
 	private void equalizeHeight(final ArrayList<RowData> loadedList) {
-		if (rowList != null && loadedList != null && !loadedList.isEmpty()) {
+		if(rowList != null && loadedList != null && !loadedList.isEmpty()) {
 			final ViewTreeObserver vto = getViewTreeObserver();
 			vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 				@Override
 				public void onGlobalLayout() {
 					vto.removeOnGlobalLayoutListener(this);
-					for (RowData row : loadedList) {
+					for(RowData row : loadedList) {
 						equalizeContentHeight(loadedList.indexOf(row));
 					}
 					View xy = llParentTable.getChildAt(0);
 					int th = llTopTable.getHeight();
 					int ph = xy.getHeight();
-					if (ph != th) {
-						if (th > ph) {
+					if(ph != th) {
+						if(th > ph) {
 							xy.getLayoutParams().height = th;
 							xy.requestLayout();
 						}
