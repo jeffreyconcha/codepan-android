@@ -260,7 +260,8 @@ public class TableView extends FrameLayout {
 	}
 
 	public void setGrandTotal(String title, String value) {
-		if(tvGrandTotalTitleTable != null && tvGrandTotalValueTable != null) {
+		if(llGrandTotalTable != null) {
+			llGrandTotalTable.setVisibility(View.VISIBLE);
 			tvGrandTotalTitleTable.setText(title);
 			tvGrandTotalValueTable.setText(value);
 		}
