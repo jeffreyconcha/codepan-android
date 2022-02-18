@@ -10,7 +10,7 @@ android {
     compileSdkVersion 31
     buildToolsVersion '31.0.0'
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 31
         renderscriptTargetApi 17
         renderscriptSupportModeEnabled false
