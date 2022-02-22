@@ -12,7 +12,7 @@ public class CellData {
 	public ColumnData column;
 
 	private boolean withChanges;
-	private Object tag;
+	private Object tag, obj;
 
 	public CellData() {
 	}
@@ -91,5 +91,13 @@ public class CellData {
 		if(updateCellDataCallback != null) {
 			updateCellDataCallback.onUpdateCellData(value);
 		}
+	}
+
+	public Object getObj() {
+		return obj;
+	}
+
+	public void setObj(Object obj) {
+		this.obj = obj;
 	}
 }
