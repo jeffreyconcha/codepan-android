@@ -3203,10 +3203,13 @@ public class CodePanUtils {
 		return matcher.find();
 	}
 
-	public static String replaceVariableInEquation(String input,
-												   String variableName, String value) {
+	public static String replaceVariableInEquation(
+		String input,
+		String variableName,
+		String value
+	) {
 		String equation = input;
-		Pattern pattern = Pattern.compile("[A-Za-z0-9]+");
+		Pattern pattern = Pattern.compile("[A-Za-z0-9_]+");
 		Matcher matcher = pattern.matcher(equation);
 		while (matcher.find()) {
 			String word = matcher.group();
