@@ -1271,7 +1271,7 @@ public class CodePanUtils {
 		if (text == null || text.isEmpty() || text.equals(".")) {
 			return false;
 		}
-		String t = text;
+		String t = text.replace(",", "");
 		if (t.length() > 1) {
 			while (t.indexOf('0') == 0) {
 				t = t.substring(1);
