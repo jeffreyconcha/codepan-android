@@ -116,7 +116,6 @@ import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -168,7 +167,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import androidx.annotation.RequiresPermission;
 import androidx.core.app.NotificationCompat;
-import androidx.core.graphics.BitmapCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -1268,23 +1266,47 @@ public class CodePanUtils {
 	}
 
 	public static boolean isNumeric(String text) {
-		if (text == null || text.isEmpty() || text.equals(".")) {
+		if(text == null || text.isEmpty() || text.equals(".")) {
 			return false;
 		}
 		String t = text.replace(",", "");
-		if (t.length() > 1) {
-			while (t.indexOf('0') == 0) {
+		if(t.length() > 1) {
+			while(t.indexOf('0') == 0) {
 				t = t.substring(1);
 			}
 		}
 		return NumberUtils.isNumber(t);
 	}
 
+	public int parseInt(String input) {
+		if(isNumeric(input)) {
+			final String clean = input.trim().replace(",", "");
+			return Integer.parseInt(clean);
+		}
+		return 0;
+	}
+
+	public float parseFloat(String input) {
+		if(isNumeric(input)) {
+			final String clean = input.trim().replace(",", "");
+			return Float.parseFloat(clean);
+		}
+		return 0F;
+	}
+
+	public double parseDouble(String input) {
+		if(isNumeric(input)) {
+			final String clean = input.trim().replace(",", "");
+			return Double.parseDouble(clean);
+		}
+		return 0D;
+	}
+
 	public static boolean isServiceRunning(Context context, Class<?> c) {
 		boolean result = false;
 		ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-			if (c.getName().equals(service.service.getClassName())) {
+		for(RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+			if(c.getName().equals(service.service.getClassName())) {
 				result = true;
 			}
 		}
