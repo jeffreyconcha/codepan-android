@@ -1278,7 +1278,7 @@ public class CodePanUtils {
 		return NumberUtils.isNumber(t);
 	}
 
-	public int parseInt(String input) {
+	public static int parseInt(String input) {
 		if(isNumeric(input)) {
 			final String clean = input.trim().replace(",", "");
 			return Integer.parseInt(clean);
@@ -1286,7 +1286,7 @@ public class CodePanUtils {
 		return 0;
 	}
 
-	public float parseFloat(String input) {
+	public static float parseFloat(String input) {
 		if(isNumeric(input)) {
 			final String clean = input.trim().replace(",", "");
 			return Float.parseFloat(clean);
@@ -1294,7 +1294,7 @@ public class CodePanUtils {
 		return 0F;
 	}
 
-	public double parseDouble(String input) {
+	public static double parseDouble(String input) {
 		if(isNumeric(input)) {
 			final String clean = input.trim().replace(",", "");
 			return Double.parseDouble(clean);
