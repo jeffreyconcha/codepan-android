@@ -15,6 +15,27 @@ interface DateTimeFields {
         get() = dateTime.timestamp
 }
 
+class DateTimePattern {
+    companion object {
+        const val displayDate = "MMMM d, yyyy";
+        const val abbrDate = "MMM d, yyyy";
+        const val displayMonth: String = "MMMM";
+        const val abbrMonth: String = "MMM";
+        const val year: String = "yyyy";
+        const val displayMonthYear: String = "MMMM yyyy";
+        const val abbrMonthYear: String = "MMM yyyy";
+        const val weekday = "EEEE";
+        const val abbrWeekday = "EEE";
+        const val displayTime = "h:mm a";
+        const val displayFullTime = "h:mm:ss a";
+        const val displayDateTime = "$displayDate, $displayTime";
+        const val displayTimeDate = "$displayTime, $displayDate";
+        const val abbrDateTime = "$abbrDate, $displayTime";
+        const val displayWeekdayDate = "$weekday, $displayDate";
+        const val abbrWeekdayDate = "$abbrWeekday, $abbrDate";
+    }
+}
+
 class DateTime(
     val date: String = "0000-00-00",
     val time: String = "00:00:00",
@@ -35,6 +56,7 @@ class DateTime(
      */
     val readableTime: String
         get() = getReadableTime()
+
 
     val timestamp: Long
         get() {
@@ -117,6 +139,11 @@ class DateTime(
         if (!withSeconds) {
             pattern = pattern.replace(":ss", "")
         }
+        val formatter = SimpleDateFormat(pattern, locale)
+        return formatter.format(Date(timestamp))
+    }
+
+    fun format(pattern: String): String {
         val formatter = SimpleDateFormat(pattern, locale)
         return formatter.format(Date(timestamp))
     }
