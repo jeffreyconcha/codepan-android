@@ -235,6 +235,13 @@ class DateTime(
         return (difference / 1000L).toInt()
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (other is DateTime) {
+            return timestamp == other.timestamp;
+        }
+        return false;
+    }
+
     companion object {
         fun now(): DateTime {
             val cal = Calendar.getInstance()
