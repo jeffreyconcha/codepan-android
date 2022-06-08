@@ -23,6 +23,7 @@ import com.codepan.widget.FocusIndicatorView;
 import com.codepan.widget.camera.Callback.OnCameraErrorCallback;
 import com.codepan.widget.camera.Callback.OnCaptureCallback;
 import com.codepan.widget.camera.CameraSurfaceView;
+import com.codepan.widget.camera.CameraSurfaceView.CameraError;
 
 import java.util.ArrayList;
 
@@ -117,7 +118,7 @@ public class CameraFragment extends Fragment implements OnClickListener, OnCaptu
         handler.postDelayed(() -> {
             if (surfaceView != null) surfaceView.stopCamera();
             surfaceView = new CameraSurfaceView(main, this,
-                cameraSelection, flashMode, FOLDER, maxWidth, maxHeight);
+                cameraSelection, flashMode, FOLDER, maxWidth, maxHeight, true);
             surfaceView.setOnCaptureCallback(this);
             surfaceView.setFocusIndicatorView(dvCamera);
             surfaceView.fullScreenToContainer(flCamera);
@@ -142,10 +143,15 @@ public class CameraFragment extends Fragment implements OnClickListener, OnCaptu
     }
 
     @Override
-    public void onCameraError() {
+    public void onCameraError(CameraError error) {
         AlertDialog.Builder builder = new AlertDialog.Builder(main);
         builder.setTitle("Camera Failed");
-        builder.setMessage("Failed to load camera please try to restart your device.");
+        if(error == CameraError.UNABLE_TO_LOAD) {
+            builder.setMessage("Failed to load camera please try to restart your device.");
+        }
+        else {
+            builder.setMessage("Motion blur detected. Please do not move your camera while capturing photo.");
+        }
         builder.setPositiveButton("OK", (dialog, id) -> {
             dialog.dismiss();
             manager.popBackStack();

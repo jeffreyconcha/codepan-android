@@ -6,6 +6,6 @@ public class Callback {
 	}
 
 	public interface OnCameraErrorCallback {
-		void onCameraError();
+		void onCameraError(CameraSurfaceView.CameraError error);
 	}
 }
