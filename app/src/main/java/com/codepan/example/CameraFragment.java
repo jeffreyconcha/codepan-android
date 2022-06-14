@@ -158,4 +158,10 @@ public class CameraFragment extends Fragment implements OnClickListener, OnCaptu
         });
         builder.show();
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+    }
 }

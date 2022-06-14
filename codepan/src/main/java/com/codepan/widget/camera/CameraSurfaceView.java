@@ -21,7 +21,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.LinearLayout.LayoutParams;
 
 import com.codepan.R;
@@ -29,6 +28,7 @@ import com.codepan.callback.Interface.OnCameraChangeCallback;
 import com.codepan.model.StampData;
 import com.codepan.utils.CodePanUtils;
 import com.codepan.utils.Console;
+import com.codepan.utils.DeviceOrientation;
 import com.codepan.utils.MotionDetector;
 import com.codepan.widget.FocusIndicatorView;
 import com.codepan.widget.camera.Callback.OnCameraErrorCallback;
@@ -60,12 +60,12 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	private OnCameraChangeCallback cameraChangeCallback;
 	private OnCameraErrorCallback cameraErrorCallback;
 	private FocusIndicatorView focusIndicatorView;
+	private boolean isLandscape, detectMotionBlur;
 	private OnCaptureCallback captureCallback;
 	private ArrayList<StampData> stampList;
 	private SurfaceHolder surfaceHolder;
 	private MotionDetector detector;
 	private String folder, prefix;
-	private boolean isLandscape;
 	private Parameters params;
 	private String flashMode;
 	private Context context;
@@ -88,9 +88,8 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 		this.hasAutoFocus = pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS);
 		this.camera = getAvailableCamera(cameraSelection);
 		this.cameraErrorCallback = cameraErrorCallback;
-		if(detectMotionBlur) {
-			this.detector = new MotionDetector(context);
-		}
+		this.detector = new MotionDetector(context);
+		this.detectMotionBlur = detectMotionBlur;
 		if(camera != null) {
 			this.cameraSelection = cameraSelection;
 			this.flashMode = flashMode;
@@ -136,19 +135,15 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 			camera.setPreviewDisplay(holder);
 			params = camera.getParameters();
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-				WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-				int rotation = manager.getDefaultDisplay().getRotation();
-				int degrees = rotation * 90;
-				CameraInfo info = new CameraInfo();
-				Camera.getCameraInfo(CAMERA_ID, info);
-				int orientation;
-				if(info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-					orientation = (info.orientation + degrees) % 360;
+				int orientation = 90;
+				if(hasFrontCam && cameraSelection == CameraInfo.CAMERA_FACING_FRONT) {
+					CameraInfo info = new CameraInfo();
+					Camera.getCameraInfo(CAMERA_ID, info);
+					orientation = (info.orientation) % 360;
 					orientation = (360 - orientation) % 360;
+					isFrontCamInverted = orientation == 270;
 				}
-				else {
-					orientation = (info.orientation - degrees + 360) % 360;
-				}
+				orientation = isLandscape ? 0 : orientation;
 				camera.setDisplayOrientation(orientation);
 			}
 			else {
@@ -263,7 +258,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
 	@Override
 	public void onPictureTaken(byte[] data, Camera camera) {
-		if(detector != null && detector.isMoving()) {
+		if(detectMotionBlur && detector.isMoving()) {
 			if(cameraErrorCallback != null) {
 				cameraErrorCallback.onCameraError(CameraError.MOTION_BLUR);
 			}
@@ -289,14 +284,16 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 				src = scale(src);
 			}
 			Matrix matrix = new Matrix();
-			matrix.postRotate(getImageRotation());
+			int rotation = getImageRotation();
+			DeviceOrientation orientation = detector.getOrientation();
+			matrix.postRotate(rotation - (orientation.getDegrees() - 90));
 			Bitmap bitmap = Bitmap.createBitmap(src, 0, 0, src.getWidth(),
 				src.getHeight(), matrix, true);
 			if(stampList != null) {
 				String font = context.getString(R.string.calibri_regular);
 				bitmap = CodePanUtils.stampPhoto(context, bitmap, font, stampList);
-				saveBitmap(fileName, bitmap);
 			}
+			saveBitmap(fileName, bitmap);
 		}
 	}
 
@@ -556,5 +553,11 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		detector.dispose();
 	}
 }
