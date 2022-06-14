@@ -18,7 +18,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.MotionEvent;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
@@ -139,21 +138,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
 				WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 				int rotation = manager.getDefaultDisplay().getRotation();
-				int degrees = 0;
-				switch(rotation) {
-					case Surface.ROTATION_0:
-						degrees = 0;
-						break;
-					case Surface.ROTATION_90:
-						degrees = 90;
-						break;
-					case Surface.ROTATION_180:
-						degrees = 180;
-						break;
-					case Surface.ROTATION_270:
-						degrees = 270;
-						break;
-				}
+				int degrees = rotation * 90;
 				CameraInfo info = new CameraInfo();
 				Camera.getCameraInfo(CAMERA_ID, info);
 				int orientation;
