@@ -18,9 +18,11 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.LinearLayout.LayoutParams;
 
 import com.codepan.R;
@@ -135,15 +137,33 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 			camera.setPreviewDisplay(holder);
 			params = camera.getParameters();
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-				int orientation = 90;
-				if(hasFrontCam && cameraSelection == CameraInfo.CAMERA_FACING_FRONT) {
-					CameraInfo info = new CameraInfo();
-					Camera.getCameraInfo(CAMERA_ID, info);
-					orientation = (info.orientation) % 360;
-					orientation = (360 - orientation) % 360;
-					isFrontCamInverted = orientation == 270;
+				WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+				int rotation = manager.getDefaultDisplay().getRotation();
+				int degrees = 0;
+				switch(rotation) {
+					case Surface.ROTATION_0:
+						degrees = 0;
+						break;
+					case Surface.ROTATION_90:
+						degrees = 90;
+						break;
+					case Surface.ROTATION_180:
+						degrees = 180;
+						break;
+					case Surface.ROTATION_270:
+						degrees = 270;
+						break;
 				}
-				orientation = isLandscape ? 0 : orientation;
+				CameraInfo info = new CameraInfo();
+				Camera.getCameraInfo(CAMERA_ID, info);
+				int orientation;
+				if(info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+					orientation = (info.orientation + degrees) % 360;
+					orientation = (360 - orientation) % 360;
+				}
+				else {
+					orientation = (info.orientation - degrees + 360) % 360;
+				}
 				camera.setDisplayOrientation(orientation);
 			}
 			else {
