@@ -286,7 +286,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 			Matrix matrix = new Matrix();
 			int rotation = getImageRotation();
 			DeviceOrientation orientation = detector.getOrientation();
-			matrix.postRotate(rotation - (orientation.getDegrees() - 90));
+			matrix.postRotate(rotation + (orientation.getDegrees() - 90));
 			Bitmap bitmap = Bitmap.createBitmap(src, 0, 0, src.getWidth(),
 				src.getHeight(), matrix, true);
 			if(stampList != null) {

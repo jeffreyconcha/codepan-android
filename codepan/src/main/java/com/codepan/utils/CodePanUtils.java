@@ -2731,8 +2731,9 @@ public class CodePanUtils {
 		final int margin = res.getDimensionPixelSize(R.dimen.eight);
 		int width = input.getWidth();
 		int height = input.getHeight();
-		float rt = (float) textSize / (float) dm.heightPixels;
-		float rm = (float) margin / (float) dm.heightPixels;
+		int max = Math.max(dm.widthPixels, dm.heightPixels);
+		float rt = (float) textSize / (float) max;
+		float rm = (float) margin / (float) max;
 		float m = rm * (float) height;
 		float size = rt * (float) height;
 		Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
