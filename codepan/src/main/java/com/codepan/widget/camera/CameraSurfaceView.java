@@ -244,6 +244,10 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 		return camera;
 	}
 
+	public DeviceOrientation getOrientation() {
+		return detector.getOrientation();
+	}
+
 	public void takePicture() {
 		if(camera != null) {
 			isCaptured = true;
