@@ -30,6 +30,7 @@ import com.codepan.utils.CodePanUtils;
 import com.codepan.utils.Console;
 import com.codepan.utils.DeviceOrientation;
 import com.codepan.utils.MotionDetector;
+import com.codepan.utils.OrientationChangedNotifier;
 import com.codepan.widget.FocusIndicatorView;
 import com.codepan.widget.camera.Callback.OnCameraErrorCallback;
 import com.codepan.widget.camera.Callback.OnCaptureCallback;
@@ -75,6 +76,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	public CameraSurfaceView(
 		Context context,
 		OnCameraErrorCallback cameraErrorCallback,
+		OrientationChangedNotifier notifier,
 		int cameraSelection,
 		String flashMode,
 		String folder,
@@ -88,7 +90,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 		this.hasAutoFocus = pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS);
 		this.camera = getAvailableCamera(cameraSelection);
 		this.cameraErrorCallback = cameraErrorCallback;
-		this.detector = new MotionDetector(context);
+		this.detector = new MotionDetector(context, notifier);
 		this.detectMotionBlur = detectMotionBlur;
 		if(camera != null) {
 			this.cameraSelection = cameraSelection;

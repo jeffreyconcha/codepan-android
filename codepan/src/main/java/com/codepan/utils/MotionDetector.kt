@@ -11,6 +11,10 @@ import kotlin.math.*
 const val DEFAULT_SENSITIVITY = 0.5F
 const val DEFAULT_ALLOWANCE = 300L
 
+interface OrientationChangedNotifier {
+    fun onOrientationChanged(orientation: DeviceOrientation)
+}
+
 enum class DeviceOrientation(val degrees: Int) {
     PORTRAIT_90(90),
     LANDSCAPE_0(0),
@@ -21,7 +25,8 @@ enum class DeviceOrientation(val degrees: Int) {
 class MotionDetector(
     val context: Context,
     val sensitivity: Float = DEFAULT_SENSITIVITY,
-    val allowanceTime: Long = DEFAULT_ALLOWANCE
+    val allowanceTime: Long = DEFAULT_ALLOWANCE,
+    val notifier: OrientationChangedNotifier?
 ) : SensorEventListener {
 
     private val sm: SensorManager =
@@ -35,6 +40,7 @@ class MotionDetector(
     private var y: Float = 0F
     private var z: Float = 0F
     private var rotation: Int = 0
+    private var current = DeviceOrientation.PORTRAIT_90
 
     val isMoving: Boolean
         get() {
@@ -55,8 +61,12 @@ class MotionDetector(
             }
         }
 
+    constructor(context: Context, notifier: OrientationChangedNotifier?) :
+        this(context, DEFAULT_SENSITIVITY, DEFAULT_ALLOWANCE, notifier)
+
+
     constructor(context: Context) :
-        this(context, DEFAULT_SENSITIVITY, DEFAULT_ALLOWANCE)
+        this(context, DEFAULT_SENSITIVITY, DEFAULT_ALLOWANCE, null)
 
     init {
         sm.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
@@ -87,7 +97,11 @@ class MotionDetector(
                 val inclination = Math.toDegrees(acos(g[2]).toDouble()).roundToInt()
                 if (inclination in 26..154) {
                     rotation = Math.toDegrees(atan2(g[0], g[1]).toDouble()).roundToInt()
-                    Console.log("Orientation: $orientation @$rotation")
+                    val newOrientation = orientation;
+                    if (newOrientation != current) {
+                        notifier?.onOrientationChanged(newOrientation)
+                        current = newOrientation;
+                    }
                 }
             }
         }
