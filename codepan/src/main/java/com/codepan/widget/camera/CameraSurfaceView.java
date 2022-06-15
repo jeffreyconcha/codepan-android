@@ -284,9 +284,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 				src = scale(src);
 			}
 			Matrix matrix = new Matrix();
-			int rotation = getImageRotation();
-			DeviceOrientation orientation = detector.getOrientation();
-			matrix.postRotate(rotation + (orientation.getDegrees() - 90));
+			matrix.postRotate(getImageRotation());
 			Bitmap bitmap = Bitmap.createBitmap(src, 0, 0, src.getWidth(),
 				src.getHeight(), matrix, true);
 			if(stampList != null) {
@@ -440,32 +438,31 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	}
 
 	public int getImageRotation() {
-		int rotation = 0;
+		DeviceOrientation orientation = detector.getOrientation();
+		int adjustment = (orientation.getDegrees() - 90);
 		int count = Camera.getNumberOfCameras();
 		if(count >= 2) {
 			switch(cameraSelection) {
 				case CameraInfo.CAMERA_FACING_FRONT:
 					if(isFrontCamInverted) {
-						rotation = IMAGE_ROTATION_BACK;
+						return IMAGE_ROTATION_BACK + adjustment;
 					}
 					else {
-						rotation = IMAGE_ROTATION_FRONT;
+						return IMAGE_ROTATION_FRONT + adjustment;
 					}
-					break;
 				case CameraInfo.CAMERA_FACING_BACK:
-					rotation = IMAGE_ROTATION_BACK;
-					break;
+					return IMAGE_ROTATION_BACK - adjustment;
 			}
 		}
 		else {
 			if(hasFrontCam) {
-				rotation = IMAGE_ROTATION_FRONT;
+				return IMAGE_ROTATION_FRONT + adjustment;
 			}
 			else {
-				rotation = IMAGE_ROTATION_BACK;
+				return IMAGE_ROTATION_BACK - adjustment;
 			}
 		}
-		return isLandscape ? 0 : rotation;
+		return 0;
 	}
 
 	@SuppressLint("NewApi")
