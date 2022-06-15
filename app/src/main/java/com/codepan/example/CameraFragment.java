@@ -129,8 +129,9 @@ public class CameraFragment extends Fragment implements OnClickListener, OnCaptu
             StampData stamp = new StampData();
             stamp.data = date + " " + time;
             stamp.alignment = Paint.Align.LEFT;
+            stampList.add(stamp);
             surfaceView.setStampList(stampList);
-            surfaceView.setMaxPictureSize(640, 360);
+            surfaceView.setMaxPictureSize(1280, 720);
             if (flCamera.getChildCount() > 1) {
                 flCamera.removeViewAt(0);
             }

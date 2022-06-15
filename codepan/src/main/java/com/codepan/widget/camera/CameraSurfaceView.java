@@ -289,7 +289,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 				src.getHeight(), matrix, true);
 			if(stampList != null) {
 				String font = context.getString(R.string.calibri_regular);
-				bitmap = CodePanUtils.stampPhoto(context, bitmap, font, stampList);
+				bitmap = CodePanUtils.stampPhoto(context, bitmap, font, 0.035F, stampList);
 			}
 			saveBitmap(fileName, bitmap);
 		}
