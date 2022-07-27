@@ -18,34 +18,48 @@ import android.os.SystemClock;
 
 @SuppressLint("MissingPermission")
 public abstract class LocationListener implements android.location.LocationListener,
-		GpsStatus.Listener, Runnable {
+	GpsStatus.Listener, Runnable {
+
+	enum LocationCriteria {
+		HIGH,
+		LOW,
+	}
 
 	private final long SENSOR_DELAY = 2000L;
 	private final long SENSOR_ALLOWANCE = 3000L;
-	private final float RECOMMENDED_SNR = 21F;
+	private final float HIGH_SNR = 21F;
+	private final float LOW_SNR = 13F;
 	private final float SENSITIVITY = 0.1F;
 	private long motionUpdate, sensorUpdate;
 	private GnssStatus.Callback callback;
 	private int used, visible, snr;
+	private float x, y, z, minSnr;
 	private boolean requestSensor;
 	private LocationManager lm;
 	private SensorManager sm;
 	private Handler handler;
 	private Sensor sensor;
-	private float x, y, z;
 
-	public LocationListener(Context context) {
+	public LocationListener(Context context, LocationCriteria criteria) {
 		lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		sm = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
 		sensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		handler = new Handler();
+		switch(criteria) {
+			case HIGH:
+				minSnr = HIGH_SNR;
+				break;
+			case LOW:
+				minSnr = LOW_SNR;
+				break;
+		}
 	}
 
 	public void startLocationUpdates() {
 		if(lm != null) {
 			try {
 				lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-						0, 0, this);
+					0, 0, this);
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 					callback = new GnssStatus.Callback() {
 						@Override
@@ -57,7 +71,7 @@ public abstract class LocationListener implements android.location.LocationListe
 							for(int i = 0; i < visible; i++) {
 								if(status.usedInFix(i)) {
 									float decibel = status.getCn0DbHz(i);
-									if(decibel >= RECOMMENDED_SNR) {
+									if(decibel >= minSnr) {
 										snr++;
 									}
 									used++;
@@ -110,7 +124,7 @@ public abstract class LocationListener implements android.location.LocationListe
 			for(GpsSatellite satellite : status.getSatellites()) {
 				if(satellite.usedInFix()) {
 					float decibel = satellite.getSnr();
-					if(decibel >= RECOMMENDED_SNR) {
+					if(decibel >= minSnr) {
 						snr++;
 					}
 					used++;

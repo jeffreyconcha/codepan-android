@@ -16,9 +16,12 @@ public class LocationOptimizer extends LocationListener {
 	public static final float NETWORK_STABILITY_RADIUS = 20F;
 	public static final float NETWORK_GEOFENCE_RADIUS = 200F;
 	public static final float GPS_GEOFENCE_RADIUS = 20F;
-	private final int GPS_LOCK_REQUIREMENTS = 5;
-	private final int GPS_FIX_REQUIREMENTS = 5;
-	private final int GPS_SNR_REQUIREMENTS = 4;
+	private final int HIGH_GPS_LOCK_REQUIREMENTS = 5;
+	private final int HIGH_GPS_FIX_REQUIREMENTS = 5;
+	private final int HIGH_GPS_SNR_REQUIREMENTS = 4;
+	private final int LOW_GPS_LOCK_REQUIREMENTS = 3;
+	private final int LOW_GPS_FIX_REQUIREMENTS = 3;
+	private final int LOW_GPS_SNR_REQUIREMENTS = 3;
 	private final int MAX_AVERAGE_DATA_STRICT = 900;
 	private final int MAX_AVERAGE_DATA_NORMAL = 15;
 	private final int MAX_OUTSIDE_DATA = 75;
@@ -28,8 +31,8 @@ public class LocationOptimizer extends LocationListener {
 	private ArrayList<Location> locationList = new ArrayList<>();
 	private ArrayList<Location> candidatelist = new ArrayList<>();
 	private OnLocationAverageChangedCallback callback;
+	private int counter, lock, minLock, minFix, minSnr;
 	private boolean initAverage = true;
-	private int counter, lock;
 	private Location outdoor;
 	private Location network;
 	private Location average;
@@ -38,10 +41,22 @@ public class LocationOptimizer extends LocationListener {
 	private Location gps;
 	private long interval;
 
-	public LocationOptimizer(Context context, long interval) {
-		super(context);
+	public LocationOptimizer(Context context, long interval, LocationCriteria criteria) {
+		super(context, criteria);
 		this.interval = interval;
 		this.random = new Random();
+		switch(criteria) {
+			case HIGH:
+				minLock = HIGH_GPS_LOCK_REQUIREMENTS;
+				minFix = HIGH_GPS_FIX_REQUIREMENTS;
+				minSnr = HIGH_GPS_SNR_REQUIREMENTS;
+				break;
+			case LOW:
+				minLock = LOW_GPS_LOCK_REQUIREMENTS;
+				minFix = LOW_GPS_FIX_REQUIREMENTS;
+				minSnr = LOW_GPS_SNR_REQUIREMENTS;
+				break;
+		}
 	}
 
 	public void inputData(Location location) {
@@ -98,7 +113,7 @@ public class LocationOptimizer extends LocationListener {
 					int bearing = random.nextInt(MAX_DEGREE);
 					int meters = random.nextInt(MAX_RANDOM_METER);
 					LatLng point = CodePanUtils.travel(latitude,
-							longitude, bearing, meters);
+						longitude, bearing, meters);
 					recent.setAccuracy(average.getAccuracy());
 					recent.setLatitude(point.latitude);
 					recent.setLongitude(point.longitude);
@@ -109,7 +124,7 @@ public class LocationOptimizer extends LocationListener {
 				else {
 					if(counter >= MAX_OUTSIDE_DATA) {
 						int max = outdoor != null && outdoor.distanceTo(recent) < NETWORK_GEOFENCE_RADIUS ?
-								MAX_AVERAGE_DATA_NORMAL : MAX_AVERAGE_DATA_STRICT;
+							MAX_AVERAGE_DATA_NORMAL : MAX_AVERAGE_DATA_STRICT;
 						candidatelist.add(recent);
 						if(candidatelist.size() >= max) {
 							locationList.clear();
@@ -172,7 +187,7 @@ public class LocationOptimizer extends LocationListener {
 		if(location != null) {
 			String provider = location.getProvider();
 			if(provider.equals(LocationManager.GPS_PROVIDER)) {
-				if(used >= GPS_FIX_REQUIREMENTS && snr >= GPS_SNR_REQUIREMENTS) {
+				if(used >= minFix && snr >= minSnr) {
 					this.gps = location;
 				}
 			}
@@ -203,13 +218,13 @@ public class LocationOptimizer extends LocationListener {
 	}
 
 	private void watchGpsLock() {
-		if(lock < GPS_LOCK_REQUIREMENTS) {
+		if(lock < minLock) {
 			lock += 1;
 		}
 	}
 
 	private boolean isGpsLock() {
-		return lock >= GPS_LOCK_REQUIREMENTS;
+		return lock >= minLock;
 	}
 
 	public void setInitAverage(boolean initAverage) {
