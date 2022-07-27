@@ -20,7 +20,7 @@ import android.os.SystemClock;
 public abstract class LocationListener implements android.location.LocationListener,
 	GpsStatus.Listener, Runnable {
 
-	enum LocationCriteria {
+	public enum LocationCriteria {
 		HIGH,
 		LOW,
 	}
