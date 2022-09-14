@@ -2991,12 +2991,27 @@ public class CodePanUtils {
 		return entryList;
 	}
 
+	public static boolean isValidDate(String date) {
+		if(date != null && !date.isEmpty()) {
+			try {
+				final String PATTERN = "yyyy-MM-dd";
+				SimpleDateFormat format = new SimpleDateFormat(PATTERN, Locale.ENGLISH);
+				format.parse(date);
+				return true;
+			}
+			catch(ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+
 	public static boolean isValidTime(String time) {
 		if(time != null && !time.isEmpty()) {
 			try {
 				final String PATTERN = "HH:mm:ss";
 				SimpleDateFormat format = new SimpleDateFormat(PATTERN, Locale.ENGLISH);
-				java.util.Date d = format.parse(time);
+				format.parse(time);
 				return true;
 			}
 			catch(ParseException e) {

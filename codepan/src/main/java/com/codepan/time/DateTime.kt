@@ -17,22 +17,55 @@ interface DateTimeFields {
 
 class DateTimePattern {
     companion object {
-        const val displayDate = "MMMM d, yyyy";
-        const val abbrDate = "MMM d, yyyy";
-        const val displayMonth: String = "MMMM";
-        const val abbrMonth: String = "MMM";
-        const val year: String = "yyyy";
-        const val displayMonthYear: String = "MMMM yyyy";
-        const val abbrMonthYear: String = "MMM yyyy";
-        const val weekday = "EEEE";
-        const val abbrWeekday = "EEE";
-        const val displayTime = "h:mm a";
-        const val displayFullTime = "h:mm:ss a";
-        const val displayDateTime = "$displayDate, $displayTime";
-        const val displayTimeDate = "$displayTime, $displayDate";
-        const val abbrDateTime = "$abbrDate, $displayTime";
-        const val displayWeekdayDate = "$weekday, $displayDate";
-        const val abbrWeekdayDate = "$abbrWeekday, $abbrDate";
+        const val displayDate = "MMMM d, yyyy"
+        const val abbrDate = "MMM d, yyyy"
+        const val displayMonth: String = "MMMM"
+        const val abbrMonth: String = "MMM"
+        const val year: String = "yyyy"
+        const val displayMonthYear: String = "MMMM yyyy"
+        const val abbrMonthYear: String = "MMM yyyy"
+        const val weekday = "EEEE"
+        const val abbrWeekday = "EEE"
+        const val displayTime = "h:mm a"
+        const val displayFullTime = "h:mm:ss a"
+        const val displayDateTime = "$displayDate, $displayTime"
+        const val displayTimeDate = "$displayTime, $displayDate"
+        const val abbrDateTime = "$abbrDate, $displayTime"
+        const val displayWeekdayDate = "$weekday, $displayDate"
+        const val abbrWeekdayDate = "$abbrWeekday, $abbrDate"
+    }
+}
+
+class DayOfWeek {
+
+    enum class Weekday(val value: Int) {
+        monday(1),
+        tuesday(2),
+        wednesday(3),
+        thursday(4),
+        friday(5),
+        saturday(6),
+        sunday(7),
+    }
+
+    companion object {
+        fun fromName(name: String): Weekday? {
+            for (weekday in Weekday.values()) {
+                if (weekday.name.startsWith(name)) {
+                    return weekday
+                }
+            }
+            return null
+        }
+
+        fun fromValue(value: Int): Weekday? {
+            for (weekday in Weekday.values()) {
+                if (weekday.value == value) {
+                    return weekday
+                }
+            }
+            return null
+        }
     }
 }
 
@@ -57,7 +90,6 @@ class DateTime(
     val readableTime: String
         get() = getReadableTime()
 
-
     val timestamp: Long
         get() {
             try {
@@ -72,11 +104,20 @@ class DateTime(
             return 0L
         }
 
+
     val offsetHours: String
         get() {
             val offset = timeZone.rawOffset / HOUR.milliseconds
             val sign = if (offset >= 0) "+" else "-"
             return "$sign${abs(offset)}:00"
+        }
+
+    val weekday: DayOfWeek.Weekday
+        get() {
+            val cal = toCalendar()
+            val intValue = cal.get(Calendar.DAY_OF_WEEK) - 1
+            val dayOfWeek = if (intValue == 0) 7 else intValue
+            return DayOfWeek.fromValue(dayOfWeek)!!
         }
 
     val history: String
@@ -149,7 +190,7 @@ class DateTime(
     }
 
     fun getOffset(
-        input: TimeZone = TimeZone.getDefault()
+        input: TimeZone = TimeZone.getDefault(),
     ): Int {
         if (input != timeZone) {
             return input.rawOffset - timeZone.rawOffset
@@ -166,16 +207,16 @@ class DateTime(
     }
 
     fun isAfterOrEqual(other: DateTime): Boolean {
-        return isAfter(other) || isEqual(other);
+        return isAfter(other) || isEqual(other)
     }
 
     fun isBeforeOrEqual(other: DateTime): Boolean {
-        return isBefore(other) || isEqual(other);
+        return isBefore(other) || isEqual(other)
     }
 
     fun isBetween(
         other1: DateTime,
-        other2: DateTime
+        other2: DateTime,
     ): Boolean {
         return if (other1.isBefore(other2)) {
             this.isAfter(other1) && this.isBefore(other2)
@@ -193,19 +234,39 @@ class DateTime(
     }
 
     fun trimTime(): DateTime {
-        return fromDate(date);
+        return fromDate(date)
     }
 
     fun trimDate(): DateTime {
-        return fromTime(time);
+        return fromTime(time)
     }
 
     fun roll(
         unit: TimeUnit,
-        amount: Int
+        amount: Int,
     ): DateTime {
         val total = timestamp + (unit.milliseconds * amount)
         return fromTimestamp(total, timeZone)
+    }
+
+    fun exactRoll(
+        unit: TimeUnit,
+        amount: Int,
+    ): DateTime {
+        val cal = toCalendar()
+        return when (unit) {
+            MONTH -> {
+                cal.roll(Calendar.MONTH, amount)
+                fromCalendar(cal)
+            }
+            YEAR -> {
+                cal.roll(Calendar.YEAR, amount)
+                fromCalendar(cal)
+            }
+            else -> {
+                roll(unit, amount)
+            }
+        }
     }
 
     fun isEqual(other: DateTime): Boolean {
@@ -237,9 +298,54 @@ class DateTime(
 
     override fun equals(other: Any?): Boolean {
         if (other is DateTime) {
-            return timestamp == other.timestamp;
+            return timestamp == other.timestamp
         }
-        return false;
+        return false
+    }
+
+    fun toCutOff(type: CutOffType, value: String): DateTime {
+        when (type) {
+            CutOffType.daily -> {
+                if (value.split(":").size == 3) {
+                    return DateTime(date, value, timeZone)
+                }
+                throw Exception("Invalid time format, value must be a 24hr format (00:00:00).")
+            }
+            CutOffType.weekly -> {
+                val weekday = DayOfWeek.fromName(value)
+                if (weekday != null) {
+                    lateinit var d1: DateTime;
+                    for (i in (1..7)) {
+                        val d1 = this.roll(DAY, -i);
+                        val d2 = this.roll(DAY, i);
+                        if (d1.weekday == weekday) {
+                            return d1;
+                        }
+                        if (d2.weekday == weekday) {
+                            return d2;
+                        }
+                    }
+                }
+                throw Exception("Invalid weekday name.")
+            }
+            CutOffType.monthly -> {
+                val day = value.toInt()
+                if (day <= 28) {
+                    val formatted = String.format(Locale.ENGLISH, "%02d", day)
+                    val elements = date.split("-")
+                    val newDate = "${elements[0]}-${elements[1]}-$formatted"
+                    return DateTime(newDate, time, timeZone)
+                }
+                throw Exception("Monthly cut-off value must not exceed the 28th day.")
+            }
+        }
+    }
+
+    fun toCalendar(): Calendar {
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = timestamp
+        cal.timeZone = timeZone
+        return cal
     }
 
     companion object {
@@ -254,7 +360,7 @@ class DateTime(
         }
 
         fun nowIn(
-            timeZone: TimeZone
+            timeZone: TimeZone,
         ): DateTime {
             val cal = Calendar.getInstance()
             cal.timeZone = timeZone
@@ -262,7 +368,7 @@ class DateTime(
         }
 
         fun fromDate(
-            date: String
+            date: String,
         ): DateTime {
             return DateTime(
                 date = date,
@@ -270,7 +376,7 @@ class DateTime(
         }
 
         fun fromTime(
-            time: String
+            time: String,
         ): DateTime {
             return DateTime(
                 time = time,
@@ -289,7 +395,7 @@ class DateTime(
 
         fun fromTimestamp(
             timestamp: Long,
-            timeZone: TimeZone = TimeZone.getDefault()
+            timeZone: TimeZone = TimeZone.getDefault(),
         ): DateTime {
             val cal = Calendar.getInstance()
             cal.timeZone = timeZone
