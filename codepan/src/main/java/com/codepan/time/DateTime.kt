@@ -219,9 +219,9 @@ class DateTime(
         other2: DateTime,
     ): Boolean {
         return if (other1.isBefore(other2)) {
-            this.isAfter(other1) && this.isBefore(other2)
+            this.isAfterOrEqual(other1) && this.isBeforeOrEqual(other2)
         } else {
-            this.isAfter(other2) && this.isBefore(other1)
+            this.isAfterOrEqual(other2) && this.isBeforeOrEqual(other1)
         }
     }
 
