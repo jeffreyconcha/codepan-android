@@ -22,9 +22,9 @@ public class LocationOptimizer extends LocationListener {
 	private final int LOW_GPS_LOCK_REQUIREMENTS = 3;
 	private final int LOW_GPS_FIX_REQUIREMENTS = 3;
 	private final int LOW_GPS_SNR_REQUIREMENTS = 3;
-	private final int MAX_AVERAGE_DATA_STRICT = 900;
+	private final int MAX_AVERAGE_DATA_STRICT = 60;
 	private final int MAX_AVERAGE_DATA_NORMAL = 15;
-	private final int MAX_OUTSIDE_DATA = 75;
+	private final int MAX_OUTSIDE_DATA = 30;
 	private final int MAX_RANDOM_METER = 5;
 	private final int MAX_DEGREE = 360;
 
