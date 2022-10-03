@@ -2385,7 +2385,7 @@ public class CodePanUtils {
 	public static GpsData getGps(
 		Context context, Location location, TimeZone timeZone,
 		long lastLocationUpdate, long interval,
-		float requiredAccuracy
+		float requiredAccuracy, long timeDiffAllowance
 	) {
 		GpsData gps = new GpsData();
 		gps.isEnabled = isGpsEnabled(context);
@@ -2401,8 +2401,8 @@ public class CodePanUtils {
 			gps.bearing = location.getBearing();
 			gps.isIndoor = !provider.equals(LocationManager.GPS_PROVIDER);
 			final long timeElapsed = SystemClock.elapsedRealtime() - lastLocationUpdate;
-			final long allowance = 15000L + interval;
-			if(timeElapsed <= allowance && (gps.accuracy <= requiredAccuracy || !gps.isIndoor)) {
+			final long elapsedAllowance = 15000L + interval;
+			if(timeElapsed <= elapsedAllowance && (gps.accuracy <= requiredAccuracy || !gps.isIndoor)) {
 				if(gps.longitude != 0 && gps.latitude != 0) {
 					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
 						gps.isValid = !location.isFromMockProvider();
@@ -2415,6 +2415,13 @@ public class CodePanUtils {
 			TimeZone utc = TimeZone.getTimeZone("UTC");
 			DateTime dt = DateTime.Companion.fromTimestamp(timestamp, utc);
 			gps.dt = dt.to(timeZone);
+			if(gps.isValid) {
+				final DateTime now = DateTime.Companion.nowIn(utc);
+				final long difference = now.difference(dt);
+				if(Math.abs(difference) > timeDiffAllowance) {
+					gps.isValid = false;
+				}
+			}
 			gps.location = location;
 			gps.withHistory = true;
 		}
