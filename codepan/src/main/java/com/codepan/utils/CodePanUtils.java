@@ -2404,12 +2404,7 @@ public class CodePanUtils {
 			final long elapsedAllowance = 15000L + interval;
 			if(timeElapsed <= elapsedAllowance && (gps.accuracy <= requiredAccuracy || !gps.isIndoor)) {
 				if(gps.longitude != 0 && gps.latitude != 0) {
-					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-						gps.isValid = !location.isFromMockProvider();
-					}
-					else {
-						gps.isValid = true;
-					}
+					gps.isValid = !location.isFromMockProvider();
 				}
 			}
 			TimeZone utc = TimeZone.getTimeZone("UTC");
