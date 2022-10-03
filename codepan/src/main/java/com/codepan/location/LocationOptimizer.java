@@ -91,9 +91,8 @@ public class LocationOptimizer extends LocationListener {
 		accuracy /= actual;
 		latitude /= actual;
 		longitude /= actual;
-		long time = System.currentTimeMillis();
 		average = new Location(LocationManager.GPS_PROVIDER);
-		average.setTime(time);
+		average.setTime(recent.getTime());
 		average.setAccuracy(accuracy);
 		average.setLatitude(latitude);
 		average.setLongitude(longitude);
