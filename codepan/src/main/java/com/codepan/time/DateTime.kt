@@ -314,8 +314,7 @@ class DateTime(
             CutOffType.weekly -> {
                 val weekday = DayOfWeek.fromName(value)
                 if (weekday != null) {
-                    lateinit var d1: DateTime;
-                    for (i in (1..7)) {
+                    for (i in (0..6)) {
                         val d1 = this.roll(DAY, -i);
                         val d2 = this.roll(DAY, i);
                         if (d1.weekday == weekday) {
