@@ -5,6 +5,7 @@ public class Authorization {
 
 	public static final String BASIC_AUTH = "Basic Auth";
 	public static final String BEARER = "Bearer";
+	public static final String CUSTOM = "CUSTOM";
 
 	private String type;
 	private String key;
@@ -14,15 +15,20 @@ public class Authorization {
 		String authorization = null;
 		String value;
 		if(type != null) {
-			if(type.equals(BASIC_AUTH)) {
-				String basic = key + ":" + token;
-				byte[] b = basic.getBytes();
-				value = new String(Base64.encode(b, Base64.NO_WRAP));
+			if(type.equals(CUSTOM)) {
+				authorization = key + "=" + token;
 			}
 			else {
-				value = token;
+				if(type.equals(BASIC_AUTH)) {
+					String basic = key + ":" + token;
+					byte[] b = basic.getBytes();
+					value = new String(Base64.encode(b, Base64.NO_WRAP));
+				}
+				else {
+					value = token;
+				}
+				authorization = type + " " + value;
 			}
-			authorization = type + " " + value;
 		}
 		return authorization;
 	}
