@@ -26,14 +26,11 @@ class MotionDetector(
     val context: Context,
     val sensitivity: Float = DEFAULT_SENSITIVITY,
     val allowanceTime: Long = DEFAULT_ALLOWANCE,
-    val notifier: OrientationChangedNotifier?
+    val notifier: OrientationChangedNotifier?,
 ) : SensorEventListener {
 
-    private val sm: SensorManager =
-        context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-
-    private val accelerometer: Sensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-
+    private var sm: SensorManager? = null;
+    private var sensor: Sensor? = null;
     private var motionUpdate: Long = 0L
     private var sensorUpdate: Long = 0L
     private var x: Float = 0F
@@ -69,7 +66,11 @@ class MotionDetector(
         this(context, DEFAULT_SENSITIVITY, DEFAULT_ALLOWANCE, null)
 
     init {
-        sm.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
+        sm = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        sensor = sm?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        if (sensor != null) {
+            sm?.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL)
+        }
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
@@ -111,6 +112,8 @@ class MotionDetector(
     }
 
     fun dispose() {
-        sm.unregisterListener(this, accelerometer)
+        if (sensor != null) {
+            sm?.unregisterListener(this, sensor)
+        }
     }
 }
