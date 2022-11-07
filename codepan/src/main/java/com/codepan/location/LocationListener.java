@@ -35,16 +35,18 @@ public abstract class LocationListener implements android.location.LocationListe
 	private int used, visible, snr;
 	private float x, y, z, minSnr;
 	private boolean requestSensor;
-	private LocationManager lm;
-	private SensorManager sm;
+	private final LocationManager lm;
+	private final SensorManager sm;
 	private Handler handler;
 	private Sensor sensor;
 
 	public LocationListener(Context context, LocationCriteria criteria) {
 		lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		sm = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-		sensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-		handler = new Handler();
+		if(sm != null) {
+			sensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+			handler = new Handler();
+		}
 		switch(criteria) {
 			case HIGH:
 				minSnr = HIGH_SNR;
@@ -86,7 +88,9 @@ public abstract class LocationListener implements android.location.LocationListe
 					lm.addGpsStatusListener(this);
 				}
 				requestSensor = true;
-				handler.postDelayed(this, SENSOR_DELAY);
+				if(handler != null) {
+					handler.postDelayed(this, SENSOR_DELAY);
+				}
 			}
 			catch(SecurityException se) {
 				se.printStackTrace();
@@ -160,33 +164,35 @@ public abstract class LocationListener implements android.location.LocationListe
 
 	@Override
 	public void run() {
-		handler.removeCallbacks(this);
-		sm.registerListener(new SensorEventListener() {
-			@Override
-			public void onSensorChanged(SensorEvent event) {
-				sm.unregisterListener(this, sensor);
-				long elapsed = SystemClock.elapsedRealtime();
-				float cx = event.values[0];
-				float cy = event.values[1];
-				float cz = event.values[2];
-				float dx = Math.abs(cx - x);
-				float dy = Math.abs(cy - y);
-				float dz = Math.abs(cz - z);
-				if(dx >= SENSITIVITY || dy >= SENSITIVITY || dz >= SENSITIVITY) {
-					motionUpdate = elapsed;
+		if(sensor != null) {
+			handler.removeCallbacks(this);
+			sm.registerListener(new SensorEventListener() {
+				@Override
+				public void onSensorChanged(SensorEvent event) {
+					sm.unregisterListener(this, sensor);
+					long elapsed = SystemClock.elapsedRealtime();
+					float cx = event.values[0];
+					float cy = event.values[1];
+					float cz = event.values[2];
+					float dx = Math.abs(cx - x);
+					float dy = Math.abs(cy - y);
+					float dz = Math.abs(cz - z);
+					if(dx >= SENSITIVITY || dy >= SENSITIVITY || dz >= SENSITIVITY) {
+						motionUpdate = elapsed;
+					}
+					x = cx;
+					y = cy;
+					z = cz;
+					sensorUpdate = elapsed;
 				}
-				x = cx;
-				y = cy;
-				z = cz;
-				sensorUpdate = elapsed;
-			}
 
-			@Override
-			public void onAccuracyChanged(Sensor sensor, int i) {
+				@Override
+				public void onAccuracyChanged(Sensor sensor, int i) {
+				}
+			}, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+			if(requestSensor) {
+				handler.postDelayed(this, SENSOR_DELAY);
 			}
-		}, sensor, SensorManager.SENSOR_DELAY_NORMAL);
-		if(requestSensor) {
-			handler.postDelayed(this, SENSOR_DELAY);
 		}
 	}
 
