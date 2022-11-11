@@ -2410,7 +2410,7 @@ public class CodePanUtils {
 			TimeZone utc = TimeZone.getTimeZone("UTC");
 			DateTime dt = DateTime.Companion.fromTimestamp(timestamp, utc);
 			gps.dt = dt.to(timeZone);
-			if(gps.isValid && gps.isIndoor) {
+			if(gps.isValid) {
 				final DateTime now = DateTime.Companion.nowIn(utc);
 				final long difference = now.difference(dt);
 				if(Math.abs(difference) > timeDiffAllowance) {
