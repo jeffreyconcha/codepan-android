@@ -254,19 +254,8 @@ class DateTime(
         amount: Int,
     ): DateTime {
         val cal = toCalendar()
-        return when (unit) {
-            MONTH -> {
-                cal.roll(Calendar.MONTH, amount)
-                fromCalendar(cal)
-            }
-            YEAR -> {
-                cal.roll(Calendar.YEAR, amount)
-                fromCalendar(cal)
-            }
-            else -> {
-                roll(unit, amount)
-            }
-        }
+        cal.add(unit.id, amount);
+        return fromCalendar(cal)
     }
 
     fun isEqual(other: DateTime): Boolean {
