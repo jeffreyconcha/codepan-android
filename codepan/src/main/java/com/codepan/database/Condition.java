@@ -81,6 +81,12 @@ public class Condition {
 		this.field = field;
 	}
 
+	public Condition(String field, SQLiteQuery subQuery) {
+		this.field = field;
+		this.operator = Operator.IN_QUERY;
+		this.subQuery = subQuery;
+	}
+
 	public Condition(String field, String value, Table table) {
 		this.field = table.as + "." + field;
 		if(value != null) {
@@ -229,8 +235,8 @@ public class Condition {
 		this.operator = operator;
 	}
 
-	public Condition(String field, SQLiteQuery subQuery) {
-		this.field = field;
+	public Condition(String field, SQLiteQuery subQuery, Table table) {
+		this.field = table.as + "." + field;
 		this.operator = Operator.IN_QUERY;
 		this.subQuery = subQuery;
 	}
@@ -313,6 +319,12 @@ public class Condition {
 		else {
 			this.value = String.valueOf(FALSE);
 		}
+	}
+
+	public Condition(Field field, SQLiteQuery subQuery) {
+		this.field = field.field;
+		this.operator = Operator.IN_QUERY;
+		this.subQuery = subQuery;
 	}
 
 	String complete() {
