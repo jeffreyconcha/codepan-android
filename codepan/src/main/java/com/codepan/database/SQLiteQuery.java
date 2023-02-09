@@ -378,44 +378,7 @@ public class SQLiteQuery {
 			for(Condition obj : conditionList) {
 				Operator operator = obj.operator;
 				if(operator != null) {
-					switch(operator) {
-						case EQUALS:
-							condition += obj.field + " = " + obj.value;
-							break;
-						case NOT_EQUALS:
-							condition += obj.field + " != " + obj.value;
-							break;
-						case GREATER_THAN:
-							condition += obj.field + " > " + obj.value;
-							break;
-						case LESS_THAN:
-							condition += obj.field + " < " + obj.value;
-							break;
-						case GREATER_THAN_OR_EQUALS:
-							condition += obj.field + " >= " + obj.value;
-							break;
-						case LESS_THAN_OR_EQUALS:
-							condition += obj.field + " <= " + obj.value;
-							break;
-						case BETWEEN:
-							condition += obj.field + " BETWEEN " + obj.start + " AND " + obj.end;
-							break;
-						case IS_NULL:
-							condition += obj.field + " IS NULL";
-							break;
-						case NOT_NULL:
-							condition += obj.field + " NOT NULL";
-							break;
-						case IS_EMPTY:
-							condition += obj.field + " = ''";
-							break;
-						case NOT_EMPTY:
-							condition += obj.field + " != ''";
-							break;
-						case LIKE:
-							condition += obj.field + " LIKE " + obj.value;
-							break;
-					}
+					condition += obj.complete();
 				}
 				else {
 					Condition[] ors = obj.ors;
@@ -424,7 +387,7 @@ public class SQLiteQuery {
 						String c = "";
 						for(int i = 0; i < length; i++) {
 							Condition or = ors[i];
-							c += or.field + " = " + or.value;
+							c += or.complete();
 							if(i < length - 1) {
 								c += " OR ";
 							}
@@ -518,7 +481,7 @@ public class SQLiteQuery {
 			conditions = " WHERE " + getConditions();
 		}
 		return "SELECT " + getFields() + " FROM " + table + conditions
-				+ getGroups() + getOrders() + getLimit();
+			+ getGroups() + getOrders() + getLimit();
 	}
 
 	public String select() {
@@ -527,7 +490,7 @@ public class SQLiteQuery {
 			conditions = " WHERE " + getConditions();
 		}
 		return "SELECT " + getFields() + " FROM " + getTables() + conditions
-				+ getGroups() + getOrders() + getLimit();
+			+ getGroups() + getOrders() + getLimit();
 	}
 
 	public String selectCount(Field field) {
@@ -536,7 +499,7 @@ public class SQLiteQuery {
 			conditions = " WHERE " + getConditions();
 		}
 		return "SELECT COUNT(" + field.field + ") FROM " + getTables() + conditions
-				+ getGroups() + getOrders();
+			+ getGroups() + getOrders();
 	}
 
 	public String addColumn(String table, Field field) {

@@ -17,11 +17,13 @@ public class Condition {
 		NOT_NULL,
 		IS_EMPTY,
 		NOT_EMPTY,
-		LIKE
+		LIKE,
+		IN_QUERY,
 	}
 
 	public Operator operator = Operator.EQUALS;
-	public String field, value, start, end;
+	public String field, value, start, end, query;
+	public SQLiteQuery subQuery;
 	public Condition[] ors;
 
 	public Condition(Condition... ors) {
@@ -227,6 +229,12 @@ public class Condition {
 		this.operator = operator;
 	}
 
+	public Condition(String field, SQLiteQuery subQuery) {
+		this.field = field;
+		this.operator = Operator.IN_QUERY;
+		this.subQuery = subQuery;
+	}
+
 	public Condition(String field, String start, String end, Operator operator, Table table) {
 		this.field = table.as + "." + field;
 		this.start = "'" + start + "'";
@@ -305,5 +313,37 @@ public class Condition {
 		else {
 			this.value = String.valueOf(FALSE);
 		}
+	}
+
+	String complete() {
+		switch(operator) {
+			case EQUALS:
+				return field + " = " + value;
+			case NOT_EQUALS:
+				return field + " != " + value;
+			case GREATER_THAN:
+				return field + " > " + value;
+			case LESS_THAN:
+				return field + " < " + value;
+			case GREATER_THAN_OR_EQUALS:
+				return field + " >= " + value;
+			case LESS_THAN_OR_EQUALS:
+				return field + " <= " + value;
+			case BETWEEN:
+				return field + " BETWEEN " + start + " AND " + end;
+			case IS_NULL:
+				return field + " IS NULL";
+			case NOT_NULL:
+				return field + " NOT NULL";
+			case IS_EMPTY:
+				return field + " = ''";
+			case NOT_EMPTY:
+				return field + " != ''";
+			case LIKE:
+				return field + " LIKE " + value;
+			case IN_QUERY:
+				return field + " IN (" + subQuery.select() + ")";
+		}
+		return null;
 	}
 }
