@@ -95,13 +95,20 @@ class MotionDetector(
                 g[0] /= vector
                 g[1] /= vector
                 g[2] /= vector
-                val inclination = Math.toDegrees(acos(g[2]).toDouble()).roundToInt()
-                if (inclination in 26..154) {
-                    rotation = Math.toDegrees(atan2(g[0], g[1]).toDouble()).roundToInt()
-                    val newOrientation = orientation;
-                    if (newOrientation != current) {
-                        notifier?.onOrientationChanged(newOrientation)
-                        current = newOrientation;
+                val degrees = Math.toDegrees(acos(g[2]).toDouble())
+                if (!degrees.isNaN()) {
+                    val inclination = degrees.roundToInt();
+                    if (inclination in 26..154) {
+                        val rd = Math.toDegrees(atan2(g[0], g[1]).toDouble())
+                        if (!rd.isNaN()) {
+                            rotation = rd.roundToInt();
+                        }
+                        val newOrientation = orientation;
+                        if (newOrientation != current) {
+                            notifier?.onOrientationChanged(newOrientation)
+                            current = newOrientation;
+                        }
+
                     }
                 }
             }
