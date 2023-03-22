@@ -15,6 +15,10 @@ enum class PermissionType(val value: PermissionValue) {
     BACKGROUND_LOCATION(PermissionValue.backgroundLocation),
     FOREGROUND_LOCATION(PermissionValue.foregroundLocation),
     FILES_AND_MEDIA(PermissionValue.filesAndMedia),
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    READ_IMAGES(PermissionValue.readImages),
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    READ_VIDEOS(PermissionValue.readVideos),
     CAMERA(PermissionValue.camera),
     MICROPHONE(PermissionValue.microphone),
     PHONE_NUMBERS(PermissionValue.phoneNumbers),
@@ -43,7 +47,7 @@ interface PermissionEvents {
 class PermissionHandler(
     val activity: CPFragmentActivity,
     val callback: PermissionEvents,
-    vararg permissions: PermissionType
+    vararg permissions: PermissionType,
 ) : OnRequestPermissionsResultCallback {
 
     val types = permissions
@@ -107,12 +111,10 @@ class PermissionHandler(
                 if (!hasRational) {
                     activity.requestPermissions(denied.toTypedArray(), REQUEST_CODE)
                 }
-            }
-            else {
+            } else {
                 callback.onPermissionsResult(this, true)
             }
-        }
-        else {
+        } else {
             callback.onPermissionsResult(this, true)
         }
     }
@@ -120,7 +122,8 @@ class PermissionHandler(
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray) {
+        grantResults: IntArray,
+    ) {
         if (requestCode == REQUEST_CODE && grantResults.isNotEmpty()) {
             var isGranted = true
             for (result in grantResults) {
