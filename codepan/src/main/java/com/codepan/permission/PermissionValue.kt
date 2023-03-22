@@ -17,11 +17,17 @@ class PermissionValue(vararg values: String) {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
-        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
         val filesAndMedia = PermissionValue(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
+        )
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+        val readImages = PermissionValue(
             Manifest.permission.READ_MEDIA_IMAGES,
+        )
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+        val readVideos = PermissionValue(
+            Manifest.permission.READ_MEDIA_VIDEO,
         )
         val camera = PermissionValue(
             Manifest.permission.CAMERA
