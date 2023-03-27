@@ -8,6 +8,7 @@ import com.codepan.callback.Interface.OnInitializeCallback;
 import com.codepan.database.SQLiteAdapter;
 import com.codepan.permission.PermissionHandler;
 import com.codepan.utils.CodePanUtils;
+import com.codepan.utils.Console;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
@@ -84,7 +85,7 @@ public abstract class CPFragmentActivity extends FragmentActivity
 
 	@Override
 	public void onRequestPermissionsResult(int code, @NonNull String[] permissions,
-			@NonNull int[] results) {
+		@NonNull int[] results) {
 		if(permissionsResultCallback != null) {
 			permissionsResultCallback.onRequestPermissionsResult(code, permissions, results);
 		}
@@ -109,7 +110,9 @@ public abstract class CPFragmentActivity extends FragmentActivity
 
 	@Override
 	public boolean onKeyUp(int code, KeyEvent event) {
+		Console.log("onKeyUp hasKeyListener:" + (keyListener != null));
 		if(keyListener != null && keyListener.onKeyUp(code, event)) {
+			Console.log("onKeyUp: Overridden");
 			return true;
 		}
 		return super.onKeyUp(code, event);

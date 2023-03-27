@@ -26,15 +26,7 @@ public class CPFragment extends Fragment implements OnBackPressedCallback, KeyLi
 		activity = (CPFragmentActivity) getActivity();
 		if(activity != null) {
 			manager = activity.getSupportFragmentManager();
-			keyListener = activity.getKeyListener();
-			activity.setKeyListener(this);
 		}
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		activity.setKeyListener(keyListener);
 	}
 
 	@Override
@@ -42,6 +34,19 @@ public class CPFragment extends Fragment implements OnBackPressedCallback, KeyLi
 		if(manager != null) {
 			manager.popBackStack();
 		}
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		keyListener = activity.getKeyListener();
+		activity.setKeyListener(this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		activity.setKeyListener(keyListener);
 	}
 
 	protected void disableBackPressed() {
