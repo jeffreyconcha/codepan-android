@@ -22,8 +22,6 @@ public class MainActivity extends FragmentActivity {
 			CalendarSample dialog = new CalendarSample();
 			FragmentManager manager = getSupportFragmentManager();
 			FragmentTransaction transaction = manager.beginTransaction();
-			transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out,
-				R.anim.fade_in, R.anim.fade_out);
 			transaction.add(R.id.rlMain, dialog);
 			transaction.addToBackStack(null);
 			transaction.commit();
@@ -32,8 +30,6 @@ public class MainActivity extends FragmentActivity {
 			TimePickerSample dialog = new TimePickerSample();
 			FragmentManager manager = getSupportFragmentManager();
 			FragmentTransaction transaction = manager.beginTransaction();
-			transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out,
-				R.anim.fade_in, R.anim.fade_out);
 			transaction.add(R.id.rlMain, dialog);
 			transaction.addToBackStack(null);
 			transaction.commit();
@@ -42,8 +38,6 @@ public class MainActivity extends FragmentActivity {
 			TableSample table = new TableSample();
 			FragmentManager manager = getSupportFragmentManager();
 			FragmentTransaction transaction = manager.beginTransaction();
-			transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out,
-				R.anim.fade_in, R.anim.fade_out);
 			transaction.add(R.id.rlMain, table);
 			transaction.addToBackStack(null);
 			transaction.commit();
@@ -52,8 +46,6 @@ public class MainActivity extends FragmentActivity {
 			CameraFragment camera = new CameraFragment();
 			FragmentManager manager = getSupportFragmentManager();
 			FragmentTransaction transaction = manager.beginTransaction();
-			transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out,
-				R.anim.fade_in, R.anim.fade_out);
 			transaction.add(R.id.rlMain, camera);
 			transaction.addToBackStack(null);
 			transaction.commit();

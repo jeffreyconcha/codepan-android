@@ -84,24 +84,23 @@ public class CameraFragment extends Fragment implements OnClickListener, OnCaptu
 
 	@Override
 	public void onClick(View view) {
-		switch(view.getId()) {
-			case R.id.btnCaptureCamera:
-				if(surfaceView != null && !surfaceView.isCaptured()) {
-					surfaceView.takePicture();
-				}
-				break;
-			case R.id.btnSwitchCamera:
-				if(cameraSelection == CameraInfo.CAMERA_FACING_FRONT) {
-					cameraSelection = CameraInfo.CAMERA_FACING_BACK;
-				}
-				else {
-					cameraSelection = CameraInfo.CAMERA_FACING_FRONT;
-				}
-				resetCamera(0);
-				break;
-			case R.id.btnBackCamera:
-				manager.popBackStack();
-				break;
+		int id = view.getId();
+		if(id == R.id.btnCaptureCamera) {
+			if(surfaceView != null && !surfaceView.isCaptured()) {
+				surfaceView.takePicture();
+			}
+		}
+		else if(id == R.id.btnSwitchCamera) {
+			if(cameraSelection == CameraInfo.CAMERA_FACING_FRONT) {
+				cameraSelection = CameraInfo.CAMERA_FACING_BACK;
+			}
+			else {
+				cameraSelection = CameraInfo.CAMERA_FACING_FRONT;
+			}
+			resetCamera(0);
+		}
+		else if(id == R.id.btnBackCamera) {
+			manager.popBackStack();
 		}
 	}
 

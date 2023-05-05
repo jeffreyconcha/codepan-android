@@ -90,7 +90,6 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
-import com.codepan.BuildConfig;
 import com.codepan.R;
 import com.codepan.cache.TypefaceCache;
 import com.codepan.database.SQLiteAdapter;
@@ -2430,9 +2429,7 @@ public class CodePanUtils {
 	}
 
 	public static void setCrashHandler(final Context context, String folder, String password) {
-		if(!BuildConfig.DEBUG) {
-			Thread.setDefaultUncaughtExceptionHandler(new CrashHandler(context, folder, password));
-		}
+		Thread.setDefaultUncaughtExceptionHandler(new CrashHandler(context, folder, password));
 	}
 
 	public static String capitalizeWord(String text) {

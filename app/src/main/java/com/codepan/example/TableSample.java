@@ -26,14 +26,14 @@ public class TableSample extends Fragment {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		columnList = new ArrayList<>();
-		for (int cn = 1; cn <= 5; cn++) {
+		for(int cn = 1; cn <= 5; cn++) {
 			String name = "Column " + cn;
-			columnList.add(new ColumnData(getContext(), name, R.dimen.one_hundred, R.layout.table_edittext_item));
+			columnList.add(new ColumnData(getContext(), name, com.codepan.R.dimen.one_hundred, R.layout.table_edittext_item));
 		}
 		rowList = new ArrayList<>();
-		for (int rn = 1; rn <= 50; rn++) {
+		for(int rn = 1; rn <= 50; rn++) {
 			ArrayList<CellData> cellList = new ArrayList<>();
-			for (ColumnData column : columnList) {
+			for(ColumnData column : columnList) {
 				int ci = columnList.indexOf(column) + 1;
 				cellList.add(new CellData("" + rn, "Cell(" + rn + ", " + ci + ")"));
 			}
