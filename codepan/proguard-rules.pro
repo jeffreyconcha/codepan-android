@@ -19,3 +19,27 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-dontwarn org.apache.**
+-dontwarn com.google.common.**
+-dontwarn com.mixpanel.**
+-dontwarn android.support.v4.**
+-dontwarn com.google.android.gms.**
+
+-keep class net.sqlcipher.** {*;}
+-keep class android.support.v8.renderscript.** {*;}
+-keep class com.google.android.gms.** {*;}
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+-keep class us.zoom.** {*;}
+-keep class com.zipow.** {*;}
+-keep class us.zipow.** {*;}
+-keep class org.webrtc.** {*;}
+-keep class us.google.protobuf.** {*;}
+-keep class com.google.crypto.tink.** { *;}
+-keep class androidx.security.crypto.**{*;}
+-keepattributes Signature
+-keepattributes EnclosingMethod
+-keepattributes InnerClasses
+-printmapping mapping.txt
