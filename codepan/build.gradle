@@ -5,26 +5,33 @@ plugins {
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 33
     buildToolsVersion '33.0.0'
+
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 33
         renderscriptTargetApi 17
         renderscriptSupportModeEnabled false
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
+
+    namespace 'com.codepan'
+
     packagingOptions {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
@@ -35,21 +42,21 @@ android {
     }
 }
 
-task androidSourcesJar(type: Jar) {
-    classifier 'sources'
-    from android.sourceSets.main.java.srcDirs
-}
-
-project.afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-                artifact androidSourcesJar // optional sources
-            }
-        }
-    }
-}
+//task androidSourcesJar(type: Jar) {
+//    classifier 'sources'
+//    from android.sourceSets.main.java.srcDirs
+//}
+//
+//project.afterEvaluate {
+//    publishing {
+//        publications {
+//            release(MavenPublication) {
+//                from components.release
+//                artifact androidSourcesJar // optional sources
+//            }
+//        }
+//    }
+//}
 
 dependencies {
     api fileTree(include: ['*.jar'], dir: 'libs')
@@ -57,11 +64,11 @@ dependencies {
     api 'net.zetetic:android-database-sqlcipher:4.5.0'
     api 'com.github.barteksc:android-pdf-viewer:2.8.1'
     api 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    api 'com.google.android.gms:play-services-location:21.0.0'
+    api 'com.google.android.gms:play-services-location:21.0.1'
     api 'com.google.android.gms:play-services-maps:18.1.0'
     api 'com.google.maps.android:android-maps-utils:0.5'
-    api 'androidx.recyclerview:recyclerview:1.2.1'
+    api 'androidx.recyclerview:recyclerview:1.3.0'
     api 'com.google.android:flexbox:2.0.1'
-    api "androidx.core:core-ktx:1.7.0"
+    api "androidx.core:core-ktx:1.10.0"
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
