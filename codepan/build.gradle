@@ -15,6 +15,7 @@ android {
         targetSdkVersion 33
         renderscriptTargetApi 17
         renderscriptSupportModeEnabled false
+        multiDexEnabled true
     }
 
     buildTypes {
