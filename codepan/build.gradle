@@ -42,6 +42,22 @@ android {
     }
 }
 
+
+task androidSourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+}
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                artifact androidSourcesJar // optional sources
+            }
+        }
+    }
+}
+
 dependencies {
     api fileTree(include: ['*.jar'], dir: 'libs')
     api 'androidx.legacy:legacy-support-v4:1.0.0'
