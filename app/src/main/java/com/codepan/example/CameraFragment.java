@@ -117,7 +117,7 @@ public class CameraFragment extends Fragment implements OnClickListener, OnCaptu
 		handler.postDelayed(() -> {
 			if(surfaceView != null) surfaceView.stopCamera();
 			surfaceView = new CameraSurfaceView(main, this, null,
-				cameraSelection, flashMode, FOLDER, maxWidth, maxHeight, true);
+				cameraSelection, flashMode, FOLDER, maxWidth, maxHeight, true, false);
 			surfaceView.setOnCaptureCallback(this);
 			surfaceView.setFocusIndicatorView(dvCamera);
 			surfaceView.fullScreenToContainer(flCamera);

@@ -58,10 +58,10 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	private boolean isFrontCamInverted, hasAutoFocus, isCaptured, hasFlash,
 		hasFrontCam, hasStopped, isScaled;
 	private int cameraSelection, maxWidth, maxHeight, picWidth, picHeight;
+	private boolean isLandscape, detectMotionBlur, withShutterSound;
 	private OnCameraChangeCallback cameraChangeCallback;
 	private OnCameraErrorCallback cameraErrorCallback;
 	private FocusIndicatorView focusIndicatorView;
-	private boolean isLandscape, detectMotionBlur;
 	private OnCaptureCallback captureCallback;
 	private ArrayList<StampData> stampList;
 	private SurfaceHolder surfaceHolder;
@@ -82,7 +82,8 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 		String folder,
 		int maxWidth,
 		int maxHeight,
-		boolean detectMotionBlur
+		boolean detectMotionBlur,
+		boolean withShutterSound
 	) {
 		super(context);
 		PackageManager pm = context.getPackageManager();
@@ -92,6 +93,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 		this.cameraErrorCallback = cameraErrorCallback;
 		this.detector = new MotionDetector(context, notifier);
 		this.detectMotionBlur = detectMotionBlur;
+		this.withShutterSound = withShutterSound;
 		if(camera != null) {
 			this.cameraSelection = cameraSelection;
 			this.flashMode = flashMode;
@@ -141,6 +143,9 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 				if(hasFrontCam && cameraSelection == CameraInfo.CAMERA_FACING_FRONT) {
 					CameraInfo info = new CameraInfo();
 					Camera.getCameraInfo(CAMERA_ID, info);
+					if(info.canDisableShutterSound) {
+						camera.enableShutterSound(withShutterSound);
+					}
 					orientation = (info.orientation) % 360;
 					orientation = (360 - orientation) % 360;
 					isFrontCamInverted = orientation == 270;
