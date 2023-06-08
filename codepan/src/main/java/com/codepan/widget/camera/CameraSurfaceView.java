@@ -140,12 +140,12 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 			params = camera.getParameters();
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
 				int orientation = 90;
+				CameraInfo info = new CameraInfo();
+				Camera.getCameraInfo(CAMERA_ID, info);
+				if(info.canDisableShutterSound) {
+					camera.enableShutterSound(withShutterSound);
+				}
 				if(hasFrontCam && cameraSelection == CameraInfo.CAMERA_FACING_FRONT) {
-					CameraInfo info = new CameraInfo();
-					Camera.getCameraInfo(CAMERA_ID, info);
-					if(info.canDisableShutterSound) {
-						camera.enableShutterSound(withShutterSound);
-					}
 					orientation = (info.orientation) % 360;
 					orientation = (360 - orientation) % 360;
 					isFrontCamInverted = orientation == 270;
