@@ -6,6 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.SystemClock
+import android.view.Surface
 import kotlin.math.*
 
 const val DEFAULT_SENSITIVITY = 0.5F
@@ -15,11 +16,16 @@ interface OrientationChangedNotifier {
     fun onOrientationChanged(orientation: DeviceOrientation)
 }
 
-enum class DeviceOrientation(val degrees: Int) {
-    PORTRAIT_90(90),
-    LANDSCAPE_0(0),
-    LANDSCAPE_180(180),
-    PORTRAIT_270(270),
+enum class DeviceOrientation(
+    val degrees: Int,
+    val opposite: Int,
+    val isLandscape: Boolean,
+    val isPortrait: Boolean,
+) {
+    PORTRAIT_90(90, 270, false, true),
+    PORTRAIT_270(270, 90, false, true),
+    LANDSCAPE_0(0, 180, true, false),
+    LANDSCAPE_180(180, 0, true, false),
 }
 
 class MotionDetector(

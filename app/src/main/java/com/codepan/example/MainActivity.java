@@ -2,16 +2,17 @@ package com.codepan.example;
 
 import android.os.Bundle;
 
+import com.codepan.app.CPFragmentActivity;
+import com.codepan.callback.Interface;
 import com.codepan.test.Test;
 import com.codepan.utils.Debouncer;
 import com.codepan.widget.CodePanTextField;
 
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends CPFragmentActivity {
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,7 +44,8 @@ public class MainActivity extends FragmentActivity {
 			transaction.commit();
 		});
 		findViewById(R.id.btnCamera).setOnClickListener(view -> {
-			CameraFragment camera = new CameraFragment();
+			CameraXFragment camera = new CameraXFragment();
+//			CameraFragment camera = new CameraFragment();
 			FragmentManager manager = getSupportFragmentManager();
 			FragmentTransaction transaction = manager.beginTransaction();
 			transaction.add(R.id.rlMain, camera);
@@ -54,5 +56,9 @@ public class MainActivity extends FragmentActivity {
 		tf.setOnTextChangedCallback(new Debouncer<>(data -> {
 //			Console.log(data);
 		}));
+	}
+
+	@Override
+	public void onLoadSplash(Interface.OnInitializeCallback initializeCallback) {
 	}
 }

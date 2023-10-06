@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000">
+
+    <com.codepan.widget.camerax.CameraXView
+        android:id="@+id/cxvCamera"
+        android:layout_width="@dimen/two_hundred"
+        android:layout_height="@dimen/three_hundred"
+        android:layout_gravity="center"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom|center_horizontal"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnSwitchCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Switch Camera"/>
+
+        <Button
+            android:id="@+id/btnCaptureCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Capture"/>
+
+    </LinearLayout>
+
+</FrameLayout>
