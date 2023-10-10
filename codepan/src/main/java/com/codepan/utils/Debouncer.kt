@@ -16,9 +16,9 @@ interface ViewNotifier {
 }
 
 class Debouncer<T>(
-    val notifier: ViewNotifier?,
-    val runner: TaskRunner<T>,
-    val delay: Long = 500L
+    private val notifier: ViewNotifier?,
+    private val runner: TaskRunner<T>,
+    private val delay: Long = 500L,
 ) {
     private var timer: Timer? = null
 
@@ -43,7 +43,7 @@ class Debouncer<T>(
 private class TaskHandler<T>(
     val data: T,
     val runner: TaskRunner<T>,
-    val notifier: ViewNotifier?
+    val notifier: ViewNotifier?,
 ) :
     TimerTask(), Callback {
     override fun run() {

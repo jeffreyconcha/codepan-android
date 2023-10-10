@@ -24,7 +24,7 @@ class InputPinView(context: Context, attrs: AttributeSet) : FrameLayout(context,
     private var itemSpacing = res.getDimensionPixelSize(R.dimen.five)
     private var itemBackground: Int
     private var pinLength = 4
-    var onPinComplete: OnPinComplete? = null
+    private var onPinComplete: OnPinComplete? = null
 
     val length: Int
         get() = pinLength

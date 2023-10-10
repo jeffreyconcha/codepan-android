@@ -6,8 +6,8 @@
 
     <com.codepan.widget.camerax.CameraXView
         android:id="@+id/cxvCamera"
-        android:layout_width="@dimen/two_hundred"
-        android:layout_height="@dimen/three_hundred"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center"/>
 
     <LinearLayout

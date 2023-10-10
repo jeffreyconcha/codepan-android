@@ -14,7 +14,6 @@ import android.util.Rational
 import android.util.Size
 import android.view.KeyEvent
 import android.view.LayoutInflater
-import android.view.Surface
 import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
@@ -22,11 +21,12 @@ import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraInfo
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.CameraSelector.LensFacing
 import androidx.camera.core.CameraState
+import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -39,6 +39,8 @@ import androidx.lifecycle.coroutineScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.window.WindowManager
 import com.codepan.R
+import com.codepan.model.StampData
+import com.codepan.utils.CodePanUtils
 import com.codepan.utils.Console
 import com.codepan.utils.DeviceOrientation
 import com.codepan.utils.MotionDetector
@@ -47,8 +49,6 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
-import java.nio.ByteBuffer
-import java.util.ArrayDeque
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.abs
@@ -60,12 +60,16 @@ const val KEY_EVENT_ACTION = "volume_key_action"
 const val KEY_EVENT_EXTRA = "volume_key_extra"
 const val RATIO_4_3_VALUE = 4.0 / 3.0
 const val RATIO_16_9_VALUE = 16.0 / 9.0
+const val EYE_BLINK_THRESHOLD = 0.2
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 val DEFAULT_RESOLUTION = Size(1080, 1920)
 
-typealias LumaListener = (luma: Double) -> Unit
+typealias BlinkEyeListener = (didBlink: Boolean) -> Unit
+typealias OnCaptureCallback = (fileName: String) -> Unit
+typealias OnCameraErrorCallback = (error: CameraError) -> Unit
 
+@ExperimentalGetImage
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class CameraXView(
     ctx: Context,
@@ -81,11 +85,16 @@ class CameraXView(
     private lateinit var folder: String
     private lateinit var resolution: Size
 
-    private var notifier: OrientationChangedNotifier? = null
+    private var stampList: ArrayList<StampData>? = null
+    private var detectMotionBlur: Boolean = false
+    private var errorCallback: OnCameraErrorCallback? = null
+    private var captureCallback: OnCaptureCallback? = null
+    private var orientationNotifier: OrientationChangedNotifier? = null
+    private var analyzer: ImageAnalysis.Analyzer? = null
     private var displayId: Int = -1
     private var capture: ImageCapture? = null
-    private var analyzer: ImageAnalysis? = null
-    private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
+    private var analysis: ImageAnalysis? = null
+    private var lensFacing: Int = CameraLens.BACK.value
     private var provider: ProcessCameraProvider? = null
     private var preview: Preview? = null
     private var camera: Camera? = null
@@ -128,19 +137,31 @@ class CameraXView(
         lifecycle: Lifecycle,
         folder: String,
         resolution: Size = DEFAULT_RESOLUTION,
-        notifier: OrientationChangedNotifier? = null,
+        stampList: ArrayList<StampData>? = null,
+        detectMotionBlur: Boolean = false,
+        analyzer: ImageAnalysis.Analyzer? = null,
+        lensFacing: Int = CameraLens.BACK.value,
+        orientationNotifier: OrientationChangedNotifier? = null,
+        captureCallback: OnCaptureCallback? = null,
+        errorCallback: OnCameraErrorCallback? = null,
     ) {
         this.lifecycle = lifecycle
         this.resolution = resolution
         this.folder = folder
-        this.notifier = notifier
+        this.stampList = stampList
+        this.detectMotionBlur = detectMotionBlur
+        this.lensFacing = lensFacing
+        this.analyzer = analyzer
+        this.orientationNotifier = orientationNotifier
+        this.captureCallback = captureCallback
+        this.errorCallback = errorCallback
         if (completer.await()) {
             executor = Executors.newSingleThreadExecutor()
             lbm = LocalBroadcastManager.getInstance(context)
             val filter = IntentFilter().apply {
                 addAction(KEY_EVENT_ACTION)
             }
-            lbm.registerReceiver(receiver, filter);
+            lbm.registerReceiver(receiver, filter)
             wm = WindowManager(context)
             pvViewFinder.post {
                 displayId = pvViewFinder.display.displayId
@@ -153,11 +174,25 @@ class CameraXView(
 
     private suspend fun setUpCamera() {
         provider = ProcessCameraProvider.getInstance(context).await()
-        lensFacing = when {
-            hasBackCamera -> CameraSelector.LENS_FACING_BACK
-            hasFrontCamera -> CameraSelector.LENS_FACING_FRONT
-            else -> throw IllegalStateException("Back and front camera are unavailable")
+        // switch to the available lens if the selected lens is not present
+        when (lensFacing) {
+            CameraLens.BACK.value -> {
+                if (!hasBackCamera && hasFrontCamera) {
+                    lensFacing = CameraLens.FRONT.value
+                } else {
+                    errorCallback?.invoke(CameraError.NO_CAMERA)
+                }
+            }
+
+            CameraLens.FRONT.value -> {
+                if (!hasFrontCamera && hasBackCamera) {
+                    lensFacing = CameraLens.BACK.value
+                } else {
+                    errorCallback?.invoke(CameraError.NO_CAMERA)
+                }
+            }
         }
+
         resetPreview()
     }
 
@@ -169,25 +204,22 @@ class CameraXView(
         preview = Preview.Builder().also {
             it.setTargetAspectRatio(ratio)
             it.setTargetRotation(rotation)
-//            it.setTargetResolution(resolution)
         }.build()
 
         capture = ImageCapture.Builder().also {
             it.setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-//            it.setTargetAspectRatio(ratio)
             it.setTargetRotation(rotation)
             it.setTargetResolution(resolution)
         }.build()
         val rational = Rational(resolution.width, resolution.height)
         capture!!.setCropAspectRatio(rational)
-        analyzer = ImageAnalysis.Builder().also {
-//            it.setTargetAspectRatio(ratio)
+        analysis = ImageAnalysis.Builder().also {
             it.setTargetRotation(rotation)
             it.setTargetResolution(resolution)
         }.build().also {
-            it.setAnalyzer(executor, LuminosityAnalyzer { value ->
-//                Log.d("LUMINOSITY", "Average luminosity: $value")
-            })
+            if (analyzer != null) {
+                it.setAnalyzer(executor, analyzer!!)
+            }
         }
         provider?.unbindAll()
         if (camera != null) {
@@ -195,14 +227,13 @@ class CameraXView(
         }
         try {
             camera = provider?.bindToLifecycle(
-                this, selector, preview, capture, analyzer
+                this, selector, preview, capture, analysis
             )
             preview?.setSurfaceProvider(pvViewFinder.surfaceProvider)
             observeCameraState(camera?.cameraInfo!!)
         } catch (exc: Exception) {
             Log.e("CameraXView", "Use case binding failed", exc)
         }
-        Console.log("SETUP CAMERA SUCCESS");
     }
 
     fun switchCamera() {
@@ -226,7 +257,7 @@ class CameraXView(
             else ->
                 lensFacing
         }
-        Console.log("Lens Selection: $lensFacing");
+        Console.log("Camera Lens Selection: $lensFacing")
         resetPreview()
     }
 
@@ -237,16 +268,32 @@ class CameraXView(
         val options = ImageCapture.OutputFileOptions.Builder(file).build()
         capture?.takePicture(options, executor, object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(results: ImageCapture.OutputFileResults) {
-                val bitmap = BitmapFactory.decodeFile(file.path)
-                val matrix = Matrix()
-                matrix.postRotate(getImageRotation().toFloat())
-                val exif = ExifInterface(file)
-                exif.rotate(0)
-                val rotated =
-                    Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-                val fos = FileOutputStream(file)
-                rotated.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-                fos.close()
+                if (detectMotionBlur && detector.isMoving) {
+                    errorCallback?.invoke(CameraError.MOTION_BLUR)
+                    file.delete()
+                } else {
+                    val bitmap = BitmapFactory.decodeFile(file.path)
+                    val matrix = Matrix()
+                    matrix.postRotate(getImageRotation().toFloat())
+                    val exif = ExifInterface(file)
+                    exif.rotate(0)
+                    val rotated =
+                        Bitmap.createBitmap(
+                            bitmap, 0, 0,
+                            bitmap.width, bitmap.height, matrix, true
+                        )
+                    val output = if (stampList != null) {
+                        val font = context.getString(R.string.calibri_regular)
+                        CodePanUtils.stampPhoto(
+                            context, rotated, font, 0.035F, stampList
+                        )
+                    } else {
+                        rotated
+                    }
+                    val fos = FileOutputStream(file)
+                    output.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+                    fos.close()
+                }
             }
 
             override fun onError(exception: ImageCaptureException) {
@@ -261,23 +308,11 @@ class CameraXView(
             run {
                 when (cameraState.type) {
                     CameraState.Type.PENDING_OPEN -> {
-                        Log.i("CAMERA STATE", "PENDING OPEN");
+                        errorCallback?.invoke(CameraError.CAMERA_BUSY)
                     }
 
-                    CameraState.Type.OPENING -> {
-                        Log.i("CAMERA STATE", "OPENING");
-                    }
-
-                    CameraState.Type.OPEN -> {
-                        Log.i("CAMERA STATE", "OPEN");
-                    }
-
-                    CameraState.Type.CLOSING -> {
-                        Log.i("CAMERA STATE", "CLOSING");
-                    }
-
-                    CameraState.Type.CLOSED -> {
-                        Log.i("CAMERA STATE", "CLOSED");
+                    else -> {
+                        Console.log(cameraState.type)
                     }
                 }
             }
@@ -290,49 +325,13 @@ class CameraXView(
     private fun aspectRatio(width: Int, height: Int): Int {
         val max = max(width, height).toDouble()
         val min = min(width, height).toDouble()
-        val ratio = max / min;
+        val ratio = max / min
         if (abs(ratio - RATIO_4_3_VALUE) <= abs(ratio - RATIO_16_9_VALUE)) {
             return AspectRatio.RATIO_4_3
         }
         return AspectRatio.RATIO_16_9
     }
 
-    private class LuminosityAnalyzer(listener: LumaListener? = null) : ImageAnalysis.Analyzer {
-        private val frameRateWindow = 8
-        private val frameTimestamps = ArrayDeque<Long>(5)
-        private val listeners = ArrayList<LumaListener>().apply { listener?.let { add(it) } }
-        private var lastAnalyzedTimestamp = 0L
-        var framesPerSecond: Double = -1.0
-            private set
-
-        private fun ByteBuffer.toByteArray(): ByteArray {
-            rewind()    // Rewind the buffer to zero
-            val data = ByteArray(remaining())
-            get(data)   // Copy the buffer into a byte array
-            return data // Return the byte array
-        }
-
-        override fun analyze(image: ImageProxy) {
-            if (listeners.isEmpty()) {
-                image.close()
-                return
-            }
-            val currentTime = System.currentTimeMillis()
-            frameTimestamps.push(currentTime)
-            while (frameTimestamps.size >= frameRateWindow) frameTimestamps.removeLast()
-            val timestampFirst = frameTimestamps.peekFirst() ?: currentTime
-            val timestampLast = frameTimestamps.peekLast() ?: currentTime
-            framesPerSecond = 1.0 / ((timestampFirst - timestampLast) /
-                frameTimestamps.size.coerceAtLeast(1).toDouble()) * 1000.0
-            lastAnalyzedTimestamp = frameTimestamps.first
-            val buffer = image.planes[0].buffer
-            val data = buffer.toByteArray()
-            val pixels = data.map { it.toInt() and 0xFF }
-            val luma = pixels.average()
-            listeners.forEach { it(luma) }
-            image.close()
-        }
-    }
 
     override fun getLifecycle(): Lifecycle {
         return lifecycle
@@ -346,22 +345,7 @@ class CameraXView(
 
     override fun onOrientationChanged(orientation: DeviceOrientation) {
 //        Console.log(orientation.degrees)
-        notifier?.onOrientationChanged(orientation)
-        when (lensFacing) {
-            CameraSelector.LENS_FACING_BACK -> {
-                val target = when (orientation) {
-                    DeviceOrientation.PORTRAIT_90 -> Surface.ROTATION_90
-                    DeviceOrientation.LANDSCAPE_180 -> Surface.ROTATION_270
-                    DeviceOrientation.LANDSCAPE_0 -> Surface.ROTATION_0
-                    DeviceOrientation.PORTRAIT_270 -> Surface.ROTATION_270
-                }
-
-            }
-
-            CameraSelector.LENS_FACING_FRONT -> {
-
-            }
-        }
+        orientationNotifier?.onOrientationChanged(orientation)
     }
 
     fun getImageRotation(): Int {
