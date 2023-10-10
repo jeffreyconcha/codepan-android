@@ -8,7 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.camera.core.ExperimentalGetImage
 import androidx.lifecycle.coroutineScope
 import com.codepan.app.CPFragment
 import com.codepan.model.StampData
@@ -17,16 +19,24 @@ import com.codepan.permission.PermissionHandler
 import com.codepan.permission.PermissionType
 import com.codepan.utils.CodePanUtils
 import com.codepan.utils.Console
+import com.codepan.widget.camerax.BlinkAnalyzer
+import com.codepan.widget.camerax.BlinkEyeListener
 import com.codepan.widget.camerax.CameraError
+import com.codepan.widget.camerax.CameraLens
 import com.codepan.widget.camerax.CameraXView
+import com.codepan.widget.camerax.FlashMode
 import com.codepan.widget.camerax.OnCameraErrorCallback
+import com.codepan.widget.camerax.OnLoadCameraCallback
 import kotlinx.coroutines.launch
 
+@ExperimentalGetImage
 class CameraXFragment : CPFragment(), PermissionEvents {
 
     private lateinit var cxvCamera: CameraXView
     private lateinit var btnSwitchCamera: Button;
     private lateinit var btnCaptureCamera: Button;
+    private lateinit var btnFlashOnCamera: Button
+    private lateinit var btnFlashOffCamera: Button
 
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -38,6 +48,8 @@ class CameraXFragment : CPFragment(), PermissionEvents {
         val view = inflater.inflate(R.layout.camerax_sample_layout, container, false)
         btnSwitchCamera = view.findViewById(R.id.btnSwitchCamera)
         btnCaptureCamera = view.findViewById(R.id.btnCaptureCamera)
+        btnFlashOnCamera = view.findViewById(R.id.btnFlashOnCamera)
+        btnFlashOffCamera = view.findViewById(R.id.btnFlashOffCamera)
         cxvCamera = view.findViewById(R.id.cxvCamera);
         handler.checkPermissions()
         btnSwitchCamera.setOnClickListener {
@@ -45,6 +57,12 @@ class CameraXFragment : CPFragment(), PermissionEvents {
         }
         btnCaptureCamera.setOnClickListener {
             cxvCamera.takePicture()
+        }
+        btnFlashOnCamera.setOnClickListener {
+            cxvCamera.setFlashMode(FlashMode.ON)
+        }
+        btnFlashOffCamera.setOnClickListener {
+            cxvCamera.setFlashMode(FlashMode.OFF)
         }
         return view;
     }
@@ -88,16 +106,54 @@ class CameraXFragment : CPFragment(), PermissionEvents {
                     folder = "camerax",
                     stampList = stampList,
                     detectMotionBlur = true,
-                    errorCallback = object : OnCameraErrorCallback {
-                        override fun invoke(error: CameraError) {
-                            Console.log("motion blur detected");
+                    lensFacing = CameraLens.FRONT,
+                    analyzer = BlinkAnalyzer { didBlink ->
+                        if (didBlink) {
+                            Console.log("You blinked!!!")
+                            cxvCamera.takePicture()
                         }
                     },
+                    loadCameraCallback = object : OnLoadCameraCallback {
+                        override fun invoke(camera: CameraXView) {
+                            if (camera.hasFlash) {
+                                btnFlashOnCamera.visibility = View.VISIBLE
+                                btnFlashOffCamera.visibility = View.VISIBLE
+                            } else {
+                                btnFlashOnCamera.visibility = View.GONE
+                                btnFlashOffCamera.visibility = View.GONE
+                            }
+                        }
 
+                    },
+                    errorCallback = object : OnCameraErrorCallback {
+                        override fun invoke(error: CameraError) {
+                            showError(error)
+                        }
+                    },
                 )
             }
         } else {
             handler.checkPermissions()
+        }
+    }
+
+    fun showError(error: CameraError) {
+        when (error) {
+            CameraError.NO_CAMERA -> {
+                Toast.makeText(context, "No camera error", Toast.LENGTH_SHORT).show()
+            }
+
+            CameraError.MOTION_BLUR -> {
+                Toast.makeText(context, "Motion blur detected", Toast.LENGTH_SHORT).show()
+            }
+
+            CameraError.CAMERA_BUSY -> {
+                Toast.makeText(context, "Camera is busy", Toast.LENGTH_SHORT).show()
+            }
+
+            CameraError.UNABLE_TO_LOAD -> {
+                Toast.makeText(context, "Unable to load", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

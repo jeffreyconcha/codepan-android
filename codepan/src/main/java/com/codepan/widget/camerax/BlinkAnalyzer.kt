@@ -6,14 +6,34 @@ import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.codepan.utils.Console
+import com.codepan.utils.Debouncer
+import com.codepan.utils.TaskRunner
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
 
 @ExperimentalGetImage
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-private class BlinkAnalyzer(val listener: BlinkEyeListener) : ImageAnalysis.Analyzer {
+class BlinkAnalyzer(
+    private val listener: BlinkEyeListener,
+    private val delay: Long = 100L,
+) : ImageAnalysis.Analyzer {
     private var _isEyeClose: Boolean = false
+
+    constructor(listener: BlinkEyeListener) :
+        this(listener, 100L)
+
+    constructor(delay: Long, listener: BlinkEyeListener) :
+        this(listener, delay)
+
+    private val debouncer = Debouncer(
+        delay = delay,
+        runner = object : TaskRunner<Boolean> {
+            override fun run(data: Boolean) {
+                listener.invoke(data)
+            }
+        }
+    )
 
     override fun analyze(proxy: ImageProxy) {
         val media = proxy.image
@@ -36,7 +56,7 @@ private class BlinkAnalyzer(val listener: BlinkEyeListener) : ImageAnalysis.Anal
                         val isEyeClose =
                             left <= EYE_BLINK_THRESHOLD || right <= EYE_BLINK_THRESHOLD
                         if (_isEyeClose && !isEyeClose) {
-                            listener.invoke(true)
+                            debouncer.run(true)
                         }
                         _isEyeClose = isEyeClose
                     }

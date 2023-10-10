@@ -14,7 +14,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="bottom|center_horizontal"
-        android:orientation="horizontal">
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnCaptureCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Capture"/>
 
         <Button
             android:id="@+id/btnSwitchCamera"
@@ -23,10 +29,16 @@
             android:text="Switch Camera"/>
 
         <Button
-            android:id="@+id/btnCaptureCamera"
+            android:id="@+id/btnFlashOnCamera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Capture"/>
+            android:text="Flash On"/>
+
+        <Button
+            android:id="@+id/btnFlashOffCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Flash Off"/>
 
     </LinearLayout>
 

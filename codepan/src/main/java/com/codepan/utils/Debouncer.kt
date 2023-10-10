@@ -25,6 +25,9 @@ class Debouncer<T>(
     constructor(runner: TaskRunner<T>) :
         this(null, runner, 500L);
 
+    constructor(runner: TaskRunner<T>, delay: Long) :
+        this(null, runner, delay);
+
     constructor(notifier: ViewNotifier, runner: TaskRunner<T>) :
         this(notifier, runner, 500L);
 
