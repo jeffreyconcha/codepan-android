@@ -26,6 +26,7 @@ import com.codepan.widget.camerax.CameraXNotifiers
 import com.codepan.widget.camerax.CameraXView
 import com.codepan.widget.camerax.FlashMode
 import kotlinx.coroutines.launch
+import java.io.File
 
 @ExperimentalGetImage
 class CameraXFragment : CPFragment(), PermissionEvents {
@@ -112,8 +113,8 @@ class CameraXFragment : CPFragment(), PermissionEvents {
                         }
                     }),
                     notifiers = object : CameraXNotifiers {
-                        override fun onCapture(fileName: String) {
-                            Console.log(fileName)
+                        override fun onCapture(file: File) {
+                            Console.log(file.name)
                         }
 
                         override fun onError(error: CameraError) {
