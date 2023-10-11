@@ -45,6 +45,7 @@ import com.codepan.utils.Console
 import com.codepan.utils.DeviceOrientation
 import com.codepan.utils.MotionDetector
 import com.codepan.utils.OrientationChangedNotifier
+import com.codepan.utils.ViewNotifier
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 import java.io.File
@@ -65,10 +66,11 @@ const val EYE_BLINK_THRESHOLD = 0.2
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 val DEFAULT_RESOLUTION = Size(1080, 1920)
 
-typealias BlinkEyeListener = (didBlink: Boolean) -> Unit
-typealias OnCaptureCallback = (fileName: String) -> Unit
-typealias OnCameraErrorCallback = (error: CameraError) -> Unit
-typealias OnLoadCameraCallback = (camera: CameraXView) -> Unit
+interface CameraXNotifiers {
+    fun onCapture(fileName: String)
+    fun onError(error: CameraError)
+    fun onLoadCamera(camera: CameraXView)
+}
 
 @ExperimentalGetImage
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -88,9 +90,7 @@ class CameraXView(
 
     private var stampList: ArrayList<StampData>? = null
     private var detectMotionBlur: Boolean = false
-    private var errorCallback: OnCameraErrorCallback? = null
-    private var captureCallback: OnCaptureCallback? = null
-    private var loadCameraCallback: OnLoadCameraCallback? = null
+    private var notifiers: CameraXNotifiers? = null
     private var orientationNotifier: OrientationChangedNotifier? = null
     private var analyzer: ImageAnalysis.Analyzer? = null
     private var displayId: Int = -1
@@ -149,9 +149,7 @@ class CameraXView(
         lensFacing: CameraLens = CameraLens.BACK,
         flashMode: FlashMode = FlashMode.OFF,
         orientationNotifier: OrientationChangedNotifier? = null,
-        captureCallback: OnCaptureCallback? = null,
-        loadCameraCallback: OnLoadCameraCallback? = null,
-        errorCallback: OnCameraErrorCallback? = null,
+        notifiers: CameraXNotifiers? = null,
     ) {
         this.lifecycle = lifecycle
         this.resolution = resolution
@@ -162,9 +160,7 @@ class CameraXView(
         this.flashMode = flashMode
         this.analyzer = analyzer
         this.orientationNotifier = orientationNotifier
-        this.captureCallback = captureCallback
-        this.loadCameraCallback = loadCameraCallback
-        this.errorCallback = errorCallback
+        this.notifiers = notifiers
         if (completer.await()) {
             executor = Executors.newSingleThreadExecutor()
             lbm = LocalBroadcastManager.getInstance(context)
@@ -191,7 +187,7 @@ class CameraXView(
                     if (hasFrontCamera) {
                         lensFacing = CameraLens.FRONT
                     } else {
-                        errorCallback?.invoke(CameraError.NO_CAMERA)
+                        notifiers?.onError(CameraError.NO_CAMERA)
                     }
                 }
             }
@@ -201,7 +197,7 @@ class CameraXView(
                     if (hasBackCamera) {
                         lensFacing = CameraLens.BACK
                     } else {
-                        errorCallback?.invoke(CameraError.NO_CAMERA)
+                        notifiers?.onError(CameraError.NO_CAMERA)
                     }
                 }
             }
@@ -289,7 +285,7 @@ class CameraXView(
         capture?.takePicture(options, executor, object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(results: ImageCapture.OutputFileResults) {
                 if (detectMotionBlur && detector.isMoving) {
-                    errorCallback?.invoke(CameraError.MOTION_BLUR)
+                    notifiers?.onError(CameraError.MOTION_BLUR)
                     file.delete()
                 } else {
                     val bitmap = BitmapFactory.decodeFile(file.path)
@@ -328,7 +324,7 @@ class CameraXView(
             run {
                 when (cameraState.type) {
                     CameraState.Type.OPEN -> {
-                        loadCameraCallback?.invoke(this)
+                        notifiers?.onLoadCamera(this)
                     }
 
                     else -> {
@@ -339,11 +335,11 @@ class CameraXView(
             cameraState.error?.let { error ->
                 when (error.code) {
                     CameraState.ERROR_CAMERA_IN_USE -> {
-                        errorCallback?.invoke(CameraError.CAMERA_BUSY)
+                        notifiers?.onError(CameraError.CAMERA_BUSY)
                     }
 
                     else -> {
-                        errorCallback?.invoke(CameraError.UNABLE_TO_LOAD)
+                        notifiers?.onError(CameraError.UNABLE_TO_LOAD)
                     }
                 }
             }

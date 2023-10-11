@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.camera.core.ExperimentalGetImage
 import androidx.lifecycle.coroutineScope
@@ -23,10 +22,9 @@ import com.codepan.widget.camerax.BlinkAnalyzer
 import com.codepan.widget.camerax.BlinkEyeListener
 import com.codepan.widget.camerax.CameraError
 import com.codepan.widget.camerax.CameraLens
+import com.codepan.widget.camerax.CameraXNotifiers
 import com.codepan.widget.camerax.CameraXView
 import com.codepan.widget.camerax.FlashMode
-import com.codepan.widget.camerax.OnCameraErrorCallback
-import com.codepan.widget.camerax.OnLoadCameraCallback
 import kotlinx.coroutines.launch
 
 @ExperimentalGetImage
@@ -107,14 +105,22 @@ class CameraXFragment : CPFragment(), PermissionEvents {
                     stampList = stampList,
                     detectMotionBlur = true,
                     lensFacing = CameraLens.FRONT,
-                    analyzer = BlinkAnalyzer { didBlink ->
-                        if (didBlink) {
+                    analyzer = BlinkAnalyzer(object : BlinkEyeListener {
+                        override fun onBlink() {
                             Console.log("You blinked!!!")
                             cxvCamera.takePicture()
                         }
-                    },
-                    loadCameraCallback = object : OnLoadCameraCallback {
-                        override fun invoke(camera: CameraXView) {
+                    }),
+                    notifiers = object : CameraXNotifiers {
+                        override fun onCapture(fileName: String) {
+                            Console.log(fileName)
+                        }
+
+                        override fun onError(error: CameraError) {
+                            showError(error)
+                        }
+
+                        override fun onLoadCamera(camera: CameraXView) {
                             if (camera.hasFlash) {
                                 btnFlashOnCamera.visibility = View.VISIBLE
                                 btnFlashOffCamera.visibility = View.VISIBLE
@@ -122,12 +128,6 @@ class CameraXFragment : CPFragment(), PermissionEvents {
                                 btnFlashOnCamera.visibility = View.GONE
                                 btnFlashOffCamera.visibility = View.GONE
                             }
-                        }
-
-                    },
-                    errorCallback = object : OnCameraErrorCallback {
-                        override fun invoke(error: CameraError) {
-                            showError(error)
                         }
                     },
                 )
@@ -138,23 +138,7 @@ class CameraXFragment : CPFragment(), PermissionEvents {
     }
 
     fun showError(error: CameraError) {
-        when (error) {
-            CameraError.NO_CAMERA -> {
-                Toast.makeText(context, "No camera error", Toast.LENGTH_SHORT).show()
-            }
-
-            CameraError.MOTION_BLUR -> {
-                Toast.makeText(context, "Motion blur detected", Toast.LENGTH_SHORT).show()
-            }
-
-            CameraError.CAMERA_BUSY -> {
-                Toast.makeText(context, "Camera is busy", Toast.LENGTH_SHORT).show()
-            }
-
-            CameraError.UNABLE_TO_LOAD -> {
-                Toast.makeText(context, "Unable to load", Toast.LENGTH_SHORT).show()
-            }
-        }
+        Console.log(error)
     }
 
     override fun onShowPermissionRationale(

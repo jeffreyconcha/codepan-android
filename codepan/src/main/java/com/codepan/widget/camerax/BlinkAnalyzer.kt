@@ -12,6 +12,10 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
 
+interface BlinkEyeListener {
+    fun onBlink()
+}
+
 @ExperimentalGetImage
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class BlinkAnalyzer(
@@ -30,7 +34,7 @@ class BlinkAnalyzer(
         delay = delay,
         runner = object : TaskRunner<Boolean> {
             override fun run(data: Boolean) {
-                listener.invoke(data)
+                listener.onBlink()
             }
         }
     )
