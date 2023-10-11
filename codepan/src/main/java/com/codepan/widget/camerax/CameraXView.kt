@@ -67,7 +67,7 @@ const val EYE_BLINK_THRESHOLD = 0.2
 val DEFAULT_RESOLUTION = Size(1080, 1920)
 
 interface CameraXNotifiers {
-    fun onCapture(fileName: String)
+    fun onCapture(file: File)
     fun onError(error: CameraError)
     fun onLoadCamera(camera: CameraXView)
 }
@@ -309,7 +309,7 @@ class CameraXView(
                     val fos = FileOutputStream(file)
                     output.compress(Bitmap.CompressFormat.JPEG, 100, fos)
                     fos.close()
-                    notifiers?.onCapture(file.name)
+                    notifiers?.onCapture(file)
                 }
             }
 

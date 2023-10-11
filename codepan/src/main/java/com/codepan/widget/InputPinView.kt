@@ -24,11 +24,7 @@ class InputPinView(context: Context, attrs: AttributeSet) : FrameLayout(context,
     private var itemSpacing = res.getDimensionPixelSize(R.dimen.five)
     private var itemBackground: Int
     private var pinLength = 4
-
-    private var onPinComplete: OnPinComplete? = null
-        set(value) {
-            field = value
-        }
+    var onPinComplete: OnPinComplete? = null
 
     val length: Int
         get() = pinLength
@@ -66,8 +62,8 @@ class InputPinView(context: Context, attrs: AttributeSet) : FrameLayout(context,
         val ta = context.obtainStyledAttributes(attrs, R.styleable.InputPinView)
         pinLength = ta.getInteger(R.styleable.InputPinView_pinLength, pinLength)
         pinTextSize = ta.getDimensionPixelSize(R.styleable.InputPinView_pinTextSize, pinTextSize)
-        pinTextColor = ta.getColor(R.styleable.InputPinView_pinTextColor, pinTextColor);
-        itemSpacing = ta.getDimensionPixelSize(R.styleable.InputPinView_itemSpacing, itemSpacing);
+        pinTextColor = ta.getColor(R.styleable.InputPinView_pinTextColor, pinTextColor)
+        itemSpacing = ta.getDimensionPixelSize(R.styleable.InputPinView_itemSpacing, itemSpacing)
         itemBackground =
             ta.getResourceId(R.styleable.InputPinView_itemBackground, R.drawable.state_input_pin)
         ta.recycle()
