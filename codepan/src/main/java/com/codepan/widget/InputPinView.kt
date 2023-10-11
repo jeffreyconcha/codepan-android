@@ -24,7 +24,11 @@ class InputPinView(context: Context, attrs: AttributeSet) : FrameLayout(context,
     private var itemSpacing = res.getDimensionPixelSize(R.dimen.five)
     private var itemBackground: Int
     private var pinLength = 4
+
     private var onPinComplete: OnPinComplete? = null
+        set(value) {
+            field = value
+        }
 
     val length: Int
         get() = pinLength
@@ -64,7 +68,8 @@ class InputPinView(context: Context, attrs: AttributeSet) : FrameLayout(context,
         pinTextSize = ta.getDimensionPixelSize(R.styleable.InputPinView_pinTextSize, pinTextSize)
         pinTextColor = ta.getColor(R.styleable.InputPinView_pinTextColor, pinTextColor);
         itemSpacing = ta.getDimensionPixelSize(R.styleable.InputPinView_itemSpacing, itemSpacing);
-        itemBackground = ta.getResourceId(R.styleable.InputPinView_itemBackground, R.drawable.state_input_pin)
+        itemBackground =
+            ta.getResourceId(R.styleable.InputPinView_itemBackground, R.drawable.state_input_pin)
         ta.recycle()
     }
 
@@ -74,8 +79,10 @@ class InputPinView(context: Context, attrs: AttributeSet) : FrameLayout(context,
     }
 
     fun update() {
-        val layout = inflater.inflate(R.layout.input_pin_layout,
-                this, false) as FlexboxLayout
+        val layout = inflater.inflate(
+            R.layout.input_pin_layout,
+            this, false
+        ) as FlexboxLayout
         for (index in 0 until pinLength) {
             val item = inflater.inflate(R.layout.input_pin_item, layout, false) as TextView
             item.also {

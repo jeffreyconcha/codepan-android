@@ -309,6 +309,7 @@ class CameraXView(
                     val fos = FileOutputStream(file)
                     output.compress(Bitmap.CompressFormat.JPEG, 100, fos)
                     fos.close()
+                    notifiers?.onCapture(file.name)
                 }
             }
 
