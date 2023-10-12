@@ -15,6 +15,8 @@ import android.util.Rational
 import android.util.Size
 import android.view.KeyEvent
 import android.view.LayoutInflater
+import android.view.Surface
+import android.view.SurfaceView
 import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
@@ -113,6 +115,9 @@ class CameraXView(
             }
         }
     }
+
+    val orientation: DeviceOrientation
+        get() = detector.orientation
 
     val hasFrontCamera: Boolean
         get() = provider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) ?: false
@@ -369,8 +374,8 @@ class CameraXView(
     }
 
     override fun onOrientationChanged(orientation: DeviceOrientation) {
-//        Console.log(orientation.degrees)
         orientationNotifier?.onOrientationChanged(orientation)
+        analysis?.targetRotation = orientation.compensation
     }
 
     fun getImageRotation(): Int {

@@ -21,11 +21,12 @@ enum class DeviceOrientation(
     val opposite: Int,
     val isLandscape: Boolean,
     val isPortrait: Boolean,
+    val compensation: Int,
 ) {
-    PORTRAIT_90(90, 270, false, true),
-    PORTRAIT_270(270, 90, false, true),
-    LANDSCAPE_0(0, 180, true, false),
-    LANDSCAPE_180(180, 0, true, false),
+    PORTRAIT_90(90, 270, false, true, Surface.ROTATION_0),
+    PORTRAIT_270(270, 90, false, true, Surface.ROTATION_180),
+    LANDSCAPE_0(0, 180, true, false, Surface.ROTATION_270),
+    LANDSCAPE_180(180, 0, true, false, Surface.ROTATION_90),
 }
 
 class MotionDetector(

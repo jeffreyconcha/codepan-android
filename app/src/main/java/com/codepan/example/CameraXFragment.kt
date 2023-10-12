@@ -109,7 +109,6 @@ class CameraXFragment : CPFragment(), PermissionEvents {
                     analyzer = BlinkAnalyzer(object : BlinkEyeListener {
                         override fun onBlink() {
                             Console.log("You blinked!!!")
-                            cxvCamera.takePicture()
                         }
                     }),
                     notifiers = object : CameraXNotifiers {
