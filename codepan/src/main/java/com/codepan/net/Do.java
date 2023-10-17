@@ -28,6 +28,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
@@ -35,70 +36,154 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLProtocolException;
 
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
 public class Do {
 
 	private static final int INDENT = 4;
+	private static final String POST = "POST";
+	private static final String GET = "GET";
 
 	public static String httpGet(String url, JSONObject paramsObj, Authorization authorization,
-								 boolean encode, int timeOut) {
-		String params = "";
-		if (paramsObj != null) {
-			params = "?";
+		boolean encode, int timeOut) {
+		StringBuilder params = new StringBuilder("?");
+		if(paramsObj != null) {
 			Iterator<String> iterator = paramsObj.keys();
 			try {
 				int i = 0;
-				while (iterator.hasNext()) {
+				while(iterator.hasNext()) {
 					String key = iterator.next();
 					String text = paramsObj.getString(key);
 					String value = encode ? URLEncoder.encode(text, "UTF-8") : text;
-					if (i != 0) {
-						params += "&" + key + "=" + value;
+					if(i != 0) {
+						params.append("&").append(key).append("=").append(value);
 					}
 					else {
-						params += key + "=" + value;
+						params.append(key).append("=").append(value);
 					}
 					i++;
 				}
 				Console.logUrl(url + params);
 				Console.logParams(paramsObj.toString(INDENT));
 			}
-			catch (JSONException | UnsupportedEncodingException e) {
+			catch(JSONException | UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
 		}
 		else {
 			Console.logUrl(url);
 		}
-		return getHttpsResponse(url, params, authorization, timeOut, "GET");
+		return getOkHttpsResponse(url, params.toString(), authorization, timeOut, GET);
 	}
 
 	public static String httpPost(String url, JSONObject paramsObj,
-								  Authorization authorization, int timeOut) {
+		Authorization authorization, int timeOut) {
 		Console.logUrl(url);
 		try {
 			Console.logParams(paramsObj.toString(INDENT));
 		}
-		catch (JSONException e) {
+		catch(JSONException e) {
 			e.printStackTrace();
 		}
-		return getHttpsResponse(url, paramsObj.toString(), authorization, timeOut, "POST");
+		return getOkHttpsResponse(url, paramsObj.toString(), authorization, timeOut, POST);
+	}
+
+	private static String getOkHttpsResponse(
+		String host,
+		String params,
+		Authorization authorization,
+		int timeOut,
+		String method
+	) {
+		StringBuilder builder = new StringBuilder();
+		boolean result = false;
+		String exception = null;
+		String message = null;
+		ErrorHandler handler = new ErrorHandler();
+		String url = method != null && method.equals(GET) ? host + params : host;
+		OkHttpClient client = new OkHttpClient.Builder()
+			.connectTimeout(timeOut, TimeUnit.MILLISECONDS)
+			.build();
+		Request.Builder request = new Request.Builder()
+			.url(url);
+		if(authorization != null) {
+			request.addHeader("Authorization", authorization.getAuthorization());
+		}
+		if(method != null && method.equals(POST)) {
+			RequestBody body = RequestBody.create(params, MediaType.get("application/json"));
+			request.post(body);
+		}
+		try {
+			Response response = client.newCall(request.build()).execute();
+			if(response.isSuccessful()) {
+				final ResponseBody body = response.body();
+				if(body != null) {
+					builder.append(body.string());
+				}
+				result = true;
+			}
+		}
+		catch(SSLProtocolException | EOFException spe) {
+			spe.printStackTrace();
+			return getOkHttpsResponse(host, params,
+				authorization, timeOut, method);
+		}
+		catch(SocketTimeoutException ste) {
+			ste.printStackTrace();
+			exception = ste.toString();
+			message = handler.getTimeOutMessage();
+		}
+		catch(UnknownHostException he) {
+			exception = he.toString();
+			message = handler.getWeakInternetMessage();
+		}
+		catch(IOException ioe) {
+			ioe.printStackTrace();
+			exception = ioe.toString();
+			message = handler.getDefaultMessage();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			exception = e.toString();
+			message = e.getMessage();
+		}
+		if(!result) {
+			try {
+				JSONObject field = new JSONObject();
+				JSONObject error = new JSONObject();
+				error.put("type", "android");
+				field.put("message", message);
+				field.put("exception", exception);
+				error.put("error", field);
+				builder.append(error.toString());
+			}
+			catch(JSONException je) {
+				je.printStackTrace();
+			}
+		}
+		return builder.toString();
 	}
 
 	private static String getHttpsResponse(String host, String params, Authorization authorization,
-										   int timeOut, String method) {
+		int timeOut, String method) {
 		boolean result = false;
 		StringBuilder response = new StringBuilder();
 		String exception = null;
 		String message = null;
 		ErrorHandler handler = new ErrorHandler();
-		boolean doOutput = method != null && method.equals("POST");
-		String uri = method != null && method.equals("GET") ? host + params : host;
-		String contentType = method != null && method.equals("GET") ?
+		boolean doOutput = method != null && method.equals(POST);
+		String uri = method != null && method.equals(GET) ? host + params : host;
+		String contentType = method != null && method.equals(GET) ?
 			"application/x-www-form-urlencoded" : "application/json";
 		try {
 			URL url = new URL(uri);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			if (connection instanceof HttpsURLConnection) {
+			if(connection instanceof HttpsURLConnection) {
 				HttpsURLConnection https = (HttpsURLConnection) connection;
 				https.setSSLSocketFactory(new TLSSocketFactory());
 				connection = https;
@@ -111,29 +196,29 @@ public class Do {
 				connection.setRequestProperty("Content-Language", "en-US");
 				connection.setRequestProperty("Connection", "close");
 				connection.setRequestProperty("Accept-Encoding", "");
-				if (authorization != null) {
+				if(authorization != null) {
 					connection.setRequestProperty("Authorization", authorization.getAuthorization());
 				}
 				connection.setDoInput(true);
 				connection.setDoOutput(doOutput);
 				connection.setUseCaches(false);
 				connection.connect();
-				if (method != null && method.equals("POST")) {
+				if(method != null && method.equals(POST)) {
 					Writer out = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
 					BufferedWriter writer = new BufferedWriter(out);
 					writer.write(params);
 					writer.flush();
 					writer.close();
 				}
-				if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-					if (!url.getHost().equals(connection.getURL().getHost())) {
+				if(connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+					if(!url.getHost().equals(connection.getURL().getHost())) {
 						message = handler.getRedirectedMessage();
 					}
 					else {
 						Reader in = new InputStreamReader(connection.getInputStream());
 						BufferedReader reader = new BufferedReader(in);
 						String line;
-						while ((line = reader.readLine()) != null) {
+						while((line = reader.readLine()) != null) {
 							response.append(line);
 						}
 						reader.close();
@@ -147,7 +232,7 @@ public class Do {
 					Console.logResponse(handler.getRaw());
 				}
 			}
-			catch (SSLProtocolException spe) {
+			catch(SSLProtocolException spe) {
 				spe.printStackTrace();
 				return getHttpsResponse(host, params,
 					authorization, timeOut, method);
@@ -157,42 +242,42 @@ public class Do {
 				return getHttpsResponse(host, params,
 					authorization, timeOut, method);
 			}
-			catch (SocketTimeoutException ste) {
+			catch(SocketTimeoutException ste) {
 				ste.printStackTrace();
 				exception = ste.toString();
 				message = handler.getTimeOutMessage();
 			}
-			catch (UnknownHostException he) {
+			catch(UnknownHostException he) {
 				exception = he.toString();
 				message = handler.getWeakInternetMessage();
 			}
-			catch (IOException ioe) {
+			catch(IOException ioe) {
 				ioe.printStackTrace();
 				exception = ioe.toString();
 				message = handler.getDefaultMessage();
 			}
-			catch (Exception e) {
+			catch(Exception e) {
 				e.printStackTrace();
 				exception = e.toString();
 				message = e.getMessage();
 			}
 			finally {
-				if (connection != null) {
+				if(connection != null) {
 					connection.disconnect();
 				}
 			}
 		}
-		catch (MalformedURLException mue) {
+		catch(MalformedURLException mue) {
 			mue.printStackTrace();
 			exception = mue.toString();
 			message = handler.getInvalidURLMessage();
 		}
-		catch (Exception e) {
+		catch(Exception e) {
 			e.printStackTrace();
 			exception = e.toString();
 			message = e.getMessage();
 		}
-		if (!result) {
+		if(!result) {
 			try {
 				JSONObject field = new JSONObject();
 				JSONObject error = new JSONObject();
@@ -202,7 +287,7 @@ public class Do {
 				error.put("error", field);
 				response.append(error.toString());
 			}
-			catch (JSONException je) {
+			catch(JSONException je) {
 				je.printStackTrace();
 			}
 		}
@@ -224,10 +309,10 @@ public class Do {
 			String ex = context.getExternalFilesDir(null).getPath() + "/" + folder;
 			File dir = external ? new File(ex) : context.getDir(folder, Context.MODE_PRIVATE);
 			boolean result = dir.exists() || dir.mkdir();
-			if (result) {
+			if(result) {
 				URL url = new URL(uri);
 				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-				if (connection instanceof HttpsURLConnection) {
+				if(connection instanceof HttpsURLConnection) {
 					HttpsURLConnection https = (HttpsURLConnection) connection;
 					https.setSSLSocketFactory(new TLSSocketFactory());
 					connection = https;
@@ -237,7 +322,7 @@ public class Do {
 				String path = dir.getPath() + "/" + fileName;
 				File file = new File(path);
 				int downloaded = 0;
-				if (file.exists()) {
+				if(file.exists()) {
 					downloaded = (int) file.length();
 					String range = "bytes=" + downloaded + "-";
 					connection.setRequestProperty("Range", range);
@@ -250,25 +335,25 @@ public class Do {
 				InputStream input = connection.getInputStream();
 				OutputStream output = new FileOutputStream(file, downloaded > 0);
 				CipherOutputStream cos = null;
-				if (cipher != null) {
+				if(cipher != null) {
 					cos = new CipherOutputStream(output, cipher);
 				}
 				int count;
 				int progress = downloaded;
 				byte[] data = new byte[1024];
-				while ((count = input.read(data)) > 0) {
+				while((count = input.read(data)) > 0) {
 					progress += count;
-					if (cipher != null) {
+					if(cipher != null) {
 						cos.write(data, 0, count);
 					}
 					else {
 						output.write(data, 0, count);
 					}
-					if (callback != null) {
+					if(callback != null) {
 						callback.onProgress(progress, max);
 					}
 				}
-				if (cipher != null) {
+				if(cipher != null) {
 					cos.flush();
 					cos.close();
 				}
@@ -277,32 +362,32 @@ public class Do {
 					output.close();
 				}
 				input.close();
-				if (callback != null) {
+				if(callback != null) {
 					callback.onComplete();
 				}
 				connection.disconnect();
 			}
 			else {
-				if (callback != null) {
+				if(callback != null) {
 					callback.onError(handler.getDirectoryMessage());
 				}
 			}
 		}
-		catch (SocketTimeoutException ste) {
+		catch(SocketTimeoutException ste) {
 			ste.printStackTrace();
-			if (callback != null) {
+			if(callback != null) {
 				callback.onError(handler.getTimeOutMessage());
 			}
 		}
-		catch (SSLException s) {
+		catch(SSLException s) {
 			s.printStackTrace();
-			if (callback != null) {
+			if(callback != null) {
 				callback.onError(handler.getConnectionLostMessage());
 			}
 		}
-		catch (Exception e) {
+		catch(Exception e) {
 			e.printStackTrace();
-			if (callback != null) {
+			if(callback != null) {
 				String error = e.getMessage();
 				callback.onError(error);
 			}
@@ -310,7 +395,7 @@ public class Do {
 	}
 
 	public static String uploadFile(String url, JSONObject json, Authorization authorization,
-									String name, File file) {
+		String name, File file) {
 		String response = null;
 		String message = null;
 		String exception = null;
@@ -319,46 +404,46 @@ public class Do {
 		ErrorHandler handler = new ErrorHandler();
 		try {
 			Multipart multipart = new Multipart(url, "UTF-8");
-			if (authorization != null) {
+			if(authorization != null) {
 				multipart.addHeaderField("Authorization",
 					authorization.getAuthorization());
 			}
 			try {
 				Iterator<String> keys = json.keys();
-				while (keys.hasNext()) {
+				while(keys.hasNext()) {
 					String key = keys.next();
 					String value = json.getString(key);
 					multipart.addFormField(key, value);
 				}
 			}
-			catch (Exception e) {
+			catch(Exception e) {
 				e.printStackTrace();
 			}
-			if (file != null && file.exists()) {
+			if(file != null && file.exists()) {
 				multipart.addFilePart(name, file);
 			}
 			response = multipart.finish(handler);
 			result = true;
 		}
-		catch (SocketTimeoutException ste) {
+		catch(SocketTimeoutException ste) {
 			ste.printStackTrace();
 			exception = ste.toString();
 			message = handler.getTimeOutMessage();
 		}
-		catch (UnknownHostException he) {
+		catch(UnknownHostException he) {
 			exception = he.toString();
 			message = handler.getWeakInternetMessage();
 		}
-		catch (IOException e) {
+		catch(IOException e) {
 			exception = e.toString();
 			message = handler.getDefaultMessage();
 		}
-		catch (Exception e) {
+		catch(Exception e) {
 			e.printStackTrace();
 			exception = e.toString();
 			message = e.getMessage();
 		}
-		if (!result) {
+		if(!result) {
 			try {
 				JSONObject error = new JSONObject();
 				JSONObject field = new JSONObject();
@@ -367,7 +452,7 @@ public class Do {
 				error.put("error", field);
 				response = error.toString(INDENT);
 			}
-			catch (JSONException je) {
+			catch(JSONException je) {
 				je.printStackTrace();
 			}
 		}
@@ -375,7 +460,7 @@ public class Do {
 	}
 
 	public static String uploadFile(String url, String json, Authorization authorization,
-									String name, File file) {
+		String name, File file) {
 		String response = null;
 		String message = null;
 		String exception = null;
@@ -386,7 +471,7 @@ public class Do {
 		Console.logParams(json);
 		try {
 			Multipart multipart = new Multipart(url, "UTF-8");
-			if (authorization != null) {
+			if(authorization != null) {
 				multipart.addHeaderField("Authorization",
 					authorization.getAuthorization());
 			}
@@ -396,25 +481,25 @@ public class Do {
 			Console.logResponse(response);
 			result = true;
 		}
-		catch (SocketTimeoutException ste) {
+		catch(SocketTimeoutException ste) {
 			ste.printStackTrace();
 			exception = ste.toString();
 			message = handler.getTimeOutMessage();
 		}
-		catch (UnknownHostException he) {
+		catch(UnknownHostException he) {
 			exception = he.toString();
 			message = handler.getWeakInternetMessage();
 		}
-		catch (IOException e) {
+		catch(IOException e) {
 			exception = e.toString();
 			message = handler.getDefaultMessage();
 		}
-		catch (Exception e) {
+		catch(Exception e) {
 			e.printStackTrace();
 			exception = e.toString();
 			message = e.getMessage();
 		}
-		if (!result) {
+		if(!result) {
 			try {
 				JSONObject error = new JSONObject();
 				JSONObject field = new JSONObject();
@@ -423,7 +508,7 @@ public class Do {
 				error.put("error", field);
 				response = error.toString(INDENT);
 			}
-			catch (JSONException je) {
+			catch(JSONException je) {
 				je.printStackTrace();
 			}
 		}
