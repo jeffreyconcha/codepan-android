@@ -5,7 +5,6 @@ import android.os.Looper;
 
 import com.codepan.app.CPFragmentActivity;
 import com.codepan.callback.Interface;
-import com.codepan.net.Do;
 import com.codepan.net.HttpRequest;
 import com.codepan.test.Test;
 import com.codepan.utils.Console;
