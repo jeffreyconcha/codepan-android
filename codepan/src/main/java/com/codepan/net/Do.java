@@ -1,10 +1,12 @@
 package com.codepan.net;
 
 import android.content.Context;
+import android.os.Build;
 
 import com.codepan.net.Callback.OnDownloadFileCallback;
 import com.codepan.utils.Console;
 
+import org.apache.commons.lang3.CharEncoding;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,11 +25,14 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Cipher;
@@ -38,6 +43,7 @@ import javax.net.ssl.SSLProtocolException;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -59,7 +65,10 @@ public class Do {
 				while(iterator.hasNext()) {
 					String key = iterator.next();
 					String text = paramsObj.getString(key);
-					String value = encode ? URLEncoder.encode(text, "UTF-8") : text;
+					String encoded = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ?
+						URLEncoder.encode(text, StandardCharsets.UTF_8) :
+						URLEncoder.encode(text, StandardCharsets.UTF_8);
+					String value = encode ? encoded : text;
 					if(i != 0) {
 						params.append("&").append(key).append("=").append(value);
 					}
@@ -71,7 +80,7 @@ public class Do {
 				Console.logUrl(url + params);
 				Console.logParams(paramsObj.toString(INDENT));
 			}
-			catch(JSONException | UnsupportedEncodingException e) {
+			catch(JSONException e) {
 				e.printStackTrace();
 			}
 		}
@@ -106,19 +115,28 @@ public class Do {
 		String message = null;
 		ErrorHandler handler = new ErrorHandler();
 		String url = method != null && method.equals(GET) ? host + params : host;
-		OkHttpClient client = new OkHttpClient.Builder()
-			.connectTimeout(timeOut, TimeUnit.MILLISECONDS)
-			.build();
-		Request.Builder request = new Request.Builder()
-			.url(url);
-		if(authorization != null) {
-			request.addHeader("Authorization", authorization.getAuthorization());
-		}
-		if(method != null && method.equals(POST)) {
-			RequestBody body = RequestBody.create(params, MediaType.get("application/json"));
-			request.post(body);
-		}
+		String contentType = method != null && method.equals(GET) ?
+			"application/x-www-form-urlencoded" : "application/json";
 		try {
+			OkHttpClient client = new OkHttpClient.Builder()
+				.protocols(List.of(Protocol.HTTP_2, Protocol.HTTP_1_1))
+				.connectTimeout(timeOut, TimeUnit.MILLISECONDS)
+				.readTimeout(timeOut, TimeUnit.MILLISECONDS)
+				.sslSocketFactory(new TLSSocketFactory(), new TrustManager())
+				.build();
+			Request.Builder request = new Request.Builder()
+				.addHeader("Content-Type", contentType)
+				.addHeader("Content-Language", "en-US")
+				.addHeader("Connection", "close")
+				.addHeader("Accept-Encoding", "")
+				.url(url);
+			if(authorization != null) {
+				request.addHeader("Authorization", authorization.getAuthorization());
+			}
+			if(method != null && method.equals(POST)) {
+				RequestBody body = RequestBody.create(params, MediaType.get("application/json"));
+				request.post(body);
+			}
 			Response response = client.newCall(request.build()).execute();
 			if(response.isSuccessful()) {
 				final ResponseBody body = response.body();
@@ -127,16 +145,26 @@ public class Do {
 				}
 				result = true;
 			}
+			else {
+				Console.log("RESPONSE ERROR CODE: " + response.code());
+			}
 		}
-		catch(SSLProtocolException | EOFException spe) {
-			spe.printStackTrace();
+		catch(SSLProtocolException | EOFException | SocketTimeoutException e) {
+			e.printStackTrace();
 			return getOkHttpsResponse(host, params,
 				authorization, timeOut, method);
 		}
-		catch(SocketTimeoutException ste) {
-			ste.printStackTrace();
-			exception = ste.toString();
-			message = handler.getTimeOutMessage();
+		catch(SocketException se) {
+			se.printStackTrace();
+			String error = se.getMessage();
+			if(error != null && error.contains("close")) {
+				return getOkHttpsResponse(host, params,
+					authorization, timeOut, method);
+			}
+			else {
+				exception = se.toString();
+				message = handler.getTimeOutMessage();
+			}
 		}
 		catch(UnknownHostException he) {
 			exception = he.toString();
@@ -160,7 +188,7 @@ public class Do {
 				field.put("message", message);
 				field.put("exception", exception);
 				error.put("error", field);
-				builder.append(error.toString());
+				builder.append(error);
 			}
 			catch(JSONException je) {
 				je.printStackTrace();
@@ -183,10 +211,8 @@ public class Do {
 		try {
 			URL url = new URL(uri);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			if(connection instanceof HttpsURLConnection) {
-				HttpsURLConnection https = (HttpsURLConnection) connection;
+			if(connection instanceof HttpsURLConnection https) {
 				https.setSSLSocketFactory(new TLSSocketFactory());
-				connection = https;
 			}
 			try {
 				connection.setConnectTimeout(timeOut);
@@ -204,7 +230,7 @@ public class Do {
 				connection.setUseCaches(false);
 				connection.connect();
 				if(method != null && method.equals(POST)) {
-					Writer out = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
+					Writer out = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
 					BufferedWriter writer = new BufferedWriter(out);
 					writer.write(params);
 					writer.flush();
@@ -232,13 +258,8 @@ public class Do {
 					Console.logResponse(handler.getRaw());
 				}
 			}
-			catch(SSLProtocolException spe) {
+			catch(SSLProtocolException | EOFException spe) {
 				spe.printStackTrace();
-				return getHttpsResponse(host, params,
-					authorization, timeOut, method);
-			}
-			catch(EOFException eof) {
-				eof.printStackTrace();
 				return getHttpsResponse(host, params,
 					authorization, timeOut, method);
 			}
@@ -285,7 +306,7 @@ public class Do {
 				field.put("message", message);
 				field.put("exception", exception);
 				error.put("error", field);
-				response.append(error.toString());
+				response.append(error);
 			}
 			catch(JSONException je) {
 				je.printStackTrace();
@@ -312,10 +333,8 @@ public class Do {
 			if(result) {
 				URL url = new URL(uri);
 				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-				if(connection instanceof HttpsURLConnection) {
-					HttpsURLConnection https = (HttpsURLConnection) connection;
+				if(connection instanceof HttpsURLConnection https) {
 					https.setSSLSocketFactory(new TLSSocketFactory());
-					connection = https;
 				}
 				connection.setConnectTimeout(timeout);
 				connection.setReadTimeout(timeout);
