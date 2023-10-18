@@ -256,12 +256,10 @@ public class HttpRequest {
 	}
 
 	public void downloadFile(
-		String uri,
 		String folder,
 		String fileName,
 		boolean external,
 		Cipher cipher,
-		int timeout,
 		OnDownloadFileCallback callback
 	) {
 		ErrorHandler handler = new ErrorHandler();
@@ -270,7 +268,7 @@ public class HttpRequest {
 			File dir = external ? new File(ex) : context.getDir(folder, Context.MODE_PRIVATE);
 			boolean result = dir.exists() || dir.mkdir();
 			if(result) {
-				URL url = new URL(uri);
+				URL url = new URL(this.url);
 				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 				if(connection instanceof HttpsURLConnection https) {
 					https.setSSLSocketFactory(new TLSSocketFactory());
@@ -279,8 +277,8 @@ public class HttpRequest {
 				if(userAgent != null) {
 					connection.setRequestProperty("User-Agent", userAgent);
 				}
-				connection.setConnectTimeout(timeout);
-				connection.setReadTimeout(timeout);
+				connection.setConnectTimeout(timeOut);
+				connection.setReadTimeout(timeOut);
 				String path = dir.getPath() + "/" + fileName;
 				File file = new File(path);
 				int downloaded = 0;
