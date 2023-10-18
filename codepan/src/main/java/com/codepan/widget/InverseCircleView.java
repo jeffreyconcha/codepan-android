@@ -63,4 +63,16 @@ public class InverseCircleView extends View {
 		canvas.clipPath(path);
 		canvas.drawColor(color);
 	}
+
+	public void setColor(int color) {
+		this.color = color;
+		edge.setColor(color);
+		invalidate();
+	}
+
+	public void setStrokeColor(int strokeColor) {
+		this.strokeColor = strokeColor;
+		stroke.setColor(strokeColor);
+		invalidate();
+	}
 }
