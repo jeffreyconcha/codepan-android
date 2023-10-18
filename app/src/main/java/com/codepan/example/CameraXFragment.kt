@@ -110,6 +110,10 @@ class CameraXFragment : CPFragment(), PermissionEvents {
                         override fun onBlink() {
                             Console.log("You blinked!!!")
                         }
+
+                        override fun onFaceChange(hasFace: Boolean) {
+                            Console.log("Has face: $hasFace")
+                        }
                     }),
                     notifiers = object : CameraXNotifiers {
                         override fun onCapture(file: File) {

@@ -14,6 +14,7 @@ import com.google.mlkit.vision.face.FaceDetectorOptions
 
 interface BlinkEyeListener {
     fun onBlink()
+    fun onFaceChange(hasFace: Boolean)
 }
 
 @ExperimentalGetImage
@@ -23,6 +24,7 @@ class BlinkAnalyzer(
     private val delay: Long = 100L,
 ) : ImageAnalysis.Analyzer {
     private var _isEyeClose: Boolean = false
+    private var _hasFace: Boolean = false
 
     constructor(listener: BlinkEyeListener) :
         this(listener, 100L)
@@ -54,6 +56,11 @@ class BlinkAnalyzer(
             val detector = FaceDetection.getClient(option)
             detector.process(image).also {
                 it.addOnSuccessListener { faces ->
+                    val hasFace = faces.isNotEmpty()
+                    if (hasFace != _hasFace) {
+                        listener.onFaceChange(hasFace)
+                    }
+                    _hasFace = hasFace
                     for (face in faces) {
                         val left = face.leftEyeOpenProbability ?: 1f
                         val right = face.rightEyeOpenProbability ?: 1f
