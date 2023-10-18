@@ -62,7 +62,7 @@ public class MainActivity extends CPFragmentActivity {
 		});
 		CodePanTextField tf = findViewById(R.id.etNumeric);
 		tf.setOnTextChangedCallback(new Debouncer<>(data -> {
-//			requestHttp();
+			requestHttp();
 		}));
 	}
 
