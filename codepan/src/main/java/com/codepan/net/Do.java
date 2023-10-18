@@ -28,6 +28,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
@@ -35,15 +36,23 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLProtocolException;
 
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
 public class Do {
 
 	private static final int INDENT = 4;
+	private static final String POST = "POST";
+	private static final String GET = "GET";
 
 	public static String httpGet(String url, JSONObject paramsObj, Authorization authorization,
 		boolean encode, int timeOut) {
-		String params = "";
+		StringBuilder params = new StringBuilder("?");
 		if(paramsObj != null) {
-			params = "?";
 			Iterator<String> iterator = paramsObj.keys();
 			try {
 				int i = 0;
@@ -52,10 +61,10 @@ public class Do {
 					String text = paramsObj.getString(key);
 					String value = encode ? URLEncoder.encode(text, "UTF-8") : text;
 					if(i != 0) {
-						params += "&" + key + "=" + value;
+						params.append("&").append(key).append("=").append(value);
 					}
 					else {
-						params += key + "=" + value;
+						params.append(key).append("=").append(value);
 					}
 					i++;
 				}
@@ -69,7 +78,7 @@ public class Do {
 		else {
 			Console.logUrl(url);
 		}
-		return getHttpsResponse(url, params, authorization, timeOut, "GET");
+		return getOkHttpsResponse(url, params.toString(), authorization, timeOut, GET);
 	}
 
 	public static String httpPost(String url, JSONObject paramsObj,
@@ -81,7 +90,83 @@ public class Do {
 		catch(JSONException e) {
 			e.printStackTrace();
 		}
-		return getHttpsResponse(url, paramsObj.toString(), authorization, timeOut, "POST");
+		return getOkHttpsResponse(url, paramsObj.toString(), authorization, timeOut, POST);
+	}
+
+	private static String getOkHttpsResponse(
+		String host,
+		String params,
+		Authorization authorization,
+		int timeOut,
+		String method
+	) {
+		StringBuilder builder = new StringBuilder();
+		boolean result = false;
+		String exception = null;
+		String message = null;
+		ErrorHandler handler = new ErrorHandler();
+		String url = method != null && method.equals(GET) ? host + params : host;
+		OkHttpClient client = new OkHttpClient.Builder()
+			.connectTimeout(timeOut, TimeUnit.MILLISECONDS)
+			.build();
+		Request.Builder request = new Request.Builder()
+			.url(url);
+		if(authorization != null) {
+			request.addHeader("Authorization", authorization.getAuthorization());
+		}
+		if(method != null && method.equals(POST)) {
+			RequestBody body = RequestBody.create(params, MediaType.get("application/json"));
+			request.post(body);
+		}
+		try {
+			Response response = client.newCall(request.build()).execute();
+			if(response.isSuccessful()) {
+				final ResponseBody body = response.body();
+				if(body != null) {
+					builder.append(body.string());
+				}
+				result = true;
+			}
+		}
+		catch(SSLProtocolException | EOFException spe) {
+			spe.printStackTrace();
+			return getOkHttpsResponse(host, params,
+				authorization, timeOut, method);
+		}
+		catch(SocketTimeoutException ste) {
+			ste.printStackTrace();
+			exception = ste.toString();
+			message = handler.getTimeOutMessage();
+		}
+		catch(UnknownHostException he) {
+			exception = he.toString();
+			message = handler.getWeakInternetMessage();
+		}
+		catch(IOException ioe) {
+			ioe.printStackTrace();
+			exception = ioe.toString();
+			message = handler.getDefaultMessage();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			exception = e.toString();
+			message = e.getMessage();
+		}
+		if(!result) {
+			try {
+				JSONObject field = new JSONObject();
+				JSONObject error = new JSONObject();
+				error.put("type", "android");
+				field.put("message", message);
+				field.put("exception", exception);
+				error.put("error", field);
+				builder.append(error.toString());
+			}
+			catch(JSONException je) {
+				je.printStackTrace();
+			}
+		}
+		return builder.toString();
 	}
 
 	private static String getHttpsResponse(String host, String params, Authorization authorization,
@@ -91,15 +176,17 @@ public class Do {
 		String exception = null;
 		String message = null;
 		ErrorHandler handler = new ErrorHandler();
-		boolean doOutput = method != null && method.equals("POST");
-		String uri = method != null && method.equals("GET") ? host + params : host;
-		String contentType = method != null && method.equals("GET") ?
+		boolean doOutput = method != null && method.equals(POST);
+		String uri = method != null && method.equals(GET) ? host + params : host;
+		String contentType = method != null && method.equals(GET) ?
 			"application/x-www-form-urlencoded" : "application/json";
 		try {
 			URL url = new URL(uri);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			if(connection instanceof HttpsURLConnection https) {
+			if(connection instanceof HttpsURLConnection) {
+				HttpsURLConnection https = (HttpsURLConnection) connection;
 				https.setSSLSocketFactory(new TLSSocketFactory());
+				connection = https;
 			}
 			try {
 				connection.setConnectTimeout(timeOut);
@@ -116,7 +203,7 @@ public class Do {
 				connection.setDoOutput(doOutput);
 				connection.setUseCaches(false);
 				connection.connect();
-				if(method != null && method.equals("POST")) {
+				if(method != null && method.equals(POST)) {
 					Writer out = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
 					BufferedWriter writer = new BufferedWriter(out);
 					writer.write(params);
@@ -145,8 +232,13 @@ public class Do {
 					Console.logResponse(handler.getRaw());
 				}
 			}
-			catch(SSLProtocolException | EOFException spe) {
+			catch(SSLProtocolException spe) {
 				spe.printStackTrace();
+				return getHttpsResponse(host, params,
+					authorization, timeOut, method);
+			}
+			catch(EOFException eof) {
+				eof.printStackTrace();
 				return getHttpsResponse(host, params,
 					authorization, timeOut, method);
 			}
