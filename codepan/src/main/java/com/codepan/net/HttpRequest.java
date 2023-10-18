@@ -9,20 +9,14 @@ import com.codepan.utils.Console;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -48,14 +42,34 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okhttp3.internal.http2.StreamResetException;
 
-public class Do {
+public class HttpRequest {
 
+	private static final int MAX_RETRY = 5;
 	private static final int INDENT = 4;
 	private static final String POST = "POST";
 	private static final String GET = "GET";
 
-	public static String httpGet(String url, JSONObject paramsObj, Authorization authorization,
-		boolean encode, int timeOut) {
+	private JSONObject paramsObj;
+	private Authorization authorization;
+	private int retryCount = 0;
+	private int timeOut;
+	private String url, userAgent;
+
+	public HttpRequest(
+		String url,
+		Authorization authorization,
+		JSONObject paramsObj,
+		int timeOut,
+		String userAgent
+	) {
+		this.paramsObj = paramsObj;
+		this.authorization = authorization;
+		this.timeOut = timeOut;
+		this.url = url;
+		this.userAgent = userAgent;
+	}
+
+	public String get(boolean encode) {
 		StringBuilder params = new StringBuilder("?");
 		if(paramsObj != null) {
 			Iterator<String> iterator = paramsObj.keys();
@@ -66,7 +80,7 @@ public class Do {
 					String text = paramsObj.getString(key);
 					String encoded = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ?
 						URLEncoder.encode(text, StandardCharsets.UTF_8) :
-						URLEncoder.encode(text, StandardCharsets.UTF_8);
+						URLEncoder.encode(text, "UTF-8");
 					String value = encode ? encoded : text;
 					if(i != 0) {
 						params.append("&").append(key).append("=").append(value);
@@ -79,18 +93,17 @@ public class Do {
 				Console.logUrl(url + params);
 				Console.logParams(paramsObj.toString(INDENT));
 			}
-			catch(JSONException e) {
+			catch(JSONException | UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
 		}
 		else {
 			Console.logUrl(url);
 		}
-		return getOkHttpsResponse(url, params.toString(), authorization, timeOut, GET);
+		return getOkHttpsResponse(url, params.toString(), GET);
 	}
 
-	public static String httpPost(String url, JSONObject paramsObj,
-		Authorization authorization, int timeOut) {
+	public String post() {
 		Console.logUrl(url);
 		try {
 			Console.logParams(paramsObj.toString(INDENT));
@@ -98,14 +111,25 @@ public class Do {
 		catch(JSONException e) {
 			e.printStackTrace();
 		}
-		return getOkHttpsResponse(url, paramsObj.toString(), authorization, timeOut, POST);
+		return getOkHttpsResponse(url, paramsObj.toString(), POST);
 	}
 
-	private static String getOkHttpsResponse(
+	private String retry(
 		String host,
 		String params,
-		Authorization authorization,
-		int timeOut,
+		String method
+	)
+		throws RuntimeException, InterruptedException {
+		Thread.sleep(1000L);
+		if(retryCount++ <= MAX_RETRY) {
+			return getOkHttpsResponse(host, params, method);
+		}
+		throw new RuntimeException("Max retries for HTTP request has been reached!!!");
+	}
+
+	private String getOkHttpsResponse(
+		String host,
+		String params,
 		String method
 	) {
 		StringBuilder builder = new StringBuilder();
@@ -132,6 +156,9 @@ public class Do {
 			if(authorization != null) {
 				request.addHeader("Authorization", authorization.getAuthorization());
 			}
+			if(userAgent != null) {
+				request.addHeader("User-Agent", userAgent);
+			}
 			if(method != null && method.equals(POST)) {
 				RequestBody body = RequestBody.create(params, MediaType.get("application/json"));
 				request.post(body);
@@ -153,15 +180,23 @@ public class Do {
 			  SocketTimeoutException |
 			  StreamResetException e) {
 			e.printStackTrace();
-			return getOkHttpsResponse(host, params,
-				authorization, timeOut, method);
+			try {
+				return retry(host, params, method);
+			}
+			catch(Exception ex) {
+				throw new RuntimeException(ex);
+			}
 		}
 		catch(SocketException se) {
 			se.printStackTrace();
 			String error = se.getMessage();
 			if(error != null && error.contains("close")) {
-				return getOkHttpsResponse(host, params,
-					authorization, timeOut, method);
+				try {
+					return retry(host, params, method);
+				}
+				catch(Exception e) {
+					throw new RuntimeException(e);
+				}
 			}
 			else {
 				exception = se.toString();
@@ -199,125 +234,7 @@ public class Do {
 		return builder.toString();
 	}
 
-	private static String getHttpsResponse(String host, String params, Authorization authorization,
-		int timeOut, String method) {
-		boolean result = false;
-		StringBuilder response = new StringBuilder();
-		String exception = null;
-		String message = null;
-		ErrorHandler handler = new ErrorHandler();
-		boolean doOutput = method != null && method.equals(POST);
-		String uri = method != null && method.equals(GET) ? host + params : host;
-		String contentType = method != null && method.equals(GET) ?
-			"application/x-www-form-urlencoded" : "application/json";
-		try {
-			URL url = new URL(uri);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			if(connection instanceof HttpsURLConnection https) {
-				https.setSSLSocketFactory(new TLSSocketFactory());
-			}
-			try {
-				connection.setConnectTimeout(timeOut);
-				connection.setReadTimeout(timeOut);
-				connection.setRequestMethod(method);
-				connection.setRequestProperty("Content-Type", contentType);
-				connection.setRequestProperty("Content-Language", "en-US");
-				connection.setRequestProperty("Connection", "close");
-				connection.setRequestProperty("Accept-Encoding", "");
-				if(authorization != null) {
-					connection.setRequestProperty("Authorization", authorization.getAuthorization());
-				}
-				connection.setDoInput(true);
-				connection.setDoOutput(doOutput);
-				connection.setUseCaches(false);
-				connection.connect();
-				if(method != null && method.equals(POST)) {
-					Writer out = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
-					BufferedWriter writer = new BufferedWriter(out);
-					writer.write(params);
-					writer.flush();
-					writer.close();
-				}
-				if(connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-					if(!url.getHost().equals(connection.getURL().getHost())) {
-						message = handler.getRedirectedMessage();
-					}
-					else {
-						Reader in = new InputStreamReader(connection.getInputStream());
-						BufferedReader reader = new BufferedReader(in);
-						String line;
-						while((line = reader.readLine()) != null) {
-							response.append(line);
-						}
-						reader.close();
-						result = true;
-					}
-					Console.logResponse(response.toString());
-				}
-				else {
-					InputStream error = connection.getErrorStream();
-					message = handler.getErrorMessage(error);
-					Console.logResponse(handler.getRaw());
-				}
-			}
-			catch(SSLProtocolException | EOFException spe) {
-				spe.printStackTrace();
-				return getHttpsResponse(host, params,
-					authorization, timeOut, method);
-			}
-			catch(SocketTimeoutException ste) {
-				ste.printStackTrace();
-				exception = ste.toString();
-				message = handler.getTimeOutMessage();
-			}
-			catch(UnknownHostException he) {
-				exception = he.toString();
-				message = handler.getWeakInternetMessage();
-			}
-			catch(IOException ioe) {
-				ioe.printStackTrace();
-				exception = ioe.toString();
-				message = handler.getDefaultMessage();
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-				exception = e.toString();
-				message = e.getMessage();
-			}
-			finally {
-				if(connection != null) {
-					connection.disconnect();
-				}
-			}
-		}
-		catch(MalformedURLException mue) {
-			mue.printStackTrace();
-			exception = mue.toString();
-			message = handler.getInvalidURLMessage();
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			exception = e.toString();
-			message = e.getMessage();
-		}
-		if(!result) {
-			try {
-				JSONObject field = new JSONObject();
-				JSONObject error = new JSONObject();
-				error.put("type", "android");
-				field.put("message", message);
-				field.put("exception", exception);
-				error.put("error", field);
-				response.append(error);
-			}
-			catch(JSONException je) {
-				je.printStackTrace();
-			}
-		}
-		return response.toString();
-	}
-
-	public static void downloadFile(
+	public void downloadFile(
 		Context context,
 		String uri,
 		String folder,
@@ -415,12 +332,13 @@ public class Do {
 		}
 	}
 
-	public static String uploadFile(String url, JSONObject json, Authorization authorization,
-		String name, File file) {
+	public String uploadFile(
+		String name,
+		File file
+	) {
 		String response = null;
 		String message = null;
 		String exception = null;
-		final int INDENT = 4;
 		boolean result = false;
 		ErrorHandler handler = new ErrorHandler();
 		try {
@@ -430,10 +348,10 @@ public class Do {
 					authorization.getAuthorization());
 			}
 			try {
-				Iterator<String> keys = json.keys();
+				Iterator<String> keys = paramsObj.keys();
 				while(keys.hasNext()) {
 					String key = keys.next();
-					String value = json.getString(key);
+					String value = paramsObj.getString(key);
 					multipart.addFormField(key, value);
 				}
 			}
@@ -480,12 +398,14 @@ public class Do {
 		return response;
 	}
 
-	public static String uploadFile(String url, String json, Authorization authorization,
-		String name, File file) {
+	public String uploadFile(
+		String json,
+		String name,
+		File file
+	) {
 		String response = null;
 		String message = null;
 		String exception = null;
-		final int INDENT = 4;
 		boolean result = false;
 		ErrorHandler handler = new ErrorHandler();
 		Console.logUrl(url);

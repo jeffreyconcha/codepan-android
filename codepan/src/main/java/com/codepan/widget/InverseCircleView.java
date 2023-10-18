@@ -39,7 +39,6 @@ public class InverseCircleView extends View {
 		stroke.setStrokeWidth(width);
 		stroke.setStyle(Paint.Style.STROKE);
 		edge = new Paint();
-		edge.setColor(color);
 		edge.setAntiAlias(true);
 		edge.setStrokeWidth(edgeThickness);
 		edge.setStyle(Paint.Style.STROKE);

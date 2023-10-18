@@ -6,6 +6,7 @@ import android.os.Looper;
 import com.codepan.app.CPFragmentActivity;
 import com.codepan.callback.Interface;
 import com.codepan.net.Do;
+import com.codepan.net.HttpRequest;
 import com.codepan.test.Test;
 import com.codepan.utils.Console;
 import com.codepan.utils.Debouncer;
@@ -66,7 +67,7 @@ public class MainActivity extends CPFragmentActivity {
 			Looper.prepare();
 			try {
 				String url = "https://catfact.ninja/fact";
-				String response = Do.httpGet(url, null, null, true, 1000);
+				String response = new HttpRequest(url, null, null, 1000).get(true);
 				Console.logResponse(response);
 			}
 			catch(Exception e) {
