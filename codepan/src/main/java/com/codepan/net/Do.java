@@ -6,7 +6,6 @@ import android.os.Build;
 import com.codepan.net.Callback.OnDownloadFileCallback;
 import com.codepan.utils.Console;
 
-import org.apache.commons.lang3.CharEncoding;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,7 +20,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -48,6 +46,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.internal.http2.StreamResetException;
 
 public class Do {
 
@@ -149,7 +148,10 @@ public class Do {
 				Console.log("RESPONSE ERROR CODE: " + response.code());
 			}
 		}
-		catch(SSLProtocolException | EOFException | SocketTimeoutException e) {
+		catch(SSLProtocolException |
+			  EOFException |
+			  SocketTimeoutException |
+			  StreamResetException e) {
 			e.printStackTrace();
 			return getOkHttpsResponse(host, params,
 				authorization, timeOut, method);
