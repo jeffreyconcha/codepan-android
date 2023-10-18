@@ -54,7 +54,6 @@ public class HttpRequest {
 
 	private Context context;
 	private Authorization authorization;
-	private JSONObject paramsObj;
 	private int retryCount = 0;
 	private int timeOut;
 	private String url;
@@ -63,11 +62,9 @@ public class HttpRequest {
 		Context context,
 		String url,
 		Authorization authorization,
-		JSONObject paramsObj,
 		int timeOut
 	) {
 		this.context = context;
-		this.paramsObj = paramsObj;
 		this.authorization = authorization;
 		this.timeOut = timeOut;
 		this.url = url;
@@ -92,7 +89,7 @@ public class HttpRequest {
 		return null;
 	}
 
-	public String get(boolean encode) {
+	public String get(JSONObject paramsObj, boolean encode) {
 		StringBuilder params = new StringBuilder("?");
 		if(paramsObj != null) {
 			Iterator<String> iterator = paramsObj.keys();
@@ -126,7 +123,7 @@ public class HttpRequest {
 		return getOkHttpsResponse(url, params.toString(), GET);
 	}
 
-	public String post() {
+	public String post(JSONObject paramsObj) {
 		Console.logUrl(url);
 		try {
 			Console.logParams(paramsObj.toString(INDENT));
@@ -360,6 +357,7 @@ public class HttpRequest {
 	}
 
 	public String uploadFile(
+		JSONObject paramsObj,
 		String name,
 		File file
 	) {
@@ -430,7 +428,7 @@ public class HttpRequest {
 	}
 
 	public String uploadFile(
-		String json,
+		String params,
 		String name,
 		File file
 	) {
@@ -440,7 +438,7 @@ public class HttpRequest {
 		boolean result = false;
 		ErrorHandler handler = new ErrorHandler();
 		Console.logUrl(url);
-		Console.logParams(json);
+		Console.logParams(params);
 		try {
 			Multipart multipart = new Multipart(url, "UTF-8");
 			if(authorization != null) {
@@ -451,7 +449,7 @@ public class HttpRequest {
 			if(userAgent != null) {
 				multipart.addHeaderField("User-Agent", userAgent);
 			}
-			multipart.addFormField("params", json);
+			multipart.addFormField("params", params);
 			multipart.addFilePart(name, file);
 			response = multipart.finish(handler);
 			Console.logResponse(response);
