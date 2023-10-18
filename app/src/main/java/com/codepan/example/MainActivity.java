@@ -11,8 +11,6 @@ import com.codepan.utils.Console;
 import com.codepan.utils.Debouncer;
 import com.codepan.widget.CodePanTextField;
 
-import org.json.JSONObject;
-
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -59,7 +57,7 @@ public class MainActivity extends CPFragmentActivity {
 		});
 		CodePanTextField tf = findViewById(R.id.etNumeric);
 		tf.setOnTextChangedCallback(new Debouncer<>(data -> {
-			requestHttp();
+//			requestHttp();
 		}));
 	}
 
