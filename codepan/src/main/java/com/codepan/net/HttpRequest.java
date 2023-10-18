@@ -1,6 +1,9 @@
 package com.codepan.net;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 
 import com.codepan.net.Callback.OnDownloadFileCallback;
@@ -49,24 +52,44 @@ public class HttpRequest {
 	private static final String POST = "POST";
 	private static final String GET = "GET";
 
-	private JSONObject paramsObj;
+	private Context context;
 	private Authorization authorization;
+	private JSONObject paramsObj;
 	private int retryCount = 0;
 	private int timeOut;
-	private String url, userAgent;
+	private String url;
 
 	public HttpRequest(
+		Context context,
 		String url,
 		Authorization authorization,
 		JSONObject paramsObj,
-		int timeOut,
-		String userAgent
+		int timeOut
 	) {
+		this.context = context;
 		this.paramsObj = paramsObj;
 		this.authorization = authorization;
 		this.timeOut = timeOut;
 		this.url = url;
-		this.userAgent = userAgent;
+	}
+
+	private String getUserAgent() {
+		final PackageManager pm = context.getPackageManager();
+		if(pm != null) {
+			try {
+				String packageId = context.getPackageName();
+				PackageInfo pi = pm.getPackageInfo(packageId, 0);
+				ApplicationInfo ai = pm.getApplicationInfo(packageId, 0);
+				String appName = pm.getApplicationLabel(ai).toString();
+				return appName + "/" + pi.versionName + "+" + pi.versionCode + "(" +
+					"Android " + Build.VERSION.SDK_INT + "; " +
+					"Model:" + Build.MODEL + "; " + Build.FINGERPRINT + ")";
+			}
+			catch(PackageManager.NameNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
 
 	public String get(boolean encode) {
@@ -156,6 +179,7 @@ public class HttpRequest {
 			if(authorization != null) {
 				request.addHeader("Authorization", authorization.getAuthorization());
 			}
+			String userAgent = getUserAgent();
 			if(userAgent != null) {
 				request.addHeader("User-Agent", userAgent);
 			}
@@ -235,7 +259,6 @@ public class HttpRequest {
 	}
 
 	public void downloadFile(
-		Context context,
 		String uri,
 		String folder,
 		String fileName,
@@ -254,6 +277,10 @@ public class HttpRequest {
 				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 				if(connection instanceof HttpsURLConnection https) {
 					https.setSSLSocketFactory(new TLSSocketFactory());
+				}
+				String userAgent = getUserAgent();
+				if(userAgent != null) {
+					connection.setRequestProperty("User-Agent", userAgent);
 				}
 				connection.setConnectTimeout(timeout);
 				connection.setReadTimeout(timeout);
@@ -346,6 +373,10 @@ public class HttpRequest {
 			if(authorization != null) {
 				multipart.addHeaderField("Authorization",
 					authorization.getAuthorization());
+				String userAgent = getUserAgent();
+				if(userAgent != null) {
+					multipart.addHeaderField("User-Agent", userAgent);
+				}
 			}
 			try {
 				Iterator<String> keys = paramsObj.keys();
@@ -415,6 +446,10 @@ public class HttpRequest {
 			if(authorization != null) {
 				multipart.addHeaderField("Authorization",
 					authorization.getAuthorization());
+			}
+			String userAgent = getUserAgent();
+			if(userAgent != null) {
+				multipart.addHeaderField("User-Agent", userAgent);
 			}
 			multipart.addFormField("params", json);
 			multipart.addFilePart(name, file);

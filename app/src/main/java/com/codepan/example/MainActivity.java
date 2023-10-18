@@ -1,5 +1,10 @@
 package com.codepan.example;
 
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 
@@ -66,7 +71,7 @@ public class MainActivity extends CPFragmentActivity {
 			Looper.prepare();
 			try {
 				String url = "https://catfact.ninja/fact";
-				String response = new HttpRequest(url, null, null, 1000, null).get(true);
+				String response = new HttpRequest(this, url, null, null, 1000).get(true);
 				Console.logResponse(response);
 			}
 			catch(Exception e) {
