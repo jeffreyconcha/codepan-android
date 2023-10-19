@@ -17,10 +17,10 @@
         <com.codepan.widget.InverseCircleView
             android:layout_width="@dimen/one_hundred"
             android:layout_height="@dimen/one_hundred"
-            inverseCircle:color="@color/black"
-            inverseCircle:edgeThickness="50"
+            inverseCircle:color="@color/black_trans_thirty"
+            inverseCircle:edgeThickness="10"
             inverseCircle:strokeColor="#FF0000"
-            inverseCircle:strokeThickness="50"/>
+            inverseCircle:strokeThickness="10"/>
 
         <com.codepan.widget.CodePanButton
             android:id="@+id/btnCalendar"

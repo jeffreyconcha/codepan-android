@@ -51,10 +51,10 @@ public class InverseCircleView extends View {
 		path.reset();
 		path.addCircle(cx, cy, r - edgeThickness, Path.Direction.CW);
 		path.setFillType(Path.FillType.INVERSE_EVEN_ODD);
-		canvas.drawCircle(cx, cy, r - edgeThickness, stroke);
 		canvas.drawPath(path, paint);
 		canvas.clipPath(path);
 		canvas.drawColor(color);
+		canvas.drawCircle(cx, cy, r - edgeThickness, stroke);
 	}
 
 	public void setColor(int color) {
