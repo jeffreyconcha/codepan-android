@@ -295,9 +295,11 @@ class CameraXView(
                 } else {
                     val bitmap = BitmapFactory.decodeFile(file.path)
                     val matrix = Matrix()
-                    matrix.postRotate(getImageRotation().toFloat())
+                    val rotation = getImageRotation();
                     val exif = ExifInterface(file)
-                    exif.rotate(0)
+                    if (exif.rotationDegrees == rotation) {
+                        matrix.postRotate(rotation.toFloat())
+                    }
                     val rotated =
                         Bitmap.createBitmap(
                             bitmap, 0, 0,
@@ -376,6 +378,7 @@ class CameraXView(
     override fun onOrientationChanged(orientation: DeviceOrientation) {
         orientationNotifier?.onOrientationChanged(orientation)
         analysis?.targetRotation = orientation.compensation
+        capture?.targetRotation = orientation.compensation
     }
 
     fun getImageRotation(): Int {

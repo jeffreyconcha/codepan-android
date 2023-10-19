@@ -140,8 +140,10 @@ public class HttpRequest {
 		String method
 	)
 		throws RuntimeException, InterruptedException {
-		Thread.sleep(1000L);
-		if(retryCount++ <= MAX_RETRY) {
+		Thread.sleep(3000L);
+		if(retryCount++ < MAX_RETRY) {
+			final int remaining = MAX_RETRY - retryCount;
+			Console.verbose("REMAINING RETRIES: " + remaining);
 			return getOkHttpsResponse(host, params, method);
 		}
 		throw new RuntimeException("Max retries for HTTP request has been reached!!!");
@@ -167,29 +169,40 @@ public class HttpRequest {
 				.readTimeout(timeOut, TimeUnit.MILLISECONDS)
 				.sslSocketFactory(new TLSSocketFactory(), new TrustManager())
 				.build();
-			Request.Builder request = new Request.Builder()
+			Request.Builder rb = new Request.Builder()
 				.addHeader("Content-Type", contentType)
 				.addHeader("Content-Language", "en-US")
 				.addHeader("Connection", "close")
 				.addHeader("Accept-Encoding", "")
 				.url(url);
 			if(authorization != null) {
-				request.addHeader("Authorization", authorization.getAuthorization());
+				rb.addHeader("Authorization", authorization.getAuthorization());
 			}
 			String userAgent = getUserAgent();
 			if(userAgent != null) {
-				request.addHeader("User-Agent", userAgent);
+				rb.addHeader("User-Agent", userAgent);
 			}
 			if(method != null && method.equals(POST)) {
 				RequestBody body = RequestBody.create(params, MediaType.get("application/json"));
-				request.post(body);
+				rb.post(body);
 			}
-			Response response = client.newCall(request.build()).execute();
+			Request request = rb.build();
+			Console.verbose("===== REQUEST HEADERS =====");
+			for(String name : request.headers().names()) {
+				Console.verbose(name + ": " + request.header(name));
+			}
+			Console.verbose("===========================");
+			Response response = client.newCall(request).execute();
 			if(response.isSuccessful()) {
 				final ResponseBody body = response.body();
 				if(body != null) {
 					builder.append(body.string());
 				}
+				Console.verbose("===== RESPONSE HEADERS =====");
+				for(String name : response.headers().names()) {
+					Console.verbose(name + ": " + response.header(name));
+				}
+				Console.verbose("============================");
 				result = true;
 			}
 			else {
