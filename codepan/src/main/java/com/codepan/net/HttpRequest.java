@@ -79,7 +79,7 @@ public class HttpRequest {
 				ApplicationInfo ai = pm.getApplicationInfo(packageId, 0);
 				String appName = pm.getApplicationLabel(ai).toString();
 				return appName + "/" + pi.versionName + "+" + pi.versionCode + "(" +
-					"Android " + Build.VERSION.SDK_INT + "; " +
+					"Android " + Build.VERSION.RELEASE + "; " +
 					"Model:" + Build.MODEL + "; " + Build.FINGERPRINT + ")";
 			}
 			catch(PackageManager.NameNotFoundException e) {
