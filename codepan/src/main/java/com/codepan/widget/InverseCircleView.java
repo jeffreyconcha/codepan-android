@@ -14,7 +14,7 @@ import com.codepan.R;
 public class InverseCircleView extends View {
 
 	private int color, strokeColor, strokeThickness, edgeThickness;
-	private Paint paint, stroke, edge;
+	private Paint paint, stroke;
 	private Path path;
 
 	public InverseCircleView(Context context, AttributeSet attrs) {
@@ -35,13 +35,8 @@ public class InverseCircleView extends View {
 		stroke = new Paint();
 		stroke.setColor(strokeColor);
 		stroke.setAntiAlias(true);
-		int width = strokeThickness + edgeThickness;
-		stroke.setStrokeWidth(width);
+		stroke.setStrokeWidth(strokeThickness);
 		stroke.setStyle(Paint.Style.STROKE);
-		edge = new Paint();
-		edge.setAntiAlias(true);
-		edge.setStrokeWidth(edgeThickness);
-		edge.setStyle(Paint.Style.STROKE);
 		ta.recycle();
 	}
 
@@ -54,10 +49,9 @@ public class InverseCircleView extends View {
 		int cy = h / 2;
 		int r = w / 2;
 		path.reset();
-		path.addCircle(cx, cy, r, Path.Direction.CW);
+		path.addCircle(cx, cy, r - edgeThickness, Path.Direction.CW);
 		path.setFillType(Path.FillType.INVERSE_EVEN_ODD);
 		canvas.drawCircle(cx, cy, r - edgeThickness, stroke);
-		canvas.drawCircle(cx, cy, r, edge);
 		canvas.drawPath(path, paint);
 		canvas.clipPath(path);
 		canvas.drawColor(color);
@@ -65,7 +59,6 @@ public class InverseCircleView extends View {
 
 	public void setColor(int color) {
 		this.color = color;
-		edge.setColor(color);
 		invalidate();
 	}
 
