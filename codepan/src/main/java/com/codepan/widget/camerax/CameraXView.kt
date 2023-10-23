@@ -15,8 +15,6 @@ import android.util.Rational
 import android.util.Size
 import android.view.KeyEvent
 import android.view.LayoutInflater
-import android.view.Surface
-import android.view.SurfaceView
 import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
@@ -47,7 +45,6 @@ import com.codepan.utils.Console
 import com.codepan.utils.DeviceOrientation
 import com.codepan.utils.MotionDetector
 import com.codepan.utils.OrientationChangedNotifier
-import com.codepan.utils.ViewNotifier
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 import java.io.File
@@ -98,8 +95,8 @@ class CameraXView(
     private var displayId: Int = -1
     private var capture: ImageCapture? = null
     private var analysis: ImageAnalysis? = null
-    private var lensFacing: CameraLens = CameraLens.BACK
-    private var flashMode: FlashMode = FlashMode.OFF
+    private var _lensFacing: CameraLens = CameraLens.BACK
+    private var _flashMode: FlashMode = FlashMode.OFF
     private var provider: ProcessCameraProvider? = null
     private var preview: Preview? = null
     private var camera: Camera? = null
@@ -127,6 +124,12 @@ class CameraXView(
 
     val hasFlash: Boolean
         get() = camera!!.cameraInfo.hasFlashUnit()
+
+    val lensFacing: CameraLens
+        get() = _lensFacing
+
+    val flashMode: FlashMode
+        get() = _flashMode
 
     private val scope: LifecycleCoroutineScope
         get() = lifecycle.coroutineScope
@@ -161,8 +164,8 @@ class CameraXView(
         this.folder = folder
         this.stampList = stampList
         this.detectMotionBlur = detectMotionBlur
-        this.lensFacing = lensFacing
-        this.flashMode = flashMode
+        this._lensFacing = lensFacing
+        this._flashMode = flashMode
         this.analyzer = analyzer
         this.orientationNotifier = orientationNotifier
         this.notifiers = notifiers
@@ -186,11 +189,11 @@ class CameraXView(
     private suspend fun setUpCamera() {
         provider = ProcessCameraProvider.getInstance(context).await()
         // switch to the available lens if the selected lens is not present
-        when (lensFacing) {
+        when (_lensFacing) {
             CameraLens.BACK -> {
                 if (!hasBackCamera) {
                     if (hasFrontCamera) {
-                        lensFacing = CameraLens.FRONT
+                        _lensFacing = CameraLens.FRONT
                     } else {
                         notifiers?.onError(CameraError.NO_CAMERA)
                     }
@@ -200,7 +203,7 @@ class CameraXView(
             CameraLens.FRONT -> {
                 if (!hasFrontCamera) {
                     if (hasBackCamera) {
-                        lensFacing = CameraLens.BACK
+                        _lensFacing = CameraLens.BACK
                     } else {
                         notifiers?.onError(CameraError.NO_CAMERA)
                     }
@@ -215,7 +218,7 @@ class CameraXView(
         val metrics = wm.getCurrentWindowMetrics().bounds
         val ratio = aspectRatio(metrics.width(), metrics.height())
         val rotation = pvViewFinder.display.rotation
-        val selector = CameraSelector.Builder().requireLensFacing(lensFacing.value).build()
+        val selector = CameraSelector.Builder().requireLensFacing(_lensFacing.value).build()
         preview = Preview.Builder().also {
             it.setTargetAspectRatio(ratio)
             it.setTargetRotation(rotation)
@@ -226,7 +229,7 @@ class CameraXView(
             it.setTargetRotation(rotation)
             it.setTargetResolution(resolution)
             it.setFlashType(ImageCapture.FLASH_TYPE_ONE_SHOT_FLASH)
-            it.setFlashMode(flashMode.value)
+            it.setFlashMode(_flashMode.value)
         }.build()
         val rational = Rational(resolution.width, resolution.height)
         capture!!.setCropAspectRatio(rational)
@@ -254,12 +257,12 @@ class CameraXView(
     }
 
     fun switchCamera() {
-        lensFacing = when (lensFacing) {
+        _lensFacing = when (_lensFacing) {
             CameraLens.FRONT -> {
                 if (hasBackCamera) {
                     CameraLens.BACK
                 } else {
-                    lensFacing
+                    _lensFacing
                 }
             }
 
@@ -267,17 +270,17 @@ class CameraXView(
                 if (hasFrontCamera) {
                     CameraLens.FRONT
                 } else {
-                    lensFacing
+                    _lensFacing
                 }
             }
         }
-        Console.log("Camera Lens Selection: $lensFacing")
+        Console.log("Camera Lens Selection: $_lensFacing")
         resetPreview()
     }
 
     fun setFlashMode(flashMode: FlashMode) {
         if (hasFlash) {
-            this.flashMode = flashMode
+            this._flashMode = flashMode
             capture?.flashMode = flashMode.value
         }
     }
@@ -383,7 +386,7 @@ class CameraXView(
 
     fun getImageRotation(): Int {
         val orientation = detector.orientation
-        return when (lensFacing) {
+        return when (_lensFacing) {
             CameraLens.BACK -> {
                 return if (orientation.isPortrait) {
                     orientation.degrees
