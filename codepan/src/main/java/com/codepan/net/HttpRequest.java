@@ -203,6 +203,7 @@ public class HttpRequest {
 					Console.verbose(name + ": " + response.header(name));
 				}
 				Console.verbose("============================");
+				Console.logResponse(builder.toString());
 				result = true;
 			}
 			else {
