@@ -12,14 +12,21 @@ import com.codepan.utils.Console;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -120,7 +127,7 @@ public class HttpRequest {
 		else {
 			Console.logUrl(url);
 		}
-		return getOkHttpsResponse(url, params.toString(), GET);
+		return getHttpResponse(url, params.toString(), GET);
 	}
 
 	public String post(JSONObject paramsObj) {
@@ -131,7 +138,20 @@ public class HttpRequest {
 		catch(JSONException e) {
 			e.printStackTrace();
 		}
-		return getOkHttpsResponse(url, paramsObj.toString(), POST);
+		return getHttpResponse(url, paramsObj.toString(), POST);
+	}
+
+	private String getHttpResponse(
+		String host,
+		String params,
+		String method
+	) {
+		if(Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+			return getOkHttpsResponse(host, params, method);
+		}
+		else {
+			return getNativeHttpsResponse(host, params, method);
+		}
 	}
 
 	private String retry(
@@ -144,7 +164,7 @@ public class HttpRequest {
 		if(retryCount++ < MAX_RETRY) {
 			final int remaining = MAX_RETRY - retryCount;
 			Console.verbose("REMAINING RETRIES: " + remaining);
-			return getOkHttpsResponse(host, params, method);
+			return getHttpResponse(host, params, method);
 		}
 		throw new RuntimeException("Max retries for HTTP request has been reached!!!");
 	}
@@ -163,14 +183,12 @@ public class HttpRequest {
 		String contentType = method != null && method.equals(GET) ?
 			"application/x-www-form-urlencoded" : "application/json";
 		try {
-			OkHttpClient.Builder cb = new OkHttpClient.Builder()
+			OkHttpClient client = new OkHttpClient.Builder()
 				.protocols(List.of(Protocol.HTTP_2, Protocol.HTTP_1_1))
 				.connectTimeout(timeOut, TimeUnit.MILLISECONDS)
-				.readTimeout(timeOut, TimeUnit.MILLISECONDS);
-			if(Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-				cb.sslSocketFactory(new TLSSocketFactory(), new TrustManager());
-			}
-			OkHttpClient client = cb.build();
+				.sslSocketFactory(new TLSSocketFactory(), new TrustManager())
+				.readTimeout(timeOut, TimeUnit.MILLISECONDS)
+				.build();
 			Request.Builder rb = new Request.Builder()
 				.addHeader("Content-Type", contentType)
 				.addHeader("Content-Language", "en-US")
@@ -270,6 +288,150 @@ public class HttpRequest {
 		}
 		return builder.toString();
 	}
+
+	private String getNativeHttpsResponse(
+		String host,
+		String params,
+		String method
+	) {
+		boolean result = false;
+		StringBuilder response = new StringBuilder();
+		String exception = null;
+		String message = null;
+		ErrorHandler handler = new ErrorHandler();
+		boolean doOutput = method != null && method.equals(POST);
+		String uri = method != null && method.equals(GET) ? host + params : host;
+		String contentType = method != null && method.equals(GET) ?
+			"application/x-www-form-urlencoded" : "application/json";
+		try {
+			URL url = new URL(uri);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			if(connection instanceof HttpsURLConnection https) {
+				https.setSSLSocketFactory(new TLSSocketFactory());
+			}
+			try {
+				connection.setConnectTimeout(timeOut);
+				connection.setReadTimeout(timeOut);
+				connection.setRequestMethod(method);
+				connection.setRequestProperty("Content-Type", contentType);
+				connection.setRequestProperty("Content-Language", "en-US");
+				connection.setRequestProperty("Connection", "close");
+				connection.setRequestProperty("Accept-Encoding", "");
+				String userAgent = getUserAgent();
+				if(userAgent != null) {
+					connection.setRequestProperty("User-Agent", userAgent);
+				}
+				if(authorization != null) {
+					connection.setRequestProperty("Authorization", authorization.getAuthorization());
+				}
+				connection.setDoInput(true);
+				connection.setDoOutput(doOutput);
+				connection.setUseCaches(false);
+				connection.connect();
+				if(method != null && method.equals(POST)) {
+					Writer out = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
+					BufferedWriter writer = new BufferedWriter(out);
+					writer.write(params);
+					writer.flush();
+					writer.close();
+				}
+				if(connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+					if(!url.getHost().equals(connection.getURL().getHost())) {
+						message = handler.getRedirectedMessage();
+					}
+					else {
+						Reader in = new InputStreamReader(connection.getInputStream());
+						BufferedReader reader = new BufferedReader(in);
+						String line;
+						while((line = reader.readLine()) != null) {
+							response.append(line);
+						}
+						reader.close();
+						result = true;
+					}
+					Console.logResponse(response.toString());
+				}
+				else {
+					InputStream error = connection.getErrorStream();
+					message = handler.getErrorMessage(error);
+					Console.logResponse(handler.getRaw());
+				}
+			}
+			catch(SSLProtocolException |
+				  EOFException |
+				  SocketTimeoutException |
+				  StreamResetException e) {
+				e.printStackTrace();
+				try {
+					return retry(host, params, method);
+				}
+				catch(Exception ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+			catch(SocketException se) {
+				se.printStackTrace();
+				String error = se.getMessage();
+				if(error != null && error.contains("close")) {
+					try {
+						return retry(host, params, method);
+					}
+					catch(Exception e) {
+						throw new RuntimeException(e);
+					}
+				}
+				else {
+					exception = se.toString();
+					message = handler.getTimeOutMessage();
+				}
+			}
+			catch(UnknownHostException he) {
+				exception = he.toString();
+				message = handler.getWeakInternetMessage();
+			}
+			catch(IOException ioe) {
+				ioe.printStackTrace();
+				exception = ioe.toString();
+				message = handler.getDefaultMessage();
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				exception = e.toString();
+				message = e.getMessage();
+			}
+			finally {
+				if(connection != null) {
+					connection.disconnect();
+				}
+			}
+		}
+		catch(MalformedURLException mue) {
+			mue.printStackTrace();
+			exception = mue.toString();
+			message = handler.getInvalidURLMessage();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			exception = e.toString();
+			message = e.getMessage();
+		}
+		if(!result) {
+			try {
+				JSONObject field = new JSONObject();
+				JSONObject error = new JSONObject();
+				error.put("type", "android");
+				field.put("message", message);
+				field.put("exception", exception);
+				error.put("error", field);
+				response.append(error);
+			}
+			catch(JSONException je) {
+				je.printStackTrace();
+			}
+		}
+		return response.toString();
+	}
+
 
 	public void downloadFile(
 		String folder,
