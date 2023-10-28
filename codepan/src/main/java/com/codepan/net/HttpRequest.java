@@ -163,12 +163,14 @@ public class HttpRequest {
 		String contentType = method != null && method.equals(GET) ?
 			"application/x-www-form-urlencoded" : "application/json";
 		try {
-			OkHttpClient client = new OkHttpClient.Builder()
+			OkHttpClient.Builder cb = new OkHttpClient.Builder()
 				.protocols(List.of(Protocol.HTTP_2, Protocol.HTTP_1_1))
 				.connectTimeout(timeOut, TimeUnit.MILLISECONDS)
-				.readTimeout(timeOut, TimeUnit.MILLISECONDS)
-				.sslSocketFactory(new TLSSocketFactory(), new TrustManager())
-				.build();
+				.readTimeout(timeOut, TimeUnit.MILLISECONDS);
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+				cb.sslSocketFactory(new TLSSocketFactory(), new TrustManager());
+			}
+			OkHttpClient client = cb.build();
 			Request.Builder rb = new Request.Builder()
 				.addHeader("Content-Type", contentType)
 				.addHeader("Content-Language", "en-US")
