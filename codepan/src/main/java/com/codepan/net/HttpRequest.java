@@ -167,7 +167,7 @@ public class HttpRequest {
 				.protocols(List.of(Protocol.HTTP_2, Protocol.HTTP_1_1))
 				.connectTimeout(timeOut, TimeUnit.MILLISECONDS)
 				.readTimeout(timeOut, TimeUnit.MILLISECONDS);
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			if(Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
 				cb.sslSocketFactory(new TLSSocketFactory(), new TrustManager());
 			}
 			OkHttpClient client = cb.build();
