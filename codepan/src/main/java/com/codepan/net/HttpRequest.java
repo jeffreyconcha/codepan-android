@@ -62,7 +62,7 @@ public class HttpRequest {
 	private Context context;
 	private Authorization authorization;
 	private int retryCount = 0;
-	private int timeOut;
+	private int initialTimeOut, currentTimeOut;
 	private String url;
 
 	public HttpRequest(
@@ -73,7 +73,8 @@ public class HttpRequest {
 	) {
 		this.context = context;
 		this.authorization = authorization;
-		this.timeOut = timeOut;
+		this.initialTimeOut = timeOut;
+		this.currentTimeOut = timeOut;
 		this.url = url;
 	}
 
@@ -146,12 +147,13 @@ public class HttpRequest {
 		String params,
 		String method
 	) {
-		if(Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-			return getOkHttpsResponse(host, params, method);
-		}
-		else {
-			return getNativeHttpsResponse(host, params, method);
-		}
+		return getNativeHttpsResponse(host, params, method);
+//		if(Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+//			return getOkHttpsResponse(host, params, method);
+//		}
+//		else {
+//			return getNativeHttpsResponse(host, params, method);
+//		}
 	}
 
 	private String retry(
@@ -163,6 +165,7 @@ public class HttpRequest {
 		Thread.sleep(3000L);
 		if(retryCount++ < MAX_RETRY) {
 			final int remaining = MAX_RETRY - retryCount;
+			currentTimeOut = retryCount * initialTimeOut;
 			Console.verbose("REMAINING RETRIES: " + remaining);
 			return getHttpResponse(host, params, method);
 		}
@@ -185,9 +188,9 @@ public class HttpRequest {
 		try {
 			OkHttpClient client = new OkHttpClient.Builder()
 				.protocols(List.of(Protocol.HTTP_2, Protocol.HTTP_1_1))
-				.connectTimeout(timeOut, TimeUnit.MILLISECONDS)
+				.connectTimeout(currentTimeOut, TimeUnit.MILLISECONDS)
 				.sslSocketFactory(new TLSSocketFactory(), new TrustManager())
-				.readTimeout(timeOut, TimeUnit.MILLISECONDS)
+				.readTimeout(currentTimeOut, TimeUnit.MILLISECONDS)
 				.build();
 			Request.Builder rb = new Request.Builder()
 				.addHeader("Content-Type", contentType)
@@ -310,8 +313,8 @@ public class HttpRequest {
 				https.setSSLSocketFactory(new TLSSocketFactory());
 			}
 			try {
-				connection.setConnectTimeout(timeOut);
-				connection.setReadTimeout(timeOut);
+				connection.setConnectTimeout(currentTimeOut);
+				connection.setReadTimeout(currentTimeOut);
 				connection.setRequestMethod(method);
 				connection.setRequestProperty("Content-Type", contentType);
 				connection.setRequestProperty("Content-Language", "en-US");
@@ -455,8 +458,8 @@ public class HttpRequest {
 				if(userAgent != null) {
 					connection.setRequestProperty("User-Agent", userAgent);
 				}
-				connection.setConnectTimeout(timeOut);
-				connection.setReadTimeout(timeOut);
+				connection.setConnectTimeout(currentTimeOut);
+				connection.setReadTimeout(currentTimeOut);
 				String path = dir.getPath() + "/" + fileName;
 				File file = new File(path);
 				int downloaded = 0;
