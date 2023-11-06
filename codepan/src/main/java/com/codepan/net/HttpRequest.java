@@ -147,13 +147,12 @@ public class HttpRequest {
 		String params,
 		String method
 	) {
-		return getNativeHttpsResponse(host, params, method);
-//		if(Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-//			return getOkHttpsResponse(host, params, method);
-//		}
-//		else {
-//			return getNativeHttpsResponse(host, params, method);
-//		}
+		if(Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+			return getOkHttpsResponse(host, params, method);
+		}
+		else {
+			return getNativeHttpsResponse(host, params, method);
+		}
 	}
 
 	private String retry(
@@ -167,6 +166,7 @@ public class HttpRequest {
 			final int remaining = MAX_RETRY - retryCount;
 			currentTimeOut = retryCount * initialTimeOut;
 			Console.verbose("REMAINING RETRIES: " + remaining);
+			Console.verbose("CURRENT TIMEOUT: " + currentTimeOut);
 			return getHttpResponse(host, params, method);
 		}
 		throw new RuntimeException("Max retries for HTTP request has been reached!!!");
