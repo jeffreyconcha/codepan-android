@@ -310,7 +310,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 		final Handler handler = new Handler(Looper.getMainLooper(), msg -> {
 			File dir = context.getDir(folder, Context.MODE_PRIVATE);
 			File file = new File(dir, fileName);
-			if(file.exists() && file.length() > 0) {
+			if(file.exists() && file.length() > 0 && CodePanUtils.isValidImage(file)) {
 				captureCallback.onCapture(fileName);
 			}
 			else {

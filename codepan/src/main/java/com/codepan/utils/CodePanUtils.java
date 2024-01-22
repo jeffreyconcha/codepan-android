@@ -3411,4 +3411,20 @@ public class CodePanUtils {
 		}
 		return builder.reverse().append(decimal).toString();
 	}
+
+	public static boolean isValidImage(File file) {
+		try {
+			BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inJustDecodeBounds = true;
+			BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+			if(options.outWidth != -1 && options.outHeight != -1) {
+				return true;
+			}
+		}
+		catch(
+			Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 }
