@@ -8,6 +8,10 @@
     <string name="calibri_light">fonts/Calibri-Light.otf</string>
     <string name="calibri_regular">fonts/Calibri-Regular.otf</string>
     <string name="calibri_italic">fonts/Calibri-Italic.otf</string>
+    <string name="opensans_bold">fonts/OpenSans-Bold.ttf</string>
+    <string name="opensans_medium">fonts/OpenSans-Medium.ttf</string>
+    <string name="opensans_regular">fonts/OpenSans-Regular.ttf</string>
+    <string name="opensans_semi">fonts/OpenSans-SemiBold.ttf</string>
     <string name="font_awesome">fonts/FontAwesome.otf</string>
     <string name="toast_font">@string/calibri_regular</string>
     <string name="of">of</string>

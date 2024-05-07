@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.codepan.widget.CodePanTextField;
+import com.codepan.widget.CodePanLabel;
 import com.codepan.widget.table.TableView;
 import com.codepan.widget.table.model.CellData;
 import com.codepan.widget.table.model.ColumnData;
@@ -28,10 +28,10 @@ public class TableSample extends Fragment {
 		columnList = new ArrayList<>();
 		for(int cn = 1; cn <= 5; cn++) {
 			String name = "Column " + cn;
-			columnList.add(new ColumnData(getContext(), name, com.codepan.R.dimen.one_hundred, R.layout.table_edittext_item));
+			columnList.add(new ColumnData(getContext(), name, com.codepan.R.dimen.one_hundred, com.codepan.R.layout.table_cell_item));
 		}
 		rowList = new ArrayList<>();
-		for(int rn = 1; rn <= 50; rn++) {
+		for(int rn = 1; rn <= 1000; rn++) {
 			ArrayList<CellData> cellList = new ArrayList<>();
 			for(ColumnData column : columnList) {
 				int ci = columnList.indexOf(column) + 1;
@@ -54,7 +54,7 @@ public class TableSample extends Fragment {
 			dataList.add(new CellData("6", "Replaced 6"));
 			tvTable.updateCellsInColumn(3, dataList, (cell, ri, mri, mci) -> {
 				CellData data = rowList.get(mri).get(mci);
-				CodePanTextField tvTableTextCell = cell.findViewById(R.id.tvTableTextCell);
+				CodePanLabel tvTableTextCell = cell.findViewById(R.id.tvTableTextCell);
 				tvTableTextCell.setText(data.name);
 			});
 		});
