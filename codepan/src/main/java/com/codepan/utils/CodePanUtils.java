@@ -3251,18 +3251,7 @@ public class CodePanUtils {
 		String variableName,
 		String value
 	) {
-		String equation = input;
-		Pattern pattern = Pattern.compile("[A-Za-z0-9_]+");
-		Matcher matcher = pattern.matcher(equation);
-		while(matcher.find()) {
-			String word = matcher.group();
-			if(word.equals(variableName)) {
-				int startIndex = matcher.start();
-				int endIndex = matcher.end();
-				equation = equation.substring(0, startIndex) + value + equation.substring(endIndex);
-			}
-		}
-		return equation;
+		return input.replaceAll("\\b"+variableName+"\\b", value);
 	}
 
 	public static Bitmap getBitmapImage(Context context, Uri uri) {
