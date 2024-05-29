@@ -1,10 +1,5 @@
 package com.codepan.example;
 
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 
@@ -52,8 +47,8 @@ public class MainActivity extends CPFragmentActivity {
 			transaction.commit();
 		});
 		findViewById(R.id.btnCamera).setOnClickListener(view -> {
-			CameraXFragment camera = new CameraXFragment();
-//			CameraFragment camera = new CameraFragment();
+//			CameraXFragment camera = new CameraXFragment();
+			CameraFragment camera = new CameraFragment();
 			FragmentManager manager = getSupportFragmentManager();
 			FragmentTransaction transaction = manager.beginTransaction();
 			transaction.add(R.id.rlMain, camera);

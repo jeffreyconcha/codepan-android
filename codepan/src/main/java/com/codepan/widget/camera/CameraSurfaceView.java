@@ -42,7 +42,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback, PictureCallback {
+public class CameraSurfaceView extends SurfaceView implements
+	SurfaceHolder.Callback, PictureCallback {
 
 	public enum CameraError {
 		UNABLE_TO_LOAD,
@@ -57,7 +58,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
 	private boolean isFrontCamInverted, hasAutoFocus, isCaptured, hasFlash,
 		hasFrontCam, hasStopped, isScaled;
-	private int cameraSelection, maxWidth, maxHeight, picWidth, picHeight;
+	private int cameraSelection, maxWidth, maxHeight, picWidth, picHeight, maxZoom;
 	private boolean isLandscape, detectMotionBlur, withShutterSound;
 	private OnCameraChangeCallback cameraChangeCallback;
 	private OnCameraErrorCallback cameraErrorCallback;
@@ -122,6 +123,12 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 				cameraErrorCallback.onCameraError(CameraError.UNABLE_TO_LOAD);
 			}
 		}
+		if(params.isZoomSupported()) {
+			maxZoom = params.getMaxZoom();
+		}
+		else {
+			Console.log("Zoom is not supported for the selected camera.");
+		}
 	}
 
 	@Override
@@ -130,6 +137,10 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 			camera.getParameters().setFocusMode(Parameters.FOCUS_MODE_AUTO);
 			camera.autoFocus(null);
 		}
+	}
+
+	public int getMaxZoom() {
+		return this.maxZoom;
 	}
 
 	@SuppressLint("ObsoleteSdkInt")
@@ -567,5 +578,14 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
 		detector.dispose();
+	}
+
+	public void updateZoom(int zoom) {
+		if(params.isZoomSupported()) {
+			if(zoom <= params.getMaxZoom()) {
+				params.setZoom(zoom);
+				camera.setParameters(params);
+			}
+		}
 	}
 }
