@@ -58,7 +58,7 @@ public class CameraSurfaceView extends SurfaceView implements
 
 	private boolean isFrontCamInverted, hasAutoFocus, isCaptured, hasFlash,
 		hasFrontCam, hasStopped, isScaled;
-	private int cameraSelection, maxWidth, maxHeight, picWidth, picHeight, maxZoom;
+	private int cameraSelection, maxWidth, maxHeight, picWidth, picHeight;
 	private boolean isLandscape, detectMotionBlur, withShutterSound;
 	private OnCameraChangeCallback cameraChangeCallback;
 	private OnCameraErrorCallback cameraErrorCallback;
@@ -123,10 +123,7 @@ public class CameraSurfaceView extends SurfaceView implements
 				cameraErrorCallback.onCameraError(CameraError.UNABLE_TO_LOAD);
 			}
 		}
-		if(params.isZoomSupported()) {
-			maxZoom = params.getMaxZoom();
-		}
-		else {
+		if(!params.isZoomSupported()) {
 			Console.log("Zoom is not supported for the selected camera.");
 		}
 	}
@@ -139,8 +136,15 @@ public class CameraSurfaceView extends SurfaceView implements
 		}
 	}
 
+	public boolean isZoomSupported() {
+		return params.isZoomSupported();
+	}
+
 	public int getMaxZoom() {
-		return this.maxZoom;
+		if(params.isZoomSupported()) {
+			return params.getMaxZoom();
+		}
+		return 0;
 	}
 
 	@SuppressLint("ObsoleteSdkInt")
