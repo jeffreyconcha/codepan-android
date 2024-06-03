@@ -256,6 +256,10 @@ class CameraXView(
         }
     }
 
+    fun setZoom(zoom: Float) {
+        camera?.cameraControl?.setLinearZoom(zoom)
+    }
+
     fun switchCamera() {
         _lensFacing = when (_lensFacing) {
             CameraLens.FRONT -> {
