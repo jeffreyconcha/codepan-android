@@ -5,6 +5,8 @@ import android.view.ViewGroup;
 
 import com.codepan.database.SQLiteAdapter;
 
+import java.util.ArrayList;
+
 public class Interface {
 
 	public interface OnInitializeCallback {
@@ -57,7 +59,7 @@ public class Interface {
 
 	public interface OnErrorCallback {
 		void onError(String error, String url, String params,
-				String response, boolean showError);
+			String response, boolean showError);
 	}
 
 	public interface OnSetIDCallback {
@@ -74,6 +76,7 @@ public class Interface {
 
 	public interface OnTouchCallback {
 		void onActionDown();
+
 		void onActionUp();
 	}
 
@@ -91,5 +94,13 @@ public class Interface {
 
 	public interface OnScrollChangeCallback {
 		void onScrollChanged(int l, int t, int ol, int ot);
+	}
+
+	public interface Searchable {
+		String name();
+
+		String code();
+
+		ArrayList<String> codeList();
 	}
 }

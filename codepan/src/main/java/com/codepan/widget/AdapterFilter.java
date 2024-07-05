@@ -3,11 +3,12 @@ package com.codepan.widget;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 
+import com.codepan.callback.Interface;
 import com.codepan.model.EntityData;
 
 import java.util.ArrayList;
 
-public class AdapterFilter<T extends EntityData> extends Filter {
+public class AdapterFilter<T extends Interface.Searchable> extends Filter {
 
 	private ArrayAdapter<T> adapter;
 	private ArrayList<T> allItems;
@@ -31,12 +32,12 @@ public class AdapterFilter<T extends EntityData> extends Filter {
 		if(cs != null) {
 			ArrayList<T> suggestList = new ArrayList<>();
 			for(T entity : allItems) {
-				String name = entity.name;
-				String code = entity.code;
+				String name = entity.name();
+				String code = entity.code();
 				String text1 = name != null ? name.toLowerCase() : null;
 				String text2 = code != null ? code.toLowerCase() : null;
 				String text3 = null;
-				ArrayList<String> codeList = entity.codeList;
+				ArrayList<String> codeList = entity.codeList();
 				if(codeList != null) {
 					StringBuilder sb = new StringBuilder();
 					for(String c : codeList) {
@@ -54,8 +55,8 @@ public class AdapterFilter<T extends EntityData> extends Filter {
 				}
 				String search = cs.toString().toLowerCase();
 				if((text1 != null && text1.contains(search)) ||
-						(text2 != null && text2.contains(search) ||
-								(text3 != null && text3.contains(search)))) {
+					(text2 != null && text2.contains(search) ||
+						(text3 != null && text3.contains(search)))) {
 					suggestList.add(entity);
 				}
 			}
