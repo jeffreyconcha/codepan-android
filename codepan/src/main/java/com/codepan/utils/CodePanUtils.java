@@ -56,6 +56,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images.Media;
+import android.provider.Settings;
 import android.provider.Settings.Secure;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
@@ -164,6 +165,7 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresPermission;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
@@ -1402,18 +1404,27 @@ public class CodePanUtils {
 		}
 	}
 
+	@RequiresPermission(value = "android.permission.SCHEDULE_EXACT_ALARM", conditional = true)
 	public static void setAlarm(Context context, PendingIntent pi, long trigger, int type) {
 		if(trigger > 0) {
 			AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 			if(manager != null) {
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-					manager.setExactAndAllowWhileIdle(type, trigger, pi);
-				}
-				else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-					manager.setExact(type, trigger, pi);
+					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+						if(manager.canScheduleExactAlarms()) {
+							manager.setExactAndAllowWhileIdle(type, trigger, pi);
+						}
+						else {
+							Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+							context.startActivity(intent);
+						}
+					}
+					else {
+						manager.setExactAndAllowWhileIdle(type, trigger, pi);
+					}
 				}
 				else {
-					manager.set(type, trigger, pi);
+					manager.setExact(type, trigger, pi);
 				}
 			}
 		}
@@ -3251,7 +3262,7 @@ public class CodePanUtils {
 		String variableName,
 		String value
 	) {
-		return input.replaceAll("\\b"+variableName+"\\b", value);
+		return input.replaceAll("\\b" + variableName + "\\b", value);
 	}
 
 	public static Bitmap getBitmapImage(Context context, Uri uri) {
