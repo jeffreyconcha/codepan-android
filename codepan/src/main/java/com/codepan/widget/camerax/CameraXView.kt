@@ -37,7 +37,7 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.coroutineScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.window.WindowManager
+import androidx.window.layout.WindowMetricsCalculator
 import com.codepan.R
 import com.codepan.model.StampData
 import com.codepan.utils.CodePanUtils
@@ -82,8 +82,7 @@ class CameraXView(
     private lateinit var pvViewFinder: PreviewView
     private lateinit var executor: ExecutorService
     private lateinit var lbm: LocalBroadcastManager
-    private lateinit var wm: WindowManager
-    private lateinit var lifecycle: Lifecycle
+    private lateinit var lc: Lifecycle
     private lateinit var folder: String
     private lateinit var resolution: Size
 
@@ -132,7 +131,7 @@ class CameraXView(
         get() = _flashMode
 
     private val scope: LifecycleCoroutineScope
-        get() = lifecycle.coroutineScope
+        get() = lc.coroutineScope
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -159,7 +158,7 @@ class CameraXView(
         orientationNotifier: OrientationChangedNotifier? = null,
         notifiers: CameraXNotifiers? = null,
     ) {
-        this.lifecycle = lifecycle
+        this.lc = lifecycle
         this.resolution = resolution
         this.folder = folder
         this.stampList = stampList
@@ -176,7 +175,6 @@ class CameraXView(
                 addAction(KEY_EVENT_ACTION)
             }
             lbm.registerReceiver(receiver, filter)
-            wm = WindowManager(context)
             pvViewFinder.post {
                 displayId = pvViewFinder.display.displayId
                 scope.launch {
@@ -215,7 +213,8 @@ class CameraXView(
 
     @SuppressLint("RestrictedApi")
     fun resetPreview() {
-        val metrics = wm.getCurrentWindowMetrics().bounds
+        val calculator = WindowMetricsCalculator.getOrCreate()
+        val metrics = calculator.computeCurrentWindowMetrics(context).bounds
         val ratio = aspectRatio(metrics.width(), metrics.height())
         val rotation = pvViewFinder.display.rotation
         val selector = CameraSelector.Builder().requireLensFacing(_lensFacing.value).build()
@@ -371,10 +370,8 @@ class CameraXView(
         return AspectRatio.RATIO_16_9
     }
 
-
-    override fun getLifecycle(): Lifecycle {
-        return lifecycle
-    }
+    override val lifecycle: Lifecycle
+        get() = lc
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
