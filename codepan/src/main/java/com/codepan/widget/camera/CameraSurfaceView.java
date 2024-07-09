@@ -123,7 +123,7 @@ public class CameraSurfaceView extends SurfaceView implements
 				cameraErrorCallback.onCameraError(CameraError.UNABLE_TO_LOAD);
 			}
 		}
-		if(!params.isZoomSupported()) {
+		if(params != null && !params.isZoomSupported()) {
 			Console.log("Zoom is not supported for the selected camera.");
 		}
 	}
