@@ -58,6 +58,9 @@ public class HttpRequest {
 	private static final int INDENT = 4;
 	private static final String POST = "POST";
 	private static final String GET = "GET";
+	private static final String PATCH = "PATCH";
+	private static final String PUT = "PUT";
+	private static final String DELETE = "DELETE";
 
 	private Context context;
 	private Authorization authorization;
@@ -131,7 +134,7 @@ public class HttpRequest {
 		return getHttpResponse(url, params.toString(), GET);
 	}
 
-	public String post(JSONObject paramsObj) {
+	private String transmit(JSONObject paramsObj, String method) {
 		Console.logUrl(url);
 		try {
 			Console.logParams(paramsObj.toString(INDENT));
@@ -139,7 +142,23 @@ public class HttpRequest {
 		catch(JSONException e) {
 			e.printStackTrace();
 		}
-		return getHttpResponse(url, paramsObj.toString(), POST);
+		return getHttpResponse(url, paramsObj.toString(), method);
+	}
+
+	public String post(JSONObject paramsObj) {
+		return transmit(paramsObj, POST);
+	}
+
+	public String put(JSONObject paramsObj) {
+		return transmit(paramsObj, PUT);
+	}
+
+	public String patch(JSONObject paramsObj) {
+		return transmit(paramsObj, PATCH);
+	}
+
+	public String delete(JSONObject paramsObj) {
+		return transmit(paramsObj, DELETE);
 	}
 
 	private String getHttpResponse(
@@ -205,9 +224,15 @@ public class HttpRequest {
 			if(userAgent != null) {
 				rb.addHeader("User-Agent", userAgent);
 			}
-			if(method != null && method.equals(POST)) {
+			if(method != null && !method.equals(GET)) {
 				RequestBody body = RequestBody.create(params, MediaType.get("application/json"));
 				rb.post(body);
+				switch(method) {
+					case POST -> rb.post(body);
+					case PATCH -> rb.patch(body);
+					case PUT -> rb.put(body);
+					case DELETE -> rb.delete(body);
+				}
 			}
 			Request request = rb.build();
 			Console.verbose("===== REQUEST HEADERS =====");
@@ -331,7 +356,7 @@ public class HttpRequest {
 				connection.setDoOutput(doOutput);
 				connection.setUseCaches(false);
 				connection.connect();
-				if(method != null && method.equals(POST)) {
+				if(method != null && !method.equals(GET)) {
 					Writer out = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
 					BufferedWriter writer = new BufferedWriter(out);
 					writer.write(params);
