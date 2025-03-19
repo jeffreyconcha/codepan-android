@@ -137,11 +137,11 @@ public class CameraSurfaceView extends SurfaceView implements
 	}
 
 	public boolean isZoomSupported() {
-		return params.isZoomSupported();
+		return params != null && params.isZoomSupported();
 	}
 
 	public int getMaxZoom() {
-		if(params.isZoomSupported()) {
+		if(isZoomSupported()) {
 			return params.getMaxZoom();
 		}
 		return 0;
@@ -585,7 +585,7 @@ public class CameraSurfaceView extends SurfaceView implements
 	}
 
 	public void updateZoom(int zoom) {
-		if(params.isZoomSupported()) {
+		if(isZoomSupported()) {
 			if(zoom <= params.getMaxZoom()) {
 				params.setZoom(zoom);
 				camera.setParameters(params);
