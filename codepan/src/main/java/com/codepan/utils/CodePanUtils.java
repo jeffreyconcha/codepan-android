@@ -2409,12 +2409,18 @@ public class CodePanUtils {
 			gps.accuracy = location.getAccuracy();
 			gps.speed = location.getSpeed();
 			gps.bearing = location.getBearing();
-			gps.isIndoor = !provider.equals(LocationManager.GPS_PROVIDER);
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+				gps.isMock = location.isMock();
+			}
+			else {
+				gps.isMock = location.isFromMockProvider();
+			}
+			gps.isIndoor = provider != null && !provider.equals(LocationManager.GPS_PROVIDER);
 			final long timeElapsed = SystemClock.elapsedRealtime() - lastLocationUpdate;
 			final long elapsedAllowance = 15000L + interval;
 			if(timeElapsed <= elapsedAllowance && (gps.accuracy <= requiredAccuracy || !gps.isIndoor)) {
 				if(gps.longitude != 0 && gps.latitude != 0) {
-					gps.isValid = !location.isFromMockProvider();
+					gps.isValid = !gps.isMock;
 				}
 			}
 			TimeZone utc = TimeZone.getTimeZone("UTC");

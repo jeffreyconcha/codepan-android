@@ -19,6 +19,7 @@ public class GpsData implements DateTimeFields {
 	public boolean isIndoor;
 	public boolean isEnabled;
 	public boolean withHistory;
+	public boolean isMock;
 	public Location location;
 	public DateTime dt;
 
