@@ -9,9 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.ExperimentalGetImage
 import androidx.lifecycle.coroutineScope
 import com.codepan.app.CPFragment
+import com.codepan.callback.VoidCallback
 import com.codepan.model.StampData
 import com.codepan.permission.PermissionEvents
 import com.codepan.permission.PermissionHandler
@@ -71,6 +73,8 @@ class CameraXFragment : CPFragment(), PermissionEvents {
             activity,
             this,
             PermissionType.CAMERA,
+            PermissionType.READ_IMAGES,
+            PermissionType.FOREGROUND_LOCATION,
         )
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -148,7 +152,56 @@ class CameraXFragment : CPFragment(), PermissionEvents {
     override fun onShowPermissionRationale(
         handler: PermissionHandler,
         permission: PermissionType,
+        onContinue: VoidCallback,
     ) {
-        Log.i("show permission", "true")
+        when (permission) {
+            PermissionType.CAMERA -> {
+                AlertDialog.Builder(activity)
+                    .setTitle("Camera Access Needed")
+                    .setMessage("This app requires access to your device’s camera to capture photos and scan documents. We only use your camera when you choose to take a photo or scan, and the data is not collected in the background.")
+                    .setPositiveButton("Continue") { dialog, _ ->
+                        dialog.dismiss()
+                        onContinue.invoke()
+                    }
+                    .setNegativeButton("Cancel") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+
+            PermissionType.READ_IMAGES -> {
+                AlertDialog.Builder(activity)
+                    .setTitle("Access to Files & Media Required")
+                    .setMessage("This app needs access to your files and media to upload, view, or share photos, videos, and documents stored on your device. This access is used only when you choose to interact with media content and is not used in the background.")
+                    .setPositiveButton("Continue") { dialog, _ ->
+                        dialog.dismiss()
+                        onContinue.invoke()
+                    }
+                    .setNegativeButton("Cancel") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+
+            PermissionType.FOREGROUND_LOCATION -> {
+                AlertDialog.Builder(activity)
+                    .setTitle("Location Permission Required")
+                    .setMessage("This app collects location data to enable route tracking even when the app is closed or not in use.")
+                    .setPositiveButton("Continue") { dialog, _ ->
+                        dialog.dismiss()
+                        onContinue.invoke()
+                    }
+                    .setNegativeButton("Cancel") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+
+            else -> {
+                Console.log("Permission not handled ${permission.name}")
+            }
+        }
+
+
     }
 }

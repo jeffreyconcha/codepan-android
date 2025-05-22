@@ -12,11 +12,14 @@ import com.codepan.utils.Debouncer;
 import com.codepan.widget.CodePanTextField;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
+import androidx.camera.core.ExperimentalGetImage;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends CPFragmentActivity {
 
+	@OptIn(markerClass = ExperimentalGetImage.class)
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,8 +50,8 @@ public class MainActivity extends CPFragmentActivity {
 			transaction.commit();
 		});
 		findViewById(R.id.btnCamera).setOnClickListener(view -> {
-//			CameraXFragment camera = new CameraXFragment();
-			CameraFragment camera = new CameraFragment();
+			CameraXFragment camera = new CameraXFragment();
+//			CameraFragment camera = new CameraFragment();
 			FragmentManager manager = getSupportFragmentManager();
 			FragmentTransaction transaction = manager.beginTransaction();
 			transaction.add(R.id.rlMain, camera);

@@ -9,14 +9,18 @@ import android.provider.Settings.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback
 import com.codepan.app.CPFragmentActivity
+import com.codepan.callback.VoidCallback
+import com.codepan.utils.Console
 
 enum class PermissionType(val value: PermissionValue) {
     @RequiresApi(Build.VERSION_CODES.Q)
     BACKGROUND_LOCATION(PermissionValue.backgroundLocation),
     FOREGROUND_LOCATION(PermissionValue.foregroundLocation),
     FILES_AND_MEDIA(PermissionValue.filesAndMedia),
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     READ_IMAGES(PermissionValue.readImages),
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     READ_VIDEOS(PermissionValue.readVideos),
     CAMERA(PermissionValue.camera),
@@ -41,6 +45,7 @@ interface PermissionEvents {
     fun onShowPermissionRationale(
         handler: PermissionHandler,
         permission: PermissionType,
+        onContinue: VoidCallback,
     )
 }
 
@@ -89,27 +94,34 @@ class PermissionHandler(
 
     fun checkPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val denied = arrayListOf<String>()
-            var hasRational = false
+            val deniedList = arrayListOf<PermissionType>()
+            var isIntentionallyDenied = false
             types@ for (type in types) {
                 for (permission in type.value.permissions) {
                     when (activity.checkSelfPermission(permission)) {
                         PackageManager.PERMISSION_GRANTED -> {
                         }
+
                         PackageManager.PERMISSION_DENIED -> {
-                            denied.add(permission)
+                            Console.log("Permission denied: $permission")
+                            deniedList.add(type)
                             if (activity.shouldShowRequestPermissionRationale(permission)) {
-                                callback.onShowPermissionRationale(this, type)
-                                hasRational = true
+                                callback.onShowPermissionRationale(this, type) {
+                                    goToSettings()
+                                }
+                                isIntentionallyDenied = true
                                 break@types
                             }
                         }
                     }
                 }
             }
-            if (denied.isNotEmpty()) {
-                if (!hasRational) {
-                    activity.requestPermissions(denied.toTypedArray(), REQUEST_CODE)
+            if (deniedList.isNotEmpty()) {
+                if (!isIntentionallyDenied) {
+                    val denied = deniedList.first()
+                    callback.onShowPermissionRationale(this, denied) {
+                        activity.requestPermissions(denied.value.permissions, REQUEST_CODE)
+                    }
                 }
             } else {
                 callback.onPermissionsResult(this, true)
@@ -125,15 +137,7 @@ class PermissionHandler(
         grantResults: IntArray,
     ) {
         if (requestCode == REQUEST_CODE && grantResults.isNotEmpty()) {
-            var isGranted = true
-            for (result in grantResults) {
-                if (result == PackageManager.PERMISSION_DENIED) {
-                    isGranted = false
-                    break
-                }
-
-            }
-            callback.onPermissionsResult(this, isGranted)
+            checkPermissions()
         }
     }
 }
