@@ -584,11 +584,12 @@ public class HttpRequest {
 			if(authorization != null) {
 				multipart.addHeaderField("Authorization",
 					authorization.getAuthorization());
-				String userAgent = getUserAgent();
-				if(userAgent != null) {
-					multipart.addHeaderField("User-Agent", userAgent);
-				}
 			}
+			String userAgent = getUserAgent();
+			if(userAgent != null) {
+				multipart.addHeaderField("User-Agent", userAgent);
+			}
+			multipart.connect();
 			try {
 				Iterator<String> keys = paramsObj.keys();
 				while(keys.hasNext()) {
@@ -662,6 +663,7 @@ public class HttpRequest {
 			if(userAgent != null) {
 				multipart.addHeaderField("User-Agent", userAgent);
 			}
+			multipart.connect();
 			if(params != null) {
 				multipart.addFormField("params", params);
 			}

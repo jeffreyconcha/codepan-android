@@ -32,7 +32,7 @@ public class Multipart {
 	private String charset;
 
 	public Multipart(String uri, String charset) throws IOException,
-			NoSuchAlgorithmException, KeyManagementException {
+		NoSuchAlgorithmException, KeyManagementException {
 		this.charset = charset;
 		String type = "multipart/form-data; boundary=" + BOUNDARY;
 		URL url = new URL(uri);
@@ -48,10 +48,19 @@ public class Multipart {
 		connection.setUseCaches(false);
 		connection.setDoOutput(true);
 		connection.setDoInput(true);
-		connection.connect();
 		Log.e("URL", uri);
-		os = connection.getOutputStream();
-		out = new DataOutputStream(os);
+	}
+
+	public void connect() throws IOException {
+		if(connection != null) {
+			connection.connect();
+			os = connection.getOutputStream();
+			out = new DataOutputStream(os);
+		}
+	}
+
+	public void addHeaderField(String name, String value) throws IOException {
+		connection.setRequestProperty(name, value);
 	}
 
 	public void addFormField(String name, String value) throws IOException {
@@ -73,7 +82,7 @@ public class Multipart {
 		out.writeBytes("--" + BOUNDARY);
 		out.writeBytes(LINE_FEED);
 		out.writeBytes("Content-Disposition: form-data; name=\"" + name + "\"; " +
-				"filename=\"" + fileName + "\"");
+			"filename=\"" + fileName + "\"");
 		out.writeBytes(LINE_FEED);
 		out.writeBytes("Content-Type: " + mimeType);
 		out.writeBytes(LINE_FEED);
@@ -89,12 +98,6 @@ public class Multipart {
 		}
 		os.flush();
 		is.close();
-		out.writeBytes(LINE_FEED);
-		out.flush();
-	}
-
-	public void addHeaderField(String name, String value) throws IOException {
-		out.writeBytes(name + ": " + value);
 		out.writeBytes(LINE_FEED);
 		out.flush();
 	}
