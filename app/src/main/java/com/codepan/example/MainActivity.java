@@ -69,7 +69,7 @@ public class MainActivity extends CPFragmentActivity {
 			Looper.prepare();
 			try {
 				String url = "https://catfact.ninja/fact";
-				String response = new HttpRequest(this, url, null, 1000).get(null, true);
+				String response = new HttpRequest(this, url, null, null, 1000).get(null, true);
 				Console.logResponse(response);
 			}
 			catch(Exception e) {
