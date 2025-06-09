@@ -2581,23 +2581,6 @@ public class CodePanUtils {
 			|| "google_sdk".equals(Build.PRODUCT);
 	}
 
-	public static boolean isPhoneRooted() {
-		try {
-			File apk = new File("/system/app/Superuser.apk");
-			if(apk.exists()) {
-				return true;
-			}
-			else {
-				File su = new File("/system/xbin/su");
-				return su.exists();
-			}
-		}
-		catch(Throwable t) {
-			t.printStackTrace();
-		}
-		return false;
-	}
-
 	public static void setSharedPref(Context context, String key, boolean value) {
 		String name = context.getPackageName();
 		SharedPreferences sp = context.getSharedPreferences(name, Context.MODE_PRIVATE);

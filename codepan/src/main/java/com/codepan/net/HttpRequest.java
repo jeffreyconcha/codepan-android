@@ -1,5 +1,6 @@
 package com.codepan.net;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -43,6 +44,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLProtocolException;
 
+import okhttp3.CertificatePinner;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
@@ -64,6 +66,7 @@ public class HttpRequest {
 
 	private Context context;
 	private Authorization authorization;
+	private CertificatePinner certificatePinner;
 	private int retryCount = 0;
 	private int initialTimeOut, currentTimeOut;
 	private String url;
@@ -72,6 +75,7 @@ public class HttpRequest {
 		Context context,
 		String url,
 		Authorization authorization,
+		CertificatePinner certificatePinner,
 		int timeOut
 	) {
 		this.context = context;
@@ -79,6 +83,7 @@ public class HttpRequest {
 		this.initialTimeOut = timeOut;
 		this.currentTimeOut = timeOut;
 		this.url = url;
+		this.certificatePinner = certificatePinner;
 	}
 
 	private String getUserAgent() {
@@ -161,6 +166,7 @@ public class HttpRequest {
 		return transmit(paramsObj, DELETE);
 	}
 
+	@SuppressLint("ObsoleteSdkInt")
 	private String getHttpResponse(
 		String host,
 		String params,
@@ -205,12 +211,15 @@ public class HttpRequest {
 		String contentType = method != null && method.equals(GET) ?
 			"application/x-www-form-urlencoded" : "application/json";
 		try {
-			OkHttpClient client = new OkHttpClient.Builder()
+			OkHttpClient.Builder cb = new OkHttpClient.Builder()
 				.protocols(List.of(Protocol.HTTP_2, Protocol.HTTP_1_1))
 				.connectTimeout(currentTimeOut, TimeUnit.MILLISECONDS)
 				.sslSocketFactory(new TLSSocketFactory(), new TrustManager())
-				.readTimeout(currentTimeOut, TimeUnit.MILLISECONDS)
-				.build();
+				.readTimeout(currentTimeOut, TimeUnit.MILLISECONDS);
+			if(certificatePinner != null) {
+				cb.certificatePinner(certificatePinner);
+			}
+			OkHttpClient client = cb.build();
 			Request.Builder rb = new Request.Builder()
 				.addHeader("Content-Type", contentType)
 				.addHeader("Content-Language", "en-US")
