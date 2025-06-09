@@ -4,6 +4,18 @@ plugins {
     id 'maven-publish'
 }
 
+def secretsFile = rootProject.file("secrets.properties")
+def secrets = new Properties()
+
+if (secretsFile.exists()) {
+    secrets.load(new FileInputStream(secretsFile))
+} else {
+    logger.warn("⚠️ secrets.properties file not found in project root.")
+}
+
+def githubUser = secrets.getProperty("gpr.user") ?: ""
+def githubToken = secrets.getProperty("gpr.token") ?: ""
+
 android {
     compileSdk 34
 
@@ -65,8 +77,8 @@ afterEvaluate {
                 name = "GithubPackages"
                 url = uri("https://maven.pkg.github.com/jeffreyconcha/codepan-android")
                 credentials {
-                    username = System.getenv("GITHUB_USER") ?: ""
-                    password = System.getenv("GITHUB_TOKEN") ?: ""
+                    username = githubUser
+                    password = githubToken
                 }
             }
         }
