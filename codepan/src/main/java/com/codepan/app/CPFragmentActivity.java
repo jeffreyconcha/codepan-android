@@ -89,6 +89,7 @@ public abstract class CPFragmentActivity extends FragmentActivity
 		if(permissionsResultCallback != null) {
 			permissionsResultCallback.onRequestPermissionsResult(code, permissions, results);
 		}
+		super.onRequestPermissionsResult(code, permissions, results);
 	}
 
 	protected String text(int resId, String... placeholders) {

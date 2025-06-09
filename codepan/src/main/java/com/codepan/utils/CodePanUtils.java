@@ -939,21 +939,6 @@ public class CodePanUtils {
 		return BitmapFactory.decodeFile(image.getAbsolutePath());
 	}
 
-	@SuppressLint("HardwareIds")
-	@RequiresPermission("android.permission.READ_PHONE_STATE")
-	public static String getDeviceId(Context context) {
-		TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-		if(manager != null) {
-			if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-				return manager.getDeviceId();
-			}
-			else {
-				return Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
-			}
-		}
-		return null;
-	}
-
 	@SuppressLint("MissingPermission")
 	public static PhoneInfoData getPhoneInfo(Context context) {
 		PhoneInfoData info = null;
