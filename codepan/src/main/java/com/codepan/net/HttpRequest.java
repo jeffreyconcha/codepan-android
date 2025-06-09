@@ -662,7 +662,9 @@ public class HttpRequest {
 			if(userAgent != null) {
 				multipart.addHeaderField("User-Agent", userAgent);
 			}
-			multipart.addFormField("params", params);
+			if(params != null) {
+				multipart.addFormField("params", params);
+			}
 			multipart.addFilePart(name, file);
 			response = multipart.finish(handler);
 			Console.logResponse(response);
