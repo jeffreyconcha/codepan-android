@@ -68,7 +68,7 @@ public class MainActivity extends CPFragmentActivity {
 		Thread bg = new Thread(() -> {
 			Looper.prepare();
 			try {
-				String url = "https://catfact.ninja/fact";
+				String url = "https://www.app.tarkie.com/API/3.0/get-company";
 				String response = new HttpRequest(this, url, null, null, 1000).get(null, true);
 				Console.logResponse(response);
 			}

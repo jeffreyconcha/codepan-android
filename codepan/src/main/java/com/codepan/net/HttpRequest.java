@@ -250,22 +250,22 @@ public class HttpRequest {
 			}
 			Console.verbose("===========================");
 			Response response = client.newCall(request).execute();
+			final ResponseBody body = response.body();
+			if(body != null) {
+				builder.append(body.string());
+			}
 			if(response.isSuccessful()) {
-				final ResponseBody body = response.body();
-				if(body != null) {
-					builder.append(body.string());
-				}
 				Console.verbose("===== RESPONSE HEADERS =====");
 				for(String name : response.headers().names()) {
 					Console.verbose(name + ": " + response.header(name));
 				}
 				Console.verbose("============================");
-				Console.logResponse(builder.toString());
 				result = true;
 			}
 			else {
 				Console.log("RESPONSE ERROR CODE: " + response.code());
 			}
+			Console.logResponse(builder.toString());
 		}
 		catch(SSLProtocolException |
 			  EOFException |
