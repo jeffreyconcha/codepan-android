@@ -3,13 +3,15 @@ package com.codepan.utils;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class RootDetectionUtils {
 
 	//Check if the device is rooted
-	public static boolean isDeviceRooted() {
-		return checkBuildTags() || checkSuperuserApk() || checkSuExists() || canExecuteSuCommand();
+	public static boolean isDeviceCompromised() {
+		return checkBuildTags() || checkSuperuserApk() || checkSuExists() || canExecuteSuCommand() ||
+			detectFridaClasses() || isFridaProcessPresent();
 	}
 
 	private static boolean checkBuildTags() {
@@ -64,5 +66,36 @@ public class RootDetectionUtils {
 		catch(Exception e) {
 			return false;
 		}
+	}
+
+	private static boolean detectFridaClasses() {
+		String[] suspiciousClasses = {
+			"re.frida.server", "frida", "gumjs", "gum-js-loop", "gmain"
+		};
+		for(String className : suspiciousClasses) {
+			try {
+				Class.forName(className);
+				return true;
+			}
+			catch(ClassNotFoundException ignored) {
+			}
+		}
+		return false;
+	}
+
+	private static boolean isFridaProcessPresent() {
+		try {
+			Process process = Runtime.getRuntime().exec("ps");
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line;
+			while((line = reader.readLine()) != null) {
+				if(line.contains("frida") || line.contains("gadget") || line.contains("gum-js")) {
+					return true;
+				}
+			}
+		}
+		catch(IOException ignored) {
+		}
+		return false;
 	}
 }
