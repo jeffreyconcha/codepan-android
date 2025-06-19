@@ -1,9 +1,15 @@
 package com.codepan.database;
 
+import androidx.annotation.NonNull;
 public class FieldValue {
 
 	public enum Value {
 		NULL
+	}
+
+	public enum ValueAction {
+		SET,
+		APPEND
 	}
 
 	private final int TRUE = 1;
@@ -18,7 +24,17 @@ public class FieldValue {
 
 	public FieldValue(String field, String value) {
 		this.value = value != null ? "'" + value
-				.replace("'", "''") + "'" : "NULL";
+			.replace("'", "''") + "'" : "NULL";
+		this.field = field;
+	}
+
+	public FieldValue(String field, @NonNull String value, ValueAction action) {
+		if(action == ValueAction.APPEND) {
+			this.value = field + " || '" + value.replace("'", "''") + "'";
+		}
+		else {
+			this.value = "'" + value.replace("'", "''") + "'";
+		}
 		this.field = field;
 	}
 
@@ -59,7 +75,17 @@ public class FieldValue {
 
 	public FieldValue(Field field, String value) {
 		this.value = value != null ? "'" + value
-				.replace("'", "''") + "'" : "NULL";
+			.replace("'", "''") + "'" : "NULL";
+		setField(field);
+	}
+
+	public FieldValue(Field field, @NonNull String value, ValueAction action) {
+		if(action == ValueAction.APPEND) {
+			this.value = field.field + " || '" + value.replace("'", "''") + "'";
+		}
+		else {
+			this.value = "'" + value.replace("'", "''") + "'";
+		}
 		setField(field);
 	}
 
