@@ -2711,7 +2711,8 @@ public class CodePanUtils {
 		Bitmap input,
 		String font,
 		float textSizePercentage,
-		ArrayList<StampData> stampList
+		ArrayList<StampData> stampList,
+		boolean isOutlined
 	) {
 		int width = input.getWidth();
 		int height = input.getHeight();
@@ -2727,15 +2728,24 @@ public class CodePanUtils {
 		float size = rt * (float) max;
 		Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(result);
-		final int shadow = Color.argb(96, 0, 0, 0);
+		final int shadow = Color.argb(50, 0, 0, 0);
 		Typeface tf = TypefaceCache.get(context, font);
-		TextPaint paint = new TextPaint();
-		paint.setAntiAlias(true);
-		paint.setTypeface(tf);
-		paint.setTextSize(size);
-		paint.setColor(Color.WHITE);
-		paint.setShadowLayer(2F, 2F, 2F, shadow);
-		paint.setStyle(Paint.Style.FILL);
+		TextPaint fillPaint = new TextPaint();
+		fillPaint.setAntiAlias(true);
+		fillPaint.setTypeface(tf);
+		fillPaint.setTextSize(size);
+		fillPaint.setColor(Color.WHITE);
+		fillPaint.setStyle(Paint.Style.FILL);
+		if(!isOutlined) {
+			fillPaint.setShadowLayer(2F, 2F, 2F, shadow);
+		}
+		TextPaint strokePaint = new TextPaint();
+		strokePaint.setAntiAlias(true);
+		strokePaint.setTypeface(tf);
+		strokePaint.setTextSize(size);
+		strokePaint.setColor(Color.BLACK);
+		strokePaint.setStyle(Paint.Style.STROKE);
+		strokePaint.setStrokeWidth(0.1F * size);
 		canvas.drawBitmap(input, 0F, 0F, null);
 		int lc = 0;
 		int rc = 0;
@@ -2755,14 +2765,21 @@ public class CodePanUtils {
 		float yr = height - (size * rc) + (m / 2);
 		for(StampData stamp : stampList) {
 			if(stamp.alignment != null) {
-				paint.setTextAlign(stamp.alignment);
+				fillPaint.setTextAlign(stamp.alignment);
+				strokePaint.setTextAlign(stamp.alignment);
 				switch(stamp.alignment) {
 					case LEFT:
-						canvas.drawText(stamp.data, m, yl, paint);
+						if(isOutlined) {
+							canvas.drawText(stamp.data, m, yl, strokePaint);
+						}
+						canvas.drawText(stamp.data, m, yl, fillPaint);
 						yl += size;
 						break;
 					case RIGHT:
-						canvas.drawText(stamp.data, width - m, yr, paint);
+						if(isOutlined) {
+							canvas.drawText(stamp.data, width - m, yr, strokePaint);
+						}
+						canvas.drawText(stamp.data, width - m, yr, fillPaint);
 						yr += size;
 						break;
 				}

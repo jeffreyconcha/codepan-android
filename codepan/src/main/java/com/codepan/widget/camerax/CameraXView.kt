@@ -314,7 +314,7 @@ class CameraXView(
                     val output = if (stampList != null) {
                         val font = context.getString(R.string.calibri_regular)
                         CodePanUtils.stampPhoto(
-                            context, rotated, font, 0.035F, stampList
+                            context, rotated, font, 0.035F, stampList, false
                         )
                     } else {
                         rotated

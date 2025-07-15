@@ -315,7 +315,7 @@ public class CameraSurfaceView extends SurfaceView implements
 				src.getHeight(), matrix, true);
 			if(stampList != null) {
 				String font = context.getString(R.string.calibri_regular);
-				bitmap = CodePanUtils.stampPhoto(context, bitmap, font, 0.035F, stampList);
+				bitmap = CodePanUtils.stampPhoto(context, bitmap, font, 0.035F, stampList, false);
 			}
 			saveBitmap(fileName, bitmap);
 		}
