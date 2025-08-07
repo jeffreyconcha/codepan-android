@@ -1,6 +1,7 @@
 package com.codepan.database;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
@@ -9,18 +10,18 @@ import com.codepan.database.Callback.OnUpgradeDatabaseCallback;
 import com.codepan.storage.SharedPreferencesManager;
 import com.codepan.utils.Console;
 
-import net.sqlcipher.Cursor;
-import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteDatabase.CursorFactory;
-import net.sqlcipher.database.SQLiteDatabaseHook;
-import net.sqlcipher.database.SQLiteOpenHelper;
-import net.sqlcipher.database.SQLiteStatement;
+import net.zetetic.database.DatabaseErrorHandler;
+import net.zetetic.database.sqlcipher.SQLiteConnection;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteDatabaseHook;
+import net.zetetic.database.sqlcipher.SQLiteOpenHelper;
+import net.zetetic.database.sqlcipher.SQLiteStatement;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SQLiteAdapter implements SQLiteDatabaseHook {
+public class SQLiteAdapter implements SQLiteDatabaseHook, DatabaseErrorHandler {
 	private final String MIGRATION_ATTEMPT = "migration";
 	private final String ERROR_TAG = "DB-Error";
 	private final int MAX_MIGRATION_ATTEMPT = 2;
@@ -48,7 +49,7 @@ public class SQLiteAdapter implements SQLiteDatabaseHook {
 	}
 
 	private void init() {
-		SQLiteDatabase.loadLibs(context);
+		System.loadLibrary("sqlcipher");
 		File databaseFile = context.getDatabasePath(name);
 		this.directory = databaseFile.getParentFile();
 		this.spm = new SharedPreferencesManager(context);
@@ -57,14 +58,14 @@ public class SQLiteAdapter implements SQLiteDatabaseHook {
 		}
 		try {
 			sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(
-				databaseFile, password, null);
+				databaseFile, password, null, this);
 		}
 		catch(SQLiteException e) {
 			e.printStackTrace();
 			try {
 				Console.log("Updating password...");
 				sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(
-					databaseFile, old, null);
+					databaseFile, old, null, this);
 				sqLiteDatabase.changePassword(password);
 			}
 			catch(SQLiteException ex) {
@@ -78,44 +79,45 @@ public class SQLiteAdapter implements SQLiteDatabaseHook {
 	}
 
 	@Override
-	public void preKey(SQLiteDatabase database) {
+	public void preKey(SQLiteConnection connection) {
 	}
 
 	@Override
-	public void postKey(SQLiteDatabase database) {
-		database.rawExecSQL("PRAGMA key = '" + password + "'");
-		Cursor cursor = database.rawQuery("PRAGMA cipher_migrate", null);
-		if(cursor.moveToNext()) {
-			int result = cursor.getInt(0);
-			if(result == 0) {
-				Console.log("Database has been migrated.");
+	public void postKey(SQLiteConnection connection) {
+		connection.execute("PRAGMA key = '" + password + "'", null, null);
+		long result = connection.executeForLong("PRAGMA cipher_migrate", null, null);
+		if(result == 0L) {
+			Console.log("Database has been migrated.");
+		}
+		else {
+			Console.log("Deleting temporary migration files...");
+			File migrated = new File(directory, name + "-migrated");
+			if(migrated.exists()) {
+				migrated.delete();
+				File journal = new File(directory, name + "-migrated-journal");
+				if(journal.exists()) {
+					journal.delete();
+				}
+			}
+			final int attempt = spm.getValue(MIGRATION_ATTEMPT, 0);
+			if(attempt >= MAX_MIGRATION_ATTEMPT) {
+				Console.log("Setting compatibility to version 3...");
+				connection.execute("PRAGMA cipher_compatibility = 3", null, null);
 			}
 			else {
-				Console.log("Deleting temporary migration files...");
-				File migrated = new File(directory, name + "-migrated");
-				if(migrated.exists()) {
-					migrated.delete();
-					File journal = new File(directory, name + "-migrated-journal");
-					if(journal.exists()) {
-						journal.delete();
-					}
-				}
-				final int attempt = spm.getValue(MIGRATION_ATTEMPT, 0);
-				if(attempt >= MAX_MIGRATION_ATTEMPT) {
-					Console.log("Setting compatibility to version 3...");
-					database.rawExecSQL("PRAGMA cipher_compatibility = 3");
-				}
-				else {
-					spm.setValue(MIGRATION_ATTEMPT, attempt + 1);
-				}
+				spm.setValue(MIGRATION_ATTEMPT, attempt + 1);
 			}
 		}
+	}
+
+	@Override
+	public void onCorruption(SQLiteDatabase dbObj, SQLiteException exception) {
 	}
 
 	public SQLiteAdapter openConnection() throws android.database.SQLException {
 		if(!sqLiteDatabase.isOpen()) {
 			SQLiteHelper helper = new SQLiteHelper(context, name, null, version);
-			sqLiteDatabase = helper.getWritableDatabase(password);
+			sqLiteDatabase = helper.getWritableDatabase();
 		}
 		return this;
 	}
@@ -372,7 +374,7 @@ public class SQLiteAdapter implements SQLiteDatabaseHook {
 		File tempFile = context.getDatabasePath(temp);
 		String path = tempFile.getAbsolutePath();
 		tempFile.delete();
-		SQLiteDatabase sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(databaseFile, old, null);
+		SQLiteDatabase sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(databaseFile, old, null, this);
 		sqLiteDatabase.rawExecSQL(String.format("ATTACH database '%s' AS encrypted KEY '%s'", path, password));
 		sqLiteDatabase.rawExecSQL("SELECT sqlcipher_export('encrypted');");
 		sqLiteDatabase.rawExecSQL("DETACH database encrypted;");
@@ -392,7 +394,7 @@ public class SQLiteAdapter implements SQLiteDatabaseHook {
 	}
 
 	private class SQLiteHelper extends SQLiteOpenHelper {
-		public SQLiteHelper(Context context, String name, CursorFactory factory, int version) {
+		public SQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
 			super(context, name, factory, version);
 		}
 

@@ -68,7 +68,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.codepan'
                 artifactId = 'codepan-android'
-                version = '1.4.0'
+                version = '1.5.0'
             }
         }
 
@@ -88,8 +88,8 @@ afterEvaluate {
 dependencies {
     api fileTree(include: ['*.jar'], dir: 'libs')
     api 'androidx.legacy:legacy-support-v4:1.0.0'
-    api 'net.zetetic:android-database-sqlcipher:4.5.4'
-    api 'androidx.sqlite:sqlite-ktx:2.4.0'
+    api 'net.zetetic:sqlcipher-android:4.7.2'
+    api 'androidx.sqlite:sqlite-ktx:2.5.2'
     api 'com.github.DImuthuUpe:AndroidPdfViewer:2.8.1'
     api 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     api 'com.google.android.gms:play-services-location:21.3.0'
