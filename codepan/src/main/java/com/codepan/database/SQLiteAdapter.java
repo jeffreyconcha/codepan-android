@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.codepan.database.Callback.OnCreateDatabaseCallback;
 import com.codepan.database.Callback.OnUpgradeDatabaseCallback;
-import com.codepan.storage.SharedPreferencesManager;
 import com.codepan.utils.Console;
 
 import net.zetetic.database.DatabaseErrorHandler;
@@ -21,30 +20,27 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SQLiteAdapter implements SQLiteDatabaseHook, DatabaseErrorHandler {
-	private final String MIGRATION_ATTEMPT = "migration";
+public class SQLiteAdapter implements DatabaseErrorHandler {
 	private final String ERROR_TAG = "DB-Error";
-	private final int MAX_MIGRATION_ATTEMPT = 2;
 
 	private OnUpgradeDatabaseCallback upgradeDatabaseCallback;
 	private OnCreateDatabaseCallback createDatabaseCallback;
 	private SQLiteDatabase sqLiteDatabase;
-	private SharedPreferencesManager spm;
 	private String temp = "temp";
 	private String name;
 	private String password;
 	private Context context;
 	private File directory;
 	private int version;
-	private String old;
+	private String oldPassword;
 
-	public SQLiteAdapter(Context context, String name, String password, String old, int version) {
+	public SQLiteAdapter(Context context, String name, String password, String oldPassword, int version) {
 		this.context = context;
 		this.name = name;
 		this.password = password;
 		this.version = version;
 		this.temp += name;
-		this.old = old;
+		this.oldPassword = oldPassword;
 		this.init();
 	}
 
@@ -56,64 +52,51 @@ public class SQLiteAdapter implements SQLiteDatabaseHook, DatabaseErrorHandler {
 		System.loadLibrary("sqlcipher");
 		File databaseFile = getDatabaseFile();
 		this.directory = databaseFile.getParentFile();
-		this.spm = new SharedPreferencesManager(context);
 		if(directory != null && !directory.exists()) {
 			directory.mkdir();
 		}
+		initDatabase();
+	}
+
+	private void initDatabase() {
+		File databaseFile = getDatabaseFile();
 		try {
 			sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(
-				databaseFile, password, null, this, this);
+				databaseFile, password, null, this, new Migrator(password));
 		}
 		catch(SQLiteException e) {
-			e.printStackTrace();
-			try {
-				Console.log("Updating password...");
+			if(oldPassword != null) {
+				Console.log("Old password detected...");
 				sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(
-					databaseFile, old, null, this, this);
+					databaseFile, oldPassword, null, this);
+				Console.log("Changing password...");
 				sqLiteDatabase.changePassword(password);
-			}
-			catch(SQLiteException ex) {
-				ex.printStackTrace();
-				Console.log("Migrating database...");
-				sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(
-					databaseFile, password, null, this, this);
 			}
 		}
 		sqLiteDatabase.close();
 	}
 
-	@Override
-	public void preKey(SQLiteConnection connection) {
-		connection.executeRaw("PRAGMA cipher_memory_security = OFF", null, null);
+	private class Migrator implements SQLiteDatabaseHook {
+
+		private final String key;
+
+		private Migrator(String key) {
+			this.key = key;
+		}
+
+		@Override
+		public void preKey(SQLiteConnection connection) {
+			connection.executeRaw("PRAGMA cipher_memory_security = OFF", null, null);
+		}
+
+		@Override
+		public void postKey(SQLiteConnection connection) {
+			connection.executeRaw("PRAGMA key = '" + key + "'", null, null);
+//			long result = connection.executeForLong("PRAGMA cipher_migrate", null, null);
+//			Console.log("Migration result: " + result);
+		}
 	}
 
-	@Override
-	public void postKey(SQLiteConnection connection) {
-		connection.executeRaw("PRAGMA key = '" + password + "'", null, null);
-		long result = connection.executeForLong("PRAGMA cipher_migrate", null, null);
-		if(result == 0L) {
-			Console.log("Database has been migrated.");
-		}
-		else {
-			Console.log("Deleting temporary migration files...");
-			File migrated = new File(directory, name + "-migrated");
-			if(migrated.exists()) {
-				migrated.delete();
-				File journal = new File(directory, name + "-migrated-journal");
-				if(journal.exists()) {
-					journal.delete();
-				}
-			}
-			final int attempt = spm.getValue(MIGRATION_ATTEMPT, 0);
-			if(attempt >= MAX_MIGRATION_ATTEMPT) {
-				Console.log("Setting compatibility to version 3...");
-				connection.executeRaw("PRAGMA cipher_compatibility = 3", null, null);
-			}
-			else {
-				spm.setValue(MIGRATION_ATTEMPT, attempt + 1);
-			}
-		}
-	}
 
 	@Override
 	public void onCorruption(SQLiteDatabase database, SQLiteException exception) {
@@ -123,7 +106,7 @@ public class SQLiteAdapter implements SQLiteDatabaseHook, DatabaseErrorHandler {
 	public SQLiteAdapter openConnection() throws android.database.SQLException {
 		if(!sqLiteDatabase.isOpen()) {
 			try {
-				SQLiteHelper helper = new SQLiteHelper(context, name, password, version, this);
+				SQLiteHelper helper = new SQLiteHelper(context, name, password, version, this, null);
 				sqLiteDatabase = helper.getWritableDatabase();
 			}
 			catch(SQLiteException e) {
@@ -386,7 +369,7 @@ public class SQLiteAdapter implements SQLiteDatabaseHook, DatabaseErrorHandler {
 		File tempFile = context.getDatabasePath(temp);
 		String path = tempFile.getAbsolutePath();
 		tempFile.delete();
-		SQLiteDatabase sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(databaseFile, old, null, this);
+		SQLiteDatabase sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(databaseFile, oldPassword, null, this);
 		sqLiteDatabase.rawExecSQL(String.format("ATTACH database '%s' AS encrypted KEY '%s'", path, password));
 		sqLiteDatabase.rawExecSQL("SELECT sqlcipher_export('encrypted');");
 		sqLiteDatabase.rawExecSQL("DETACH database encrypted;");
@@ -411,9 +394,10 @@ public class SQLiteAdapter implements SQLiteDatabaseHook, DatabaseErrorHandler {
 			String name,
 			String password,
 			int version,
-			DatabaseErrorHandler errorHandler
+			DatabaseErrorHandler errorHandler,
+			SQLiteDatabaseHook hook
 		) {
-			super(context, name, password, null, version, 0, errorHandler, null, false);
+			super(context, name, password, null, version, 0, errorHandler, hook, false);
 		}
 
 		@Override
