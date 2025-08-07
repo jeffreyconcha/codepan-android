@@ -48,9 +48,13 @@ public class SQLiteAdapter implements SQLiteDatabaseHook, DatabaseErrorHandler {
 		this.init();
 	}
 
+	private File getDatabaseFile() {
+		return context.getDatabasePath(name);
+	}
+
 	private void init() {
 		System.loadLibrary("sqlcipher");
-		File databaseFile = context.getDatabasePath(name);
+		File databaseFile = getDatabaseFile();
 		this.directory = databaseFile.getParentFile();
 		this.spm = new SharedPreferencesManager(context);
 		if(directory != null && !directory.exists()) {
@@ -58,21 +62,21 @@ public class SQLiteAdapter implements SQLiteDatabaseHook, DatabaseErrorHandler {
 		}
 		try {
 			sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(
-				databaseFile, password, null, this);
+				databaseFile, password, null, this, this);
 		}
 		catch(SQLiteException e) {
 			e.printStackTrace();
 			try {
 				Console.log("Updating password...");
 				sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(
-					databaseFile, old, null, this);
+					databaseFile, old, null, this, this);
 				sqLiteDatabase.changePassword(password);
 			}
 			catch(SQLiteException ex) {
 				ex.printStackTrace();
 				Console.log("Migrating database...");
 				sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(
-					databaseFile, password, null, this);
+					databaseFile, password, null, this, this);
 			}
 		}
 		sqLiteDatabase.close();
@@ -80,11 +84,12 @@ public class SQLiteAdapter implements SQLiteDatabaseHook, DatabaseErrorHandler {
 
 	@Override
 	public void preKey(SQLiteConnection connection) {
+		connection.executeRaw("PRAGMA cipher_memory_security = OFF", null, null);
 	}
 
 	@Override
 	public void postKey(SQLiteConnection connection) {
-		connection.execute("PRAGMA key = '" + password + "'", null, null);
+		connection.executeRaw("PRAGMA key = '" + password + "'", null, null);
 		long result = connection.executeForLong("PRAGMA cipher_migrate", null, null);
 		if(result == 0L) {
 			Console.log("Database has been migrated.");
@@ -102,7 +107,7 @@ public class SQLiteAdapter implements SQLiteDatabaseHook, DatabaseErrorHandler {
 			final int attempt = spm.getValue(MIGRATION_ATTEMPT, 0);
 			if(attempt >= MAX_MIGRATION_ATTEMPT) {
 				Console.log("Setting compatibility to version 3...");
-				connection.execute("PRAGMA cipher_compatibility = 3", null, null);
+				connection.executeRaw("PRAGMA cipher_compatibility = 3", null, null);
 			}
 			else {
 				spm.setValue(MIGRATION_ATTEMPT, attempt + 1);
@@ -111,13 +116,20 @@ public class SQLiteAdapter implements SQLiteDatabaseHook, DatabaseErrorHandler {
 	}
 
 	@Override
-	public void onCorruption(SQLiteDatabase dbObj, SQLiteException exception) {
+	public void onCorruption(SQLiteDatabase database, SQLiteException exception) {
+		Log.e(ERROR_TAG, "Database corruption detected: " + exception.getMessage());
 	}
 
 	public SQLiteAdapter openConnection() throws android.database.SQLException {
 		if(!sqLiteDatabase.isOpen()) {
-			SQLiteHelper helper = new SQLiteHelper(context, name, null, version);
-			sqLiteDatabase = helper.getWritableDatabase();
+			try {
+				SQLiteHelper helper = new SQLiteHelper(context, name, password, version, this);
+				sqLiteDatabase = helper.getWritableDatabase();
+			}
+			catch(SQLiteException e) {
+				Log.e(ERROR_TAG, "Error opening database: " + e.getMessage());
+				throw (e);
+			}
 		}
 		return this;
 	}
@@ -394,8 +406,14 @@ public class SQLiteAdapter implements SQLiteDatabaseHook, DatabaseErrorHandler {
 	}
 
 	private class SQLiteHelper extends SQLiteOpenHelper {
-		public SQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-			super(context, name, factory, version);
+		public SQLiteHelper(
+			Context context,
+			String name,
+			String password,
+			int version,
+			DatabaseErrorHandler errorHandler
+		) {
+			super(context, name, password, null, version, 0, errorHandler, null, false);
 		}
 
 		@Override
@@ -432,12 +450,6 @@ public class SQLiteAdapter implements SQLiteDatabaseHook, DatabaseErrorHandler {
 	public void vacuum() {
 		if(!sqLiteDatabase.inTransaction()) {
 			this.execQuery("VACUUM");
-		}
-	}
-
-	public void disableMemorySecurity() {
-		if(!sqLiteDatabase.inTransaction()) {
-			this.execQuery("PRAGMA cipher_memory_security = OFF");
 		}
 	}
 

@@ -1,8 +1,6 @@
 package com.codepan.database;
 
-import com.codepan.utils.Console;
-
-import net.sqlcipher.database.SQLiteStatement;
+import net.zetetic.database.sqlcipher.SQLiteStatement;
 
 import java.util.ArrayList;
 
