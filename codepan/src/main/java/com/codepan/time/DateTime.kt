@@ -1,6 +1,7 @@
 package com.codepan.time
 
 import com.codepan.time.TimeUnit.*
+import com.codepan.utils.CodePanUtils
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.abs
@@ -39,19 +40,19 @@ class DateTimePattern {
 class DayOfWeek {
 
     enum class Weekday(val value: Int) {
-        monday(1),
-        tuesday(2),
-        wednesday(3),
-        thursday(4),
-        friday(5),
-        saturday(6),
-        sunday(7),
+        MONDAY(1),
+        TUESDAY(2),
+        WEDNESDAY(3),
+        THURSDAY(4),
+        FRIDAY(5),
+        SATURDAY(6),
+        SUNDAY(7),
     }
 
     companion object {
         fun fromName(name: String): Weekday? {
-            for (weekday in Weekday.values()) {
-                if (weekday.name.startsWith(name)) {
+            for (weekday in Weekday.entries) {
+                if (weekday.name.lowercase().startsWith(name.lowercase())) {
                     return weekday
                 }
             }
@@ -59,7 +60,7 @@ class DayOfWeek {
         }
 
         fun fromValue(value: Int): Weekday? {
-            for (weekday in Weekday.values()) {
+            for (weekday in Weekday.entries) {
                 if (weekday.value == value) {
                     return weekday
                 }
@@ -130,22 +131,26 @@ class DateTime(
                     difference > MONTH.milliseconds -> {
                         return "$readableDate at $readableTime"
                     }
+
                     difference >= WEEK.milliseconds -> {
                         val w = (difference / WEEK.milliseconds).toInt()
                         val type = if (w > 1) "weeks" else "week"
                         return "$w $type ago"
                     }
+
                     difference >= DAY.milliseconds -> {
                         val d = (difference / DAY.milliseconds).toInt()
                         val type = if (d > 1) "days" else "day"
                         return "$d $type ago"
 
                     }
+
                     difference >= HOUR.milliseconds -> {
                         val h = (difference / HOUR.milliseconds).toInt()
                         val type = if (h > 1) "hours" else "hour"
                         return "$h $type ago"
                     }
+
                     difference >= MINUTE.milliseconds -> {
                         val m = (difference / MINUTE.milliseconds).toInt()
                         val type = if (m > 1) "mins" else "min"
@@ -300,6 +305,7 @@ class DateTime(
                 }
                 throw Exception("Invalid time format, value must be a 24hr format (00:00:00).")
             }
+
             CutOffType.weekly -> {
                 val weekday = DayOfWeek.fromName(value)
                 if (weekday != null) {
@@ -316,6 +322,7 @@ class DateTime(
                 }
                 throw Exception("Invalid weekday name.")
             }
+
             CutOffType.monthly -> {
                 val day = value.toInt()
                 if (day <= 28) {
@@ -336,6 +343,160 @@ class DateTime(
         return cal
     }
 
+    fun daysElapsedInMonth(): Int {
+        val cal = toCalendar()
+        return cal.get(Calendar.DAY_OF_MONTH)
+    }
+
+    fun getNoOfDaysInMonth(): Int {
+        val cal = toCalendar()
+        return cal.getActualMaximum(Calendar.DAY_OF_MONTH)
+    }
+
+    fun toFirstDayOfThisWeek(): DateTime {
+        for (d in 0..6) {
+            val date = exactRoll(DAY, -d)
+            if (date.weekday.value == DayOfWeek.Weekday.MONDAY.value) {
+                return date;
+            }
+        }
+        return this;
+    }
+
+    fun toLastDayOfThisWeek(): DateTime {
+        for (d in 0..6) {
+            val date = exactRoll(DAY, d)
+            if (date.weekday.value == DayOfWeek.Weekday.SUNDAY.value) {
+                return date;
+            }
+        }
+        return this;
+    }
+
+    fun toFirstDayOfMonth(): DateTime {
+        val cal = toCalendar()
+        cal.set(Calendar.DAY_OF_MONTH, 1)
+        return fromCalendar(cal)
+    }
+
+    fun toLastDayOfMonth(): DateTime {
+        val cal = toCalendar()
+        val max = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
+        cal.set(Calendar.DAY_OF_MONTH, max)
+        return fromCalendar(cal)
+    }
+
+    fun toFirstDayOfYear(): DateTime {
+        val cal = toCalendar()
+        val min = cal.getActualMinimum(Calendar.DAY_OF_YEAR)
+        cal.set(Calendar.DAY_OF_YEAR, min)
+        return fromCalendar(cal)
+    }
+
+    fun toLastDayOfYear(): DateTime {
+        val cal = toCalendar()
+        val max = cal.getActualMaximum(Calendar.DAY_OF_YEAR)
+        cal.set(Calendar.DAY_OF_YEAR, max)
+        return fromCalendar(cal)
+    }
+
+    fun toPeriod(period: DateTimeRange.Period): DateTimeRange {
+        return when (period) {
+            DateTimeRange.Period.TODAY -> {
+                DateTimeRange.today()
+            }
+
+            DateTimeRange.Period.YESTERDAY -> {
+                DateTimeRange.yesterday()
+            }
+
+            DateTimeRange.Period.THIS_WEEK -> {
+                DateTimeRange(
+                    start = toFirstDayOfThisWeek(),
+                    end = toLastDayOfThisWeek(),
+                    period = DateTimeRange.Period.THIS_WEEK
+                )
+            }
+
+            DateTimeRange.Period.THIS_MONTH -> {
+                DateTimeRange(
+                    start = toFirstDayOfMonth(),
+                    end = toLastDayOfMonth(),
+                    period = DateTimeRange.Period.THIS_MONTH
+                )
+            }
+
+            DateTimeRange.Period.LAST_WEEK -> {
+                val date = exactRoll(DAY, -7);
+                val start = date.toFirstDayOfThisWeek()
+                DateTimeRange(
+                    start = start,
+                    end = start.toLastDayOfThisWeek(),
+                    period = DateTimeRange.Period.LAST_WEEK
+                )
+            }
+
+            DateTimeRange.Period.LAST_MONTH -> {
+                val date = exactRoll(MONTH, -1);
+                val start = date.toFirstDayOfMonth()
+                DateTimeRange(
+                    start = start,
+                    end = start.toLastDayOfMonth(),
+                    period = DateTimeRange.Period.LAST_MONTH
+                )
+            }
+
+            DateTimeRange.Period.LAST_7_DAYS -> {
+                DateTimeRange(
+                    start = exactRoll(DAY, -6),
+                    end = this,
+                    period = DateTimeRange.Period.LAST_7_DAYS
+                )
+            }
+
+            DateTimeRange.Period.LAST_30_DAYS -> {
+                DateTimeRange(
+                    start = exactRoll(DAY, -30),
+                    end = this,
+                    period = DateTimeRange.Period.LAST_30_DAYS
+                )
+            }
+
+            DateTimeRange.Period.LAST_3_MONTHS -> {
+                DateTimeRange(
+                    start = exactRoll(MONTH, -3),
+                    end = this,
+                    period = DateTimeRange.Period.LAST_3_MONTHS
+                )
+            }
+
+            DateTimeRange.Period.LAST_6_MONTHS -> {
+                DateTimeRange(
+                    start = exactRoll(MONTH, -6),
+                    end = this,
+                    period = DateTimeRange.Period.LAST_6_MONTHS
+                )
+            }
+
+            DateTimeRange.Period.THIS_YEAR -> {
+                DateTimeRange(
+                    start = toFirstDayOfYear(),
+                    end = toLastDayOfYear(),
+                    period = DateTimeRange.Period.THIS_YEAR
+                )
+            }
+
+            DateTimeRange.Period.FROM_THE_BEGINNING -> {
+                DateTimeRange(
+                    start = fromDate("1970-01-01"),
+                    end = this,
+                    period = DateTimeRange.Period.FROM_THE_BEGINNING
+                )
+            }
+        }
+    }
+
+
     companion object {
         fun now(): DateTime {
             val cal = Calendar.getInstance()
@@ -345,6 +506,10 @@ class DateTime(
         fun today(): DateTime {
             val cal = Calendar.getInstance()
             return fromCalendar(cal).trimTime()
+        }
+
+        fun yesterday(): DateTime {
+            return today().roll(DAY, -1)
         }
 
         fun nowIn(
