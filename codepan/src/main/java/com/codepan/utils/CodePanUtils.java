@@ -1217,12 +1217,12 @@ public class CodePanUtils {
 
 	public static MockData getMockLocationApp(Context context, String[] exceptions) {
 		PackageManager pm = context.getPackageManager();
-		List<String> appList = exceptions != null ? Arrays.asList(exceptions) : new ArrayList<>();
-		List<ApplicationInfo> packageList = pm.getInstalledApplications(PackageManager.GET_META_DATA);
-		for(ApplicationInfo info : packageList) {
-			int mask = ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
-			if((info.flags & mask) == 0) {
-				try {
+		try {
+			List<String> appList = exceptions != null ? Arrays.asList(exceptions) : new ArrayList<>();
+			List<ApplicationInfo> packageList = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+			for(ApplicationInfo info : packageList) {
+				int mask = ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
+				if((info.flags & mask) == 0) {
 					PackageInfo pi = pm.getPackageInfo(info.packageName, PackageManager.GET_PERMISSIONS);
 					String[] permissionList = pi.requestedPermissions;
 					if(permissionList != null) {
@@ -1238,10 +1238,10 @@ public class CodePanUtils {
 						}
 					}
 				}
-				catch(Exception e) {
-					e.printStackTrace();
-				}
 			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
