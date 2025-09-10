@@ -11,6 +11,9 @@ data class Place(
     val area: String?
         get() = data.adminArea
 
+    val subArea: String?
+        get() = data.subAdminArea
+
     val zipCode: String?
         get() = data.postalCode
 
@@ -26,6 +29,7 @@ data class Place(
             val number = data.subThoroughfare
             val street = data.thoroughfare
             val locality = data.locality
+            val subArea = data.subAdminArea
             val area = data.adminArea
             val zipCode = data.postalCode
             val country = data.countryName
@@ -39,6 +43,10 @@ data class Place(
             if (locality != null) {
                 group(builder)
                 builder.append(locality)
+            }
+            if (subArea != null) {
+                group(builder)
+                builder.append(subArea)
             }
             if (area != null) {
                 group(builder)
