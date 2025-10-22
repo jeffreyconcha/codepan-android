@@ -165,7 +165,6 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresPermission;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
@@ -1401,6 +1400,7 @@ public class CodePanUtils {
 						}
 						else {
 							Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+							intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 							context.startActivity(intent);
 						}
 					}
