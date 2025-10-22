@@ -16,6 +16,7 @@ import android.util.Size
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import androidx.camera.core.AspectRatio
@@ -176,9 +177,27 @@ class CameraXView(
             }
             lbm.registerReceiver(receiver, filter)
             pvViewFinder.post {
-                displayId = pvViewFinder.display.displayId
-                scope.launch {
-                    setUpCamera()
+                val display = pvViewFinder.display
+                if (display != null) {
+                    displayId = display.displayId
+                    scope.launch {
+                        setUpCamera()
+                    }
+                } else {
+                    pvViewFinder.viewTreeObserver.addOnGlobalLayoutListener(
+                        object : ViewTreeObserver.OnGlobalLayoutListener {
+                            override fun onGlobalLayout() {
+                                val d = pvViewFinder.display
+                                if (d != null) {
+                                    pvViewFinder.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                                    displayId = d.displayId
+                                    scope.launch {
+                                        setUpCamera()
+                                    }
+                                }
+                            }
+                        }
+                    )
                 }
             }
         }
