@@ -492,6 +492,9 @@ public class HttpRequest {
 				if(userAgent != null) {
 					connection.setRequestProperty("User-Agent", userAgent);
 				}
+				if(authorization != null) {
+					connection.setRequestProperty("Authorization", authorization.getAuthorization());
+				}
 				connection.setConnectTimeout(currentTimeOut);
 				connection.setReadTimeout(currentTimeOut);
 				String path = dir.getPath() + "/" + fileName;
