@@ -5,13 +5,13 @@ plugins {
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdk 34
-    ndkVersion '21.0.6113669'
+    compileSdk 35
+    ndkVersion '29.0.14033849'
 
     defaultConfig {
         applicationId "com.codepan.example"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
