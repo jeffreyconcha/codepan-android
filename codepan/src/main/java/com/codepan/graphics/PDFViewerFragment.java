@@ -8,17 +8,13 @@ import android.view.ViewGroup;
 import com.codepan.R;
 import com.codepan.app.CPFragment;
 import com.codepan.widget.CodePanButton;
-import com.github.barteksc.pdfviewer.PDFView;
-import com.github.barteksc.pdfviewer.PDFView.Configurator;
-import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
-import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
+import com.infomaniak.lib.pdfview.PDFView;
 
 import java.io.File;
 
 import androidx.annotation.NonNull;
 
-public class PDFViewerFragment extends CPFragment implements OnPageChangeListener,
-	OnLoadCompleteListener {
+public class PDFViewerFragment extends CPFragment {
 
 	public void setDeleteConfirmationCallback(OnConfirmDeleteCallback callback) {
 		this.callback = callback;
@@ -36,7 +32,7 @@ public class PDFViewerFragment extends CPFragment implements OnPageChangeListene
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (path != null) {
+		if(path != null) {
 			file = new File(path);
 		}
 	}
@@ -47,27 +43,25 @@ public class PDFViewerFragment extends CPFragment implements OnPageChangeListene
 		CodePanButton btnClosePDFViewer = view.findViewById(R.id.btnClosePDFViewer);
 		btnClosePDFViewer.setOnClickListener(v -> onBackPressed());
 		btnClosePDFViewer.setOnLongClickListener(v -> {
-			if (callback != null) {
+			if(callback != null) {
 				callback.onConfirmDelete(this);
 			}
 			return true;
 		});
 		pdfViewer = view.findViewById(R.id.pdfViewer);
-		if (file != null && file.exists()) {
-			Configurator config = pdfViewer.fromFile(file);
-			config.defaultPage(0);
-			config.enableSwipe(true);
-			config.swipeHorizontal(false);
-			config.onPageChange(this);
-			config.onLoad(this);
-			config.load();
+		if(file != null && file.exists()) {
+			pdfViewer.fromFile(file)
+				.enableSwipe(true) // allows to block changing pages using swipe
+				.swipeHorizontal(false)
+				.enableDoubletap(true)
+				.defaultPage(0).load();
 		}
 		return view;
 	}
 
 	public boolean delete() {
 		manager.popBackStack();
-		if (file != null) {
+		if(file != null) {
 			return file.delete();
 		}
 		return false;
@@ -79,13 +73,5 @@ public class PDFViewerFragment extends CPFragment implements OnPageChangeListene
 
 	public void setFile(File file) {
 		this.file = file;
-	}
-
-	@Override
-	public void loadComplete(int nbPages) {
-	}
-
-	@Override
-	public void onPageChanged(int page, int count) {
 	}
 }

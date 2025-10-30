@@ -68,7 +68,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.codepan'
                 artifactId = 'codepan-android'
-                version = '1.8.1'
+                version = '1.8.4'
             }
         }
 
@@ -90,7 +90,7 @@ dependencies {
     api 'androidx.legacy:legacy-support-v4:1.0.0'
     api 'net.zetetic:sqlcipher-android:4.10.0'
     api 'androidx.sqlite:sqlite-ktx:2.6.1'
-    api 'com.github.DImuthuUpe:AndroidPdfViewer:2.8.1'
+    api 'com.github.Infomaniak:android-pdfview:3.2.13'
     api 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     api 'com.google.android.gms:play-services-location:21.3.0'
     api 'com.google.android.gms:play-services-maps:19.2.0'
