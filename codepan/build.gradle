@@ -68,7 +68,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.codepan'
                 artifactId = 'codepan-android'
-                version = '1.8.4'
+                version = '1.8.5'
             }
         }
 
