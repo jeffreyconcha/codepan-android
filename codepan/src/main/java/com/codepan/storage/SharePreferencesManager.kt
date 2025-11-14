@@ -2,12 +2,20 @@ package com.codepan.storage
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
+import androidx.annotation.RequiresApi
 
 class SharedPreferencesManager(context: Context) {
 
-    private val preferences: SharedPreferences = context.getSharedPreferences(context.packageName,
-        Context.MODE_PRIVATE)
+    private val preferences: SharedPreferences = context.getSharedPreferences(
+        context.packageName,
+        Context.MODE_PRIVATE
+    )
     private val editor = preferences.edit();
+
+    fun contains(key: String): Boolean {
+        return preferences.contains(key)
+    }
 
     @Suppress("UNCHECKED_CAST")
     fun <T> getValue(key: String, default: T?): T {
@@ -21,6 +29,7 @@ class SharedPreferencesManager(context: Context) {
         } as T
     }
 
+    @RequiresApi(Build.VERSION_CODES.GINGERBREAD)
     fun <T> setValue(key: String, value: T) {
         when (value) {
             is String -> editor.putString(key, value)
