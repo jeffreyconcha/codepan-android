@@ -8,24 +8,31 @@ import androidx.annotation.NonNull;
 
 public class CrashHandler implements UncaughtExceptionHandler {
 
-	private Context context;
+	private boolean shouldRethrow;
 	private String folder, password;
+	private Context context;
 
-	public CrashHandler(Context context, String folder, String password) {
+	public CrashHandler(Context context, String folder, String password, boolean shouldRethrow) {
 		this.context = context;
 		this.folder = folder;
 		this.password = password;
+		this.shouldRethrow = shouldRethrow;
 	}
 
 	@Override
 	public void uncaughtException(@NonNull Thread thread, Throwable e) {
 		String message = e.getMessage() + "\n" + CodePanUtils.throwableToString(e);
 		CodePanUtils.setErrorMsg(context, message, folder, password);
-		try {
-			throw e;
+		if(shouldRethrow) {
+			try {
+				throw e;
+			}
+			catch(Throwable ex) {
+				throw new RuntimeException(ex);
+			}
 		}
-		catch(Throwable ex) {
-			throw new RuntimeException(ex);
+		else {
+			System.exit(0);
 		}
 	}
 }
