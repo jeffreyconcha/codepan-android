@@ -23,15 +23,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
 	public void uncaughtException(@NonNull Thread thread, Throwable e) {
 		String message = e.getMessage() + "\n" + CodePanUtils.throwableToString(e);
 		CodePanUtils.setErrorMsg(context, message, folder, password);
-		if(shouldRethrow) {
-			try {
-				throw e;
-			}
-			catch(Throwable ex) {
-				throw new RuntimeException(ex);
-			}
-		}
-		else {
+		if(!shouldRethrow) {
 			System.exit(0);
 		}
 	}
