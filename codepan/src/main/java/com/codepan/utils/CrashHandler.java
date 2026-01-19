@@ -4,6 +4,8 @@ import android.content.Context;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 
+import androidx.annotation.NonNull;
+
 public class CrashHandler implements UncaughtExceptionHandler {
 
 	private Context context;
@@ -16,9 +18,14 @@ public class CrashHandler implements UncaughtExceptionHandler {
 	}
 
 	@Override
-	public void uncaughtException(Thread thread, Throwable e) {
+	public void uncaughtException(@NonNull Thread thread, Throwable e) {
 		String message = e.getMessage() + "\n" + CodePanUtils.throwableToString(e);
 		CodePanUtils.setErrorMsg(context, message, folder, password);
-		System.exit(0);
+		try {
+			throw e;
+		}
+		catch(Throwable ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 }
