@@ -2430,8 +2430,9 @@ public class CodePanUtils {
 		return fragment != null && fragment.isVisible();
 	}
 
-	public static void setCrashHandler(final Context context, String folder, String password, boolean shouldRethrow) {
-		Thread.setDefaultUncaughtExceptionHandler(new CrashHandler(context, folder, password, shouldRethrow));
+	public static void setCrashHandler(final Context context, String folder, String password) {
+		Thread.setDefaultUncaughtExceptionHandler(new CrashHandler(context, folder, password,
+			Thread.getDefaultUncaughtExceptionHandler()));
 	}
 
 	public static String capitalizeWord(String text) {
